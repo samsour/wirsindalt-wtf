@@ -12,26 +12,28 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.7.4",
+    "@libsql/client": "^0.14.0",
+    "drizzle-orm": "^0.36.4",
+    "nanoid": "^5.0.9",
     "next": "^15.0.0",
+    "next-auth": "5.0.0-beta.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next-auth": "5.0.0-beta.25",
-    "@auth/drizzle-adapter": "^1.7.4",
-    "drizzle-orm": "^0.36.4",
-    "@libsql/client": "^0.14.0",
-    "nanoid": "^5.0.9",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.7.2",
-    "drizzle-kit": "^0.30.0",
-    "tailwindcss": "^3.4.16",
-    "postcss": "^8.4.49",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.30.0",
     "eslint": "^9.16.0",
-    "eslint-config-next": "^15.0.0"
-  }
+    "eslint-config-next": "^15.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@11.3.0+sha512.2c403d6594527287672b1f7056343a1f7c3634036a67ffabfcc2b3d7595d843768f8787148d1b57cf7956c90606bbd192857c363af19e96d2d0ec9ec5741d215"
 }

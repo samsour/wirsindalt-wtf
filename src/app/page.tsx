@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { auth, signIn } from "@/lib/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
+
   return (
     <>
       <section className="mx-auto max-w-[1120px] grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-20 px-12 pt-24 pb-20 items-center">
@@ -18,9 +21,15 @@ export default function HomePage() {
             Connect your calendars privately. See the overlap, not the details. Stop polling your friends in group chats — let the math do it.
           </p>
           <div className="flex gap-3 items-center">
-            <Link href="/dashboard" className="btn-primary">
-              Create a group <span>→</span>
-            </Link>
+            {session?.user ? (
+              <Link href="/dashboard" className="btn-primary">
+                Create a group <span>→</span>
+              </Link>
+            ) : (
+              <form action={async () => { "use server"; await signIn("google", { redirectTo: "/dashboard" }); }}>
+                <button type="submit" className="btn-primary">Create a group →</button>
+              </form>
+            )}
             <button className="btn-secondary">See how it works</button>
           </div>
         </div>
