@@ -275,12 +275,12 @@
       {/if}
       <div class="gate-year">2016 → 2026</div>
       <h1 class="gate-title">Zeig, dass du dabei warst.</h1>
-      <p class="gate-sub">Wie lautete unser Abi-Motto? <span class="gate-tip" aria-label="Hinweis">ℹ︎<span class="gate-tip-text">Das mit dem Captain Blaubär, komm schon...</span></span></p>
+      <p class="gate-sub">Wie lautete unser Abi-Motto? <span class="gate-tip" aria-label="Hinweis">ℹ︎<span class="gate-tip-text">Captain Blaubär, komm schon...</span></span></p>
       <input class="gate-input" bind:value={authMotto} placeholder="Abi-Motto eingeben…" onkeydown={e => e.key === 'Enter' && login()} />
       <input class="gate-input" bind:value={authName} placeholder="Dein Name" onkeydown={e => e.key === 'Enter' && login()} />
       {#if authError}<p class="gate-error">{authError}</p>{/if}
       <button class="btn btn-primary gate-btn" onclick={login} disabled={authLoading}>
-        {authLoading ? 'Wird geprüft…' : 'Rein da →'}
+        {authLoading ? 'Löse binomische Formeln auf...' : 'Rein da →'}
       </button>
       <p class="gate-hint">Kein Account nötig — nur dein Name und das Motto.</p>
     </div>
@@ -577,7 +577,7 @@
 
   /* GATE */
   .gate-bg { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: #faf9f6; }
-  .gate-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; }
+  .gate-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; overflow: hidden; }
   .motto-stamp {
     position: absolute;
     top: 38%; left: 50%;
@@ -603,9 +603,9 @@
   .gate-year { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 1rem; }
   .gate-title { font-family: var(--serif); font-size: 2rem; margin-bottom: .5rem; line-height: 1.2; }
   .gate-sub { color: var(--ink2); font-size: 14px; margin-bottom: 1.5rem; }
-  .gate-tip { position: relative; display: inline-block; cursor: default; font-size: 12px; color: var(--ink3); vertical-align: middle; margin-left: 2px; }
-  .gate-tip-text { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 12px; white-space: nowrap; padding: 5px 10px; border-radius: 6px; transition: opacity .15s; pointer-events: none; }
-  .gate-tip-text::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
+  .gate-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: default; font-size: 11px; color: var(--ink3); vertical-align: middle; margin-left: 4px; width: 16px; height: 16px; border-radius: 50%; background: #eee; }
+  .gate-tip-text { visibility: hidden; opacity: 0; position: absolute; top: calc(100% + 6px); right: 0; background: var(--ink); color: #fff; font-size: 12px; white-space: nowrap; padding: 5px 10px; border-radius: 6px; transition: opacity .15s; pointer-events: none; }
+  .gate-tip-text::after { content: ''; position: absolute; bottom: 100%; right: 8px; border: 5px solid transparent; border-bottom-color: var(--ink); }
   .gate-tip:hover .gate-tip-text { visibility: visible; opacity: 1; }
   .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
   .gate-input:focus { border-color: var(--accent); }
