@@ -38,6 +38,7 @@
  * The above values will be the same _even if_ different values for `ENVIRONMENT` or `PUBLIC_BASE_URL` are set at runtime, as they are statically replaced in your code with their build time values.
  */
 declare module '$env/static/private' {
+	export const MAX_PHASE: string;
 	export const TURSO_AUTH_TOKEN: string;
 	export const TURSO_URL: string;
 	export const NVM_INC: string;
@@ -181,6 +182,7 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		MAX_PHASE: string;
 		TURSO_AUTH_TOKEN: string;
 		TURSO_URL: string;
 		NVM_INC: string;

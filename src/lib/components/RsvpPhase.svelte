@@ -8,8 +8,6 @@
     rsvpNote = $bindable(''),
     rsvpLoading,
     onsubmit,
-    onback,
-    onnext,
   }: {
     rsvpStats: { attending: number; notAttending: number; totalGuests: number };
     rsvpDone?: boolean;
@@ -19,8 +17,6 @@
     rsvpNote?: string;
     rsvpLoading: boolean;
     onsubmit: () => void;
-    onback: () => void;
-    onnext: () => void;
   } = $props();
 </script>
 
@@ -93,10 +89,6 @@
     {/if}
   {/if}
 
-  <div class="footer-nav">
-    <button class="btn btn-outline" onclick={onback}>← Zurück</button>
-    <button class="btn btn-primary" onclick={onnext}>Zur Planung →</button>
-  </div>
 </div>
 
 <style>

@@ -5,7 +5,7 @@
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
     newIdeaText = $bindable(''), newIdeaTag = $bindable('Programm'),
     newLocDesc = $bindable(''), newLocAddr = $bindable(''),
-    onaddcontrib, ondeletecontrib, onaddidea, ontoggleideavote, onaddlocation, onback, onshare,
+    onaddcontrib, ondeletecontrib, onaddidea, ontoggleideavote, onaddlocation, onshare,
   }: {
     ideas: any[];
     myIdeaVotes: number[];
@@ -24,7 +24,6 @@
     onaddidea: () => void;
     ontoggleideavote: (id: number) => void;
     onaddlocation: () => void;
-    onback: () => void;
     onshare: () => void;
   } = $props();
 
@@ -132,8 +131,7 @@
     </div>
   {/if}
 
-  <div class="footer-nav">
-    <button class="btn btn-outline" onclick={onback}>← Zurück</button>
+  <div style="padding-top:1.5rem;margin-top:.5rem;border-top:1px solid var(--border)">
     <button class="btn btn-primary" onclick={onshare}>Link teilen ↗</button>
   </div>
 </div>

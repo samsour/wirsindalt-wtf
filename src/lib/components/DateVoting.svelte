@@ -1,14 +1,13 @@
 <script lang="ts">
   import { DATES } from '$lib/dates';
 
-  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, oncastvote, onnext }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
     myVoteCount: number;
     oncastvote: (dateKey: string, vote: string) => void;
-    onnext: () => void;
   } = $props();
 
   const byMonth = DATES.reduce((acc, d) => {
@@ -75,9 +74,8 @@
     </div>
   {/if}
 
-  <div class="footer-nav">
+  <div class="vote-stat">
     <div class="stat-pill"><span class="sn">{myVoteCount}</span><span class="sl">meine Stimmen</span></div>
-    <button class="btn btn-primary" onclick={onnext}>Weiter zur Anmeldung →</button>
   </div>
 </div>
 
@@ -111,5 +109,6 @@
   .result-track { flex: 1; height: 7px; background: #eee; border-radius: 4px; overflow: hidden; }
   .result-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .5s; }
   .result-num { font-size: 12px; color: var(--ink3); min-width: 24px; text-align: right; }
+  .vote-stat { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid var(--border); }
   @media (max-width: 500px) { .date-row { grid-template-columns: 1fr; } }
 </style>
