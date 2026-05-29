@@ -54,6 +54,17 @@ async function addDateOption(formData: FormData) {
   redirect("/dashboard?toast=date-added");
 }
 
+async function updateDateLabel(formData: FormData) {
+  "use server";
+  const session = await auth();
+  if (session?.user?.email !== ADMIN_EMAIL) redirect("/");
+
+  const id = String(formData.get("id"));
+  const label = String(formData.get("label") || "").trim() || null;
+  await db.update(dateOptions).set({ label }).where(eq(dateOptions.id, id));
+  revalidatePath("/dashboard");
+}
+
 async function removeDateOption(formData: FormData) {
   "use server";
   const session = await auth();
@@ -228,11 +239,23 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <div className="flex-1 min-w-0">
-                      <span className="font-medium text-sm">
-                        {d.toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}
-                      </span>
-                      {opt.label && <span className="text-xs text-ink-muted ml-2">{opt.label}</span>}
-                      {isWinner && <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-accent">Gewählt</span>}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-sm">
+                          {d.toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}
+                        </span>
+                        {isWinner && <span className="font-mono text-[10px] uppercase tracking-wider text-accent">Gewählt</span>}
+                      </div>
+                      <form action={updateDateLabel} className="flex items-center gap-1.5 mt-1">
+                        <input type="hidden" name="id" value={opt.id} />
+                        <input
+                          type="text"
+                          name="label"
+                          defaultValue={opt.label ?? ""}
+                          placeholder="Label hinzufügen…"
+                          className="text-xs px-2 py-1 bg-bg border border-line rounded-md focus:outline-none focus:border-ink transition w-40 text-ink-muted placeholder:text-ink-faint"
+                        />
+                        <button type="submit" className="text-xs text-ink-faint hover:text-ink transition px-1">✓</button>
+                      </form>
                     </div>
                     <span className="font-mono text-sm font-medium tabular-nums">{opt.voteCount}</span>
                     <form action={setFinalDate}>
