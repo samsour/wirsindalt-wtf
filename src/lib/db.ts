@@ -10,6 +10,7 @@ export async function initDb() {
   await db.executeMultiple(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id TEXT UNIQUE,
       name TEXT NOT NULL,
       created_at TEXT DEFAULT (datetime('now'))
     );
@@ -74,4 +75,6 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     );
   `);
+  // migration: add client_id to existing users tables
+  try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }
 }

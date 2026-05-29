@@ -8,19 +8,15 @@
   let authMotto = $state('');
   let authError = $state('');
   let authLoading = $state(false);
-  let nameExists = $state(false);
-  let nameCheckTimer: ReturnType<typeof setTimeout>;
 
-  $effect(() => {
-    const name = authName.trim();
-    clearTimeout(nameCheckTimer);
-    if (name.length < 2) { nameExists = false; return; }
-    nameCheckTimer = setTimeout(async () => {
-      const res = await fetch(`/api/auth?name=${encodeURIComponent(name)}`);
-      const d = await res.json();
-      nameExists = d.exists;
-    }, 400);
-  });
+  function getClientId(): string {
+    let id = localStorage.getItem('abi2016_clientId');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('abi2016_clientId', id);
+    }
+    return id;
+  }
 
   // --- Nav ---
   let phase = $state(0);
@@ -83,7 +79,7 @@
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: authName, motto: authMotto }),
+      body: JSON.stringify({ clientId: getClientId(), name: authName, motto: authMotto }),
     });
     const data = await res.json();
     authLoading = false;
@@ -278,9 +274,6 @@
       <p class="gate-sub">Wie lautete unser Abi-Motto?</p>
       <input class="gate-input" bind:value={authMotto} placeholder="Abi-Motto eingeben…" onkeydown={e => e.key === 'Enter' && login()} />
       <input class="gate-input" bind:value={authName} placeholder="Dein Name" onkeydown={e => e.key === 'Enter' && login()} />
-      {#if nameExists}
-        <p class="gate-name-warn">„{authName.trim()}" ist bereits registriert — bist du das? Falls nicht, füge deinen Nachnamen hinzu.</p>
-      {/if}
       {#if authError}<p class="gate-error">{authError}</p>{/if}
       <button class="btn btn-primary gate-btn" onclick={login} disabled={authLoading}>
         {authLoading ? 'Wird geprüft…' : 'Rein da →'}
@@ -587,7 +580,6 @@
   .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
   .gate-input:focus { border-color: var(--accent); }
   .gate-error { color: var(--red); font-size: 13px; margin: .5rem 0; }
-  .gate-name-warn { color: var(--maybe); font-size: 12px; margin: -.25rem 0 .5rem; text-align: left; line-height: 1.5; }
   .gate-btn { width: 100%; justify-content: center; margin-top: .5rem; }
   .gate-hint { font-size: 12px; color: var(--ink3); margin-top: 1rem; }
 

@@ -2,18 +2,8 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { checkMotto } from '$lib/dates';
 
-export async function GET({ url }) {
-  const name = url.searchParams.get('name')?.trim();
-  if (!name) return json({ exists: false });
-  const existing = await db.execute({
-    sql: `SELECT id FROM users WHERE lower(name) = lower(?) LIMIT 1`,
-    args: [name],
-  });
-  return json({ exists: existing.rows.length > 0 });
-}
-
 export async function POST({ request }) {
-  const { name, motto } = await request.json();
+  const { clientId, name, motto } = await request.json();
 
   if (!checkMotto(motto)) {
     return json({ error: 'Motto falsch - versuch es nochmal!' }, { status: 401 });
@@ -21,11 +11,13 @@ export async function POST({ request }) {
   if (!name?.trim()) {
     return json({ error: 'Bitte Namen eingeben.' }, { status: 400 });
   }
+  if (!clientId) {
+    return json({ error: 'Missing client ID.' }, { status: 400 });
+  }
 
-  // Find or create user by name (case-insensitive)
   const existing = await db.execute({
-    sql: `SELECT id, name FROM users WHERE lower(name) = lower(?) LIMIT 1`,
-    args: [name.trim()],
+    sql: `SELECT id, name FROM users WHERE client_id = ? LIMIT 1`,
+    args: [clientId],
   });
 
   let userId: number;
@@ -36,8 +28,8 @@ export async function POST({ request }) {
     userName = existing.rows[0].name as string;
   } else {
     const result = await db.execute({
-      sql: `INSERT INTO users (name) VALUES (?) RETURNING id, name`,
-      args: [name.trim()],
+      sql: `INSERT INTO users (client_id, name) VALUES (?, ?) RETURNING id, name`,
+      args: [clientId, name.trim()],
     });
     userId = result.rows[0].id as number;
     userName = result.rows[0].name as string;
