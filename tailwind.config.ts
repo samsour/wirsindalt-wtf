@@ -5,34 +5,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: "#FAFAF7",
-        surface: "#FFFFFF",
+        bg: "#D8E6F0",       // light periwinkle — the wallpaper
+        surface: "#EEF5FA",  // slightly lighter for cards
         ink: {
-          DEFAULT: "#1A1A1A",
-          muted: "#6B6B66",
-          faint: "#A8A8A0",
+          DEFAULT: "#1A2A42", // deep navy — the signature ink
+          muted: "#4B6480",
+          faint: "#8AA2B8",
         },
         line: {
-          DEFAULT: "#E8E6DF",
-          strong: "#D4D2C9",
+          DEFAULT: "#B8CCE0",
+          strong: "#98B4CC",
         },
         accent: {
-          DEFAULT: "#2D5F3F",
-          soft: "#E8F0E9",
-          mid: "#7AAD8B",
+          DEFAULT: "#C42828", // Blaubär red — the sweater
+          soft: "#FDEAEA",
+          mid: "#D96060",
         },
         warm: {
-          DEFAULT: "#C9774A",
-          soft: "#FAEDE3",
-        },
-        // Heatmap scale
-        heat: {
-          0: "#F4F2EC",
-          1: "#EBEFE6",
-          2: "#D7E2D4",
-          3: "#ADCBAE",
-          4: "#7AAD8B",
-          5: "#4E8666",
+          DEFAULT: "#C49A60", // anchor rope amber
+          soft: "#F5EBDB",
         },
       },
       fontFamily: {

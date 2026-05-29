@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth, signIn, signOut } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
@@ -12,22 +12,14 @@ export async function Nav() {
       <Link href="/" className="font-serif italic text-[20px] font-medium tracking-tight text-ink">
         wirsindalt<span className="text-accent">.wtf</span>
       </Link>
-      <div className="flex items-center gap-3">
-        {isAdmin ? (
-          <>
-            <Link href="/dashboard" className="label hover:text-ink">Admin</Link>
-            <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
-              <button type="submit" className="btn-secondary">Abmelden</button>
-            </form>
-          </>
-        ) : (
-          <form action={async () => { "use server"; await signIn("google", { redirectTo: "/dashboard" }); }}>
-            <button type="submit" className="label text-ink-muted hover:text-ink transition">
-              Admin →
-            </button>
+      {isAdmin && (
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard" className="label hover:text-ink">Admin</Link>
+          <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
+            <button type="submit" className="btn-secondary">Abmelden</button>
           </form>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

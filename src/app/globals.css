@@ -20,7 +20,7 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-[10px] bg-ink text-bg px-5 py-3 text-sm font-medium transition hover:bg-black hover:-translate-y-px;
+    @apply inline-flex items-center gap-2 rounded-[10px] bg-ink text-bg px-5 py-3 text-sm font-medium transition hover:opacity-85 hover:-translate-y-px;
   }
   .btn-secondary {
     @apply inline-flex items-center gap-2 rounded-[10px] border border-line-strong text-ink px-5 py-3 text-sm font-medium transition hover:border-ink;

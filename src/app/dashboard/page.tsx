@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -136,9 +137,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="mx-auto max-w-[800px] px-8 py-12 space-y-10">
-      <header>
-        <p className="label mb-1">Admin</p>
-        <h1 className="font-serif text-[38px] tracking-tight">wirsindalt<em className="italic">.wtf</em></h1>
+      <header className="flex items-start justify-between">
+        <div>
+          <p className="label mb-1">Admin</p>
+          <h1 className="font-serif text-[38px] tracking-tight">wirsindalt<em className="italic">.wtf</em></h1>
+        </div>
+        <Link href="/" className="label hover:text-ink transition mt-1">← Zur Website</Link>
       </header>
 
       {/* Event details */}
@@ -172,6 +176,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <input
                 type="time"
                 name="time"
+                lang="de"
                 defaultValue={ev?.time ?? ""}
                 className="w-full px-4 py-3 text-base bg-bg border border-line-strong rounded-[10px] focus:outline-none focus:border-ink transition"
               />
@@ -338,7 +343,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                   </div>
                 </div>
                 <span className="text-[11px] text-ink-faint whitespace-nowrap">
-                  {v.createdAt.toLocaleString("de-DE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  {v.createdAt.toLocaleString("de-DE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })}
                 </span>
               </div>
             ))}

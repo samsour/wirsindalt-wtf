@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const VOTED_KEY = "wirsindalt_voted";
 const RSVP_KEY = "wirsindalt_rsvp";
@@ -92,6 +93,14 @@ export default function HomePage() {
     <div className="mx-auto max-w-[640px] px-6 pt-16 pb-32">
       {/* Hero */}
       <div className="text-center mb-14">
+        <Image
+          src="/images/immerblau.png"
+          alt="Abi 2016 – immer blau, trotzdem schlau"
+          width={260}
+          height={260}
+          className="mx-auto mb-6 drop-shadow-md"
+          priority
+        />
         <p className="label mb-4">Abitur 2016 · CvSS</p>
         <h1 className="font-serif font-normal text-[clamp(40px,6vw,72px)] leading-none tracking-[-0.03em] mb-5">
           <em className="italic text-accent">Bääm!</em> Terminplanung
