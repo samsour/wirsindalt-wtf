@@ -110,7 +110,7 @@ export default function HomePage() {
         )}
         {!eventData.description && !finalOption && (
           <p className="text-ink-muted text-lg max-w-[420px] mx-auto">
-            10 Jahre. Zeit für eine Party. Stimm ab, wann du kannst — dann planen wir.
+            10 Jahre. Zeit für eine Party. Stimm ab, wann du kannst, dann planen wir.
           </p>
         )}
       </div>
@@ -130,7 +130,11 @@ export default function HomePage() {
       ) : eventData.dateOptions.length === 0 ? (
         <p className="text-center text-ink-muted">Termine werden bald bekannt gegeben.</p>
       ) : hasVoted ? (
-        <Results options={sorted} maxVotes={maxVotes} submitted={submitted} />
+        <Results options={sorted} maxVotes={maxVotes} submitted={submitted} onReset={() => {
+          localStorage.removeItem(VOTED_KEY);
+          setHasVoted(false);
+          setSubmitted(false);
+        }} />
       ) : (
         <VoteForm
           options={eventData.dateOptions}
@@ -327,15 +331,159 @@ function Stat({ value, label, accent }: { value: number; label: string; accent?:
 
 // ─── Voting phase ───
 
+type DateGroup =
+  | { kind: "weekend"; fri?: DateOption; sat?: DateOption }
+  | { kind: "solo"; opt: DateOption };
+
+function groupByWeekend(options: DateOption[]): DateGroup[] {
+  const sorted = [...options].sort((a, b) => a.date.localeCompare(b.date));
+  const groups: DateGroup[] = [];
+  let i = 0;
+  while (i < sorted.length) {
+    const cur = sorted[i];
+    const dow = new Date(cur.date + "T12:00:00").getDay(); // 0=Sun,5=Fri,6=Sat
+    if (dow === 5) {
+      const next = sorted[i + 1];
+      const nextIsSat =
+        next &&
+        new Date(next.date + "T12:00:00").getDay() === 6 &&
+        new Date(next.date + "T12:00:00").getTime() - new Date(cur.date + "T12:00:00").getTime() === 86400000;
+      if (nextIsSat) {
+        groups.push({ kind: "weekend", fri: cur, sat: next });
+        i += 2;
+        continue;
+      }
+    }
+    if (dow === 5 || dow === 6) {
+      groups.push({ kind: "weekend", fri: dow === 5 ? cur : undefined, sat: dow === 6 ? cur : undefined });
+    } else {
+      groups.push({ kind: "solo", opt: cur });
+    }
+    i++;
+  }
+  return groups;
+}
+
+function DateToggle({ opt, selected, toggleDate }: { opt: DateOption; selected: Set<string>; toggleDate: (id: string) => void }) {
+  const checked = selected.has(opt.id);
+  const d = new Date(opt.date + "T12:00:00");
+  const weekday = d.toLocaleDateString("de-DE", { weekday: "short" });
+  const dayNum = d.toLocaleDateString("de-DE", { day: "numeric" });
+  return (
+    <button
+      type="button"
+      onClick={() => toggleDate(opt.id)}
+      className={`flex-1 flex flex-col items-center py-3.5 px-3 rounded-[10px] border transition ${
+        checked ? "bg-ink text-bg border-ink" : "bg-surface border-line-strong hover:border-ink"
+      }`}
+    >
+      <span className={`font-mono text-[10px] uppercase tracking-wider mb-1 ${checked ? "text-white/50" : "text-ink-faint"}`}>{weekday}</span>
+      <span className="font-serif text-[22px] leading-none tracking-tight">{dayNum}</span>
+      {opt.label && (
+        <span className={`text-[10px] mt-1.5 text-center leading-tight ${checked ? "text-white/60" : "text-ink-muted"}`}>{opt.label}</span>
+      )}
+    </button>
+  );
+}
+
+function CalendarView({ options, selected, toggleDate }: {
+  options: DateOption[];
+  selected: Set<string>;
+  toggleDate: (id: string) => void;
+}) {
+  const optionByDate = new Map(options.map((o) => [o.date, o]));
+
+  // collect unique year-month combos in order
+  const months: { year: number; month: number }[] = [];
+  const seen = new Set<string>();
+  [...options].sort((a, b) => a.date.localeCompare(b.date)).forEach((o) => {
+    const d = new Date(o.date + "T12:00:00");
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      months.push({ year: d.getFullYear(), month: d.getMonth() });
+    }
+  });
+
+  return (
+    <div className="space-y-6">
+      {months.map(({ year, month }) => {
+        const monthName = new Date(year, month, 1).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+        // first weekday of month (Mon=0 … Sun=6)
+        const firstDow = (new Date(year, month, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const cells: (number | null)[] = [
+          ...Array(firstDow).fill(null),
+          ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+        ];
+        // pad to full weeks
+        while (cells.length % 7 !== 0) cells.push(null);
+
+        return (
+          <div key={`${year}-${month}`}>
+            <p className="label text-ink-faint mb-3">{monthName}</p>
+            <div className="grid grid-cols-7 gap-px">
+              {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map((d) => (
+                <div key={d} className="font-mono text-[9px] uppercase tracking-wider text-ink-faint text-center py-1.5">
+                  {d}
+                </div>
+              ))}
+              {cells.map((day, ci) => {
+                if (day === null) return <div key={ci} />;
+                const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                const opt = optionByDate.get(dateStr);
+                const checked = opt ? selected.has(opt.id) : false;
+                if (!opt) {
+                  return (
+                    <div key={ci} className="text-center py-2.5 text-sm text-ink-faint/30 select-none">
+                      {day}
+                    </div>
+                  );
+                }
+                return (
+                  <button
+                    key={ci}
+                    type="button"
+                    onClick={() => toggleDate(opt.id)}
+                    className={`relative flex flex-col items-center py-2 rounded-[8px] border transition ${
+                      checked ? "bg-ink text-bg border-ink" : "bg-surface border-line-strong hover:border-ink"
+                    }`}
+                  >
+                    <span className="text-sm font-medium leading-none">{day}</span>
+                    {opt.label && (
+                      <span className={`text-[8px] mt-1 leading-tight text-center px-0.5 line-clamp-1 ${checked ? "text-white/50" : "text-ink-faint"}`}>
+                        {opt.label}
+                      </span>
+                    )}
+                    {checked && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function VoteForm({ options, name, setName, selected, toggleDate, onSubmit, submitting }: {
   options: DateOption[];
   name: string;
   setName: (v: string) => void;
   selected: Set<string>;
   toggleDate: (id: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitting: boolean;
 }) {
+  const [view, setView] = useState<"list" | "month">("month");
+  const groups = groupByWeekend(options);
+
+  // derive month labels for section headers
+  let lastMonth = "";
+
   return (
     <form onSubmit={onSubmit} className="space-y-8">
       <div>
@@ -349,53 +497,84 @@ function VoteForm({ options, name, setName, selected, toggleDate, onSubmit, subm
         />
       </div>
       <div>
-        <label className="label block mb-3">
-          Wann kannst du?{" "}
-          <span className="text-ink-faint font-normal normal-case">(mehrere möglich)</span>
-        </label>
-        <div className="space-y-2">
-          {options.map((opt) => {
-            const d = new Date(opt.date + "T12:00:00");
-            const checked = selected.has(opt.id);
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => toggleDate(opt.id)}
-                className={`w-full text-left px-5 py-4 rounded-[10px] border transition flex items-center justify-between group ${
-                  checked ? "bg-ink text-bg border-ink" : "bg-surface border-line-strong hover:border-ink"
-                }`}
-              >
-                <div>
-                  <div className="font-medium">
-                    {d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })}
-                  </div>
-                  {opt.label && (
-                    <div className={`text-xs mt-0.5 ${checked ? "text-white/60" : "text-ink-muted"}`}>{opt.label}</div>
+        <div className="flex items-center justify-between mb-3">
+          <label className="label">
+            Wann kannst du?{" "}
+            <span className="text-ink-faint font-normal normal-case">(mehrere möglich)</span>
+          </label>
+          <div className="flex bg-surface border border-line-strong rounded-[8px] p-0.5 gap-0.5">
+            <button
+              type="button"
+              onClick={() => setView("month")}
+              className={`px-2.5 py-1 rounded-[6px] font-mono text-[10px] uppercase tracking-wider transition ${
+                view === "month" ? "bg-ink text-bg" : "text-ink-muted hover:text-ink"
+              }`}
+            >
+              Monat
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`px-2.5 py-1 rounded-[6px] font-mono text-[10px] uppercase tracking-wider transition ${
+                view === "list" ? "bg-ink text-bg" : "text-ink-muted hover:text-ink"
+              }`}
+            >
+              Liste
+            </button>
+          </div>
+        </div>
+        {view === "month" ? (
+          <CalendarView options={options} selected={selected} toggleDate={toggleDate} />
+        ) : (
+          <div className="space-y-1.5">
+            {groups.map((group, i) => {
+              const representativeDate =
+                group.kind === "weekend" ? (group.fri ?? group.sat)!.date : group.opt.date;
+              const month = new Date(representativeDate + "T12:00:00").toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+              const showMonthHeader = month !== lastMonth;
+              lastMonth = month;
+              return (
+                <div key={i}>
+                  {showMonthHeader && (
+                    <p className="label text-ink-faint mb-2 mt-4 first:mt-0">{month}</p>
+                  )}
+                  {group.kind === "weekend" ? (
+                    <div className="flex gap-2">
+                      {group.fri && <DateToggle opt={group.fri} selected={selected} toggleDate={toggleDate} />}
+                      {group.sat && <DateToggle opt={group.sat} selected={selected} toggleDate={toggleDate} />}
+                    </div>
+                  ) : (
+                    <DateToggle opt={group.opt} selected={selected} toggleDate={toggleDate} />
                   )}
                 </div>
-                <span className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition ${
-                  checked ? "bg-white border-white" : "border-line-strong group-hover:border-ink"
-                }`}>
-                  {checked && <CheckIcon />}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      <button
-        type="submit"
-        disabled={!name.trim() || selected.size === 0 || submitting}
-        className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {submitting ? "Wird gespeichert…" : "Abstimmen →"}
-      </button>
+      <div>
+        <button
+          type="submit"
+          disabled={!name.trim() || selected.size === 0 || submitting}
+          className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {submitting ? "Wird gespeichert…" : "Abstimmen →"}
+        </button>
+        {(!name.trim() || selected.size === 0) && (
+          <p className="text-center font-mono text-[10px] uppercase tracking-wider text-ink-faint mt-2">
+            {!name.trim() && selected.size === 0
+              ? "Name eingeben · Termine auswählen"
+              : !name.trim()
+              ? `${selected.size} Termin${selected.size !== 1 ? "e" : ""} ausgewählt — Name fehlt noch`
+              : "Termine auswählen"}
+          </p>
+        )}
+      </div>
     </form>
   );
 }
 
-function Results({ options, maxVotes, submitted }: { options: DateOption[]; maxVotes: number; submitted: boolean }) {
+function Results({ options, maxVotes, submitted, onReset }: { options: DateOption[]; maxVotes: number; submitted: boolean; onReset: () => void }) {
   return (
     <div className="space-y-6">
       {submitted && (
@@ -404,7 +583,16 @@ function Results({ options, maxVotes, submitted }: { options: DateOption[]; maxV
         </div>
       )}
       <div>
-        <h2 className="font-serif text-2xl tracking-tight mb-5">Aktuelle Ergebnisse</h2>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-serif text-2xl tracking-tight">Aktuelle Ergebnisse</h2>
+          <button
+            type="button"
+            onClick={onReset}
+            className="font-mono text-[10px] uppercase tracking-wider text-ink-faint hover:text-ink-muted transition"
+          >
+            Neu abstimmen
+          </button>
+        </div>
         <div className="space-y-3">
           {options.map((opt, i) => {
             const d = new Date(opt.date + "T12:00:00");
@@ -479,14 +667,6 @@ function Steps({ active }: { active: number }) {
 }
 
 // ─── Icons ───
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
-      <path d="M1 4L4.5 7.5L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink" />
-    </svg>
-  );
-}
 
 function ClockIcon() {
   return (
