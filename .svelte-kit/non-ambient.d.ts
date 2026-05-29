@@ -46,6 +46,6 @@ declare module "$app/types" {
 		};
 		Pathname(): "/" | "/api/auth" | "/api/contributions" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/rsvp" | "/api/votes";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/robots.txt" | string & {};
+		Asset(): "/immerblau.png" | "/robots.txt" | string & {};
 	}
 }
