@@ -1,9 +1,9 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { DATES } from '$lib/dates';
+import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
-  // Aggregate vote counts per date
   const rows = await db.execute(`
     SELECT date_key, vote, COUNT(*) as count
     FROM date_votes
@@ -23,8 +23,9 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-  const { userId, dateKey, vote } = await request.json();
-  if (!userId || !dateKey) return json({ error: 'Missing fields' }, { status: 400 });
+  const { token, dateKey, vote } = await request.json();
+  const { userId } = await resolveToken(token);
+  if (!dateKey) return json({ error: 'Missing fields' }, { status: 400 });
   if (vote !== null && !['yes', 'maybe', 'no'].includes(vote)) {
     return json({ error: 'Invalid vote value' }, { status: 400 });
   }
@@ -44,9 +45,9 @@ export async function POST({ request }) {
   return json({ ok: true });
 }
 
-// GET user's own votes
 export async function PUT({ request }) {
-  const { userId } = await request.json();
+  const { token } = await request.json();
+  const { userId } = await resolveToken(token);
   const rows = await db.execute({
     sql: `SELECT date_key, vote FROM date_votes WHERE user_id = ?`,
     args: [userId],

@@ -3,11 +3,24 @@
   import { DATES } from '$lib/dates';
 
   // --- Auth state ---
-  let user: { userId: number; userName: string } | null = $state(null);
+  let user: { userId: number; userName: string; token: string } | null = $state(null);
   let authName = $state('');
   let authMotto = $state('');
   let authError = $state('');
   let authLoading = $state(false);
+  let nameExists = $state(false);
+  let nameCheckTimer: ReturnType<typeof setTimeout>;
+
+  $effect(() => {
+    const name = authName.trim();
+    clearTimeout(nameCheckTimer);
+    if (name.length < 2) { nameExists = false; return; }
+    nameCheckTimer = setTimeout(async () => {
+      const res = await fetch(`/api/auth?name=${encodeURIComponent(name)}`);
+      const d = await res.json();
+      nameExists = d.exists;
+    }, 400);
+  });
 
   // --- Nav ---
   let phase = $state(0);
@@ -52,8 +65,13 @@
   onMount(async () => {
     const stored = localStorage.getItem('abi2016_user');
     if (stored) {
-      user = JSON.parse(stored);
-      await loadAll();
+      const parsed = JSON.parse(stored);
+      if (parsed.token) {
+        user = parsed;
+        await loadAll();
+      } else {
+        localStorage.removeItem('abi2016_user');
+      }
     }
     await loadVotes();
     await loadRsvpStats();
@@ -96,7 +114,7 @@
     const res = await fetch('/api/votes', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId }),
+      body: JSON.stringify({ token: user.token }),
     });
     myVotes = await res.json();
   }
@@ -119,7 +137,7 @@
     await fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, dateKey, vote: newVote }),
+      body: JSON.stringify({ token: user.token, dateKey, vote: newVote }),
     });
     votingKey = null;
     showToast(newVote === 'yes' ? '✓ Stimme gezählt!' : newVote === 'maybe' ? '~ Als Vielleicht vermerkt' : newVote === 'no' ? '✗ Abgesagt' : 'Stimme zurückgezogen');
@@ -136,7 +154,7 @@
     await fetch('/api/rsvp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, attending: rsvpChoice === 'yes', guests: rsvpGuests, dietary: rsvpDietary, note: rsvpNote }),
+      body: JSON.stringify({ token: user.token, attending: rsvpChoice === 'yes', guests: rsvpGuests, dietary: rsvpDietary, note: rsvpNote }),
     });
     rsvpLoading = false;
     rsvpDone = true;
@@ -154,7 +172,7 @@
     const res = await fetch('/api/contributions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, userName: user.userName, item: newContribItem, category: newContribCat }),
+      body: JSON.stringify({ token: user.token, item: newContribItem, category: newContribCat }),
     });
     const c = await res.json();
     contributions = [c, ...contributions];
@@ -167,13 +185,13 @@
     await fetch('/api/contributions', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, userId: user.userId }),
+      body: JSON.stringify({ id, token: user.token }),
     });
     contributions = contributions.filter(c => c.id !== id);
   }
 
   async function loadIdeas() {
-    const res = await fetch(`/api/ideas${user ? '?userId=' + user.userId : ''}`);
+    const res = await fetch(`/api/ideas${user ? '?token=' + user.token : ''}`);
     const d = await res.json();
     ideas = d.ideas;
     myIdeaVotes = d.myVotes;
@@ -184,7 +202,7 @@
     const res = await fetch('/api/ideas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, userName: user.userName, text: newIdeaText, tag: newIdeaTag }),
+      body: JSON.stringify({ token: user.token, text: newIdeaText, tag: newIdeaTag }),
     });
     const idea = await res.json();
     ideas = [idea, ...ideas];
@@ -198,7 +216,7 @@
     const res = await fetch('/api/ideas', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, ideaId }),
+      body: JSON.stringify({ token: user.token, ideaId }),
     });
     const d = await res.json();
     if (d.voted) {
@@ -221,7 +239,7 @@
     const res = await fetch('/api/locations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, userName: user.userName, description: newLocDesc, address: newLocAddr }),
+      body: JSON.stringify({ token: user.token, description: newLocDesc, address: newLocAddr }),
     });
     const loc = await res.json();
     locations = [...locations, loc];
@@ -260,6 +278,9 @@
       <p class="gate-sub">Wie lautete unser Abi-Motto?</p>
       <input class="gate-input" bind:value={authMotto} placeholder="Abi-Motto eingeben…" onkeydown={e => e.key === 'Enter' && login()} />
       <input class="gate-input" bind:value={authName} placeholder="Dein Name" onkeydown={e => e.key === 'Enter' && login()} />
+      {#if nameExists}
+        <p class="gate-name-warn">„{authName.trim()}" ist bereits registriert — bist du das? Falls nicht, füge deinen Nachnamen hinzu.</p>
+      {/if}
       {#if authError}<p class="gate-error">{authError}</p>{/if}
       <button class="btn btn-primary gate-btn" onclick={login} disabled={authLoading}>
         {authLoading ? 'Wird geprüft…' : 'Rein da →'}
@@ -566,6 +587,7 @@
   .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
   .gate-input:focus { border-color: var(--accent); }
   .gate-error { color: var(--red); font-size: 13px; margin: .5rem 0; }
+  .gate-name-warn { color: var(--maybe); font-size: 12px; margin: -.25rem 0 .5rem; text-align: left; line-height: 1.5; }
   .gate-btn { width: 100%; justify-content: center; margin-top: .5rem; }
   .gate-hint { font-size: 12px; color: var(--ink3); margin-top: 1rem; }
 

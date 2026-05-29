@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
+import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(`
@@ -15,8 +16,8 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-  const { userId, attending, guests, dietary, note } = await request.json();
-  if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+  const { token, attending, guests, dietary, note } = await request.json();
+  const { userId } = await resolveToken(token);
 
   await db.execute({
     sql: `INSERT INTO rsvp (user_id, attending, guests, dietary, note) VALUES (?, ?, ?, ?, ?)

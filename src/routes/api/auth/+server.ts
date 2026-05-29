@@ -2,6 +2,16 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { checkMotto } from '$lib/dates';
 
+export async function GET({ url }) {
+  const name = url.searchParams.get('name')?.trim();
+  if (!name) return json({ exists: false });
+  const existing = await db.execute({
+    sql: `SELECT id FROM users WHERE lower(name) = lower(?) LIMIT 1`,
+    args: [name],
+  });
+  return json({ exists: existing.rows.length > 0 });
+}
+
 export async function POST({ request }) {
   const { name, motto } = await request.json();
 
@@ -33,5 +43,11 @@ export async function POST({ request }) {
     userName = result.rows[0].name as string;
   }
 
-  return json({ userId, userName });
+  const token = crypto.randomUUID();
+  await db.execute({
+    sql: `INSERT INTO sessions (token, user_id) VALUES (?, ?)`,
+    args: [token, userId],
+  });
+
+  return json({ userId, userName, token });
 }

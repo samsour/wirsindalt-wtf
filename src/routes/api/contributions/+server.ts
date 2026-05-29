@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
+import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(
@@ -9,8 +10,9 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-  const { userId, userName, item, category } = await request.json();
-  if (!userId || !item?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
+  const { token, item, category } = await request.json();
+  const { userId, userName } = await resolveToken(token);
+  if (!item?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
 
   const result = await db.execute({
     sql: `INSERT INTO contributions (user_id, user_name, item, category) VALUES (?, ?, ?, ?) RETURNING *`,
@@ -20,7 +22,8 @@ export async function POST({ request }) {
 }
 
 export async function DELETE({ request }) {
-  const { id, userId } = await request.json();
+  const { id, token } = await request.json();
+  const { userId } = await resolveToken(token);
   await db.execute({
     sql: `DELETE FROM contributions WHERE id = ? AND user_id = ?`,
     args: [id, userId],

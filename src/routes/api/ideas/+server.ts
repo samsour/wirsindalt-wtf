@@ -1,31 +1,35 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
+import { resolveToken } from '$lib/server/auth';
 
 export async function GET({ url }) {
-  const userId = url.searchParams.get('userId');
+  const token = url.searchParams.get('token');
   const ideas = await db.execute(
     `SELECT id, user_name, text, tag, votes, created_at FROM ideas ORDER BY votes DESC, created_at DESC`
   );
   let myVotes: number[] = [];
-  if (userId) {
-    const vr = await db.execute({
-      sql: `SELECT idea_id FROM idea_votes WHERE user_id = ?`,
-      args: [userId],
-    });
-    myVotes = vr.rows.map(r => r.idea_id as number);
+  if (token) {
+    try {
+      const { userId } = await resolveToken(token);
+      const vr = await db.execute({
+        sql: `SELECT idea_id FROM idea_votes WHERE user_id = ?`,
+        args: [userId],
+      });
+      myVotes = vr.rows.map(r => r.idea_id as number);
+    } catch { /* invalid token, skip myVotes */ }
   }
   return json({ ideas: ideas.rows, myVotes });
 }
 
 export async function POST({ request }) {
-  const { userId, userName, text, tag } = await request.json();
-  if (!userId || !text?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
+  const { token, text, tag } = await request.json();
+  const { userId, userName } = await resolveToken(token);
+  if (!text?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
 
   const result = await db.execute({
     sql: `INSERT INTO ideas (user_id, user_name, text, tag, votes) VALUES (?, ?, ?, ?, 1) RETURNING *`,
     args: [userId, userName, text.trim(), tag],
   });
-  // auto-vote own idea
   await db.execute({
     sql: `INSERT OR IGNORE INTO idea_votes (user_id, idea_id) VALUES (?, ?)`,
     args: [userId, result.rows[0].id as number],
@@ -34,8 +38,8 @@ export async function POST({ request }) {
 }
 
 export async function PUT({ request }) {
-  const { userId, ideaId } = await request.json();
-  // Toggle vote
+  const { token, ideaId } = await request.json();
+  const { userId } = await resolveToken(token);
   const existing = await db.execute({
     sql: `SELECT id FROM idea_votes WHERE user_id = ? AND idea_id = ?`,
     args: [userId, ideaId],
