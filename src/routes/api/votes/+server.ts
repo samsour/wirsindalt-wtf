@@ -24,7 +24,10 @@ export async function GET() {
 
 export async function POST({ request }) {
   const { userId, dateKey, vote } = await request.json();
-  if (!userId || !dateKey || !vote) return json({ error: 'Missing fields' }, { status: 400 });
+  if (!userId || !dateKey) return json({ error: 'Missing fields' }, { status: 400 });
+  if (vote !== null && !['yes', 'maybe', 'no'].includes(vote)) {
+    return json({ error: 'Invalid vote value' }, { status: 400 });
+  }
 
   if (vote === null) {
     await db.execute({

@@ -15,7 +15,7 @@
   // --- Phase 1: Votes ---
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
   let myVotes: Record<string, string> = $state({});
-  let voteLoading = $state(false);
+  let votingKey = $state<string | null>(null);
 
   // --- Phase 2: RSVP ---
   let rsvpStats = $state({ attending: 0, notAttending: 0, totalGuests: 0 });
@@ -103,6 +103,8 @@
 
   async function castVote(dateKey: string, vote: string) {
     if (!user) { showToast('Bitte zuerst einloggen!'); return; }
+    if (votingKey === dateKey) return;
+    votingKey = dateKey;
     const prev = myVotes[dateKey];
     const newVote = prev === vote ? null : vote;
     // Optimistic
@@ -119,6 +121,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user.userId, dateKey, vote: newVote }),
     });
+    votingKey = null;
     showToast(newVote === 'yes' ? '✓ Stimme gezählt!' : newVote === 'maybe' ? '~ Als Vielleicht vermerkt' : newVote === 'no' ? '✗ Abgesagt' : 'Stimme zurückgezogen');
   }
 
@@ -317,9 +320,9 @@
                 </div>
                 <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
                 <div class="vote-actions">
-                  <button class="vbtn yes" class:active={mv === 'yes'} onclick={() => castVote(d.key, 'yes')}>✓ Ja</button>
-                  <button class="vbtn maybe" class:active={mv === 'maybe'} onclick={() => castVote(d.key, 'maybe')}>~ Vielleicht</button>
-                  <button class="vbtn no" class:active={mv === 'no'} onclick={() => castVote(d.key, 'no')}>✗ Nein</button>
+                  <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => castVote(d.key, 'yes')}>✓ Ja</button>
+                  <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => castVote(d.key, 'maybe')}>~ Vielleicht</button>
+                  <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => castVote(d.key, 'no')}>✗ Nein</button>
                 </div>
               </div>
             {/each}
