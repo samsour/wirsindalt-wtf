@@ -1,128 +1,85 @@
-# Vennwhen
+# wirsindalt.wtf
 
-> Find the *when* in everyone's calendar.
+A single-purpose date poll for one class reunion. No SaaS, no multi-tenancy, no investors.
 
-Group scheduling without the polling. Members connect their calendars privately; the app surfaces when you're all free.
+It's basically Doodle but we own it and it doesn't look like it was designed in 2009.
+
+## What it does
+
+1. Admin picks a bunch of candidate dates
+2. People vote for the ones they can make
+3. Admin declares the winner
+4. People RSVP
+
+That's it. No accounts for guests, no emails, no dark patterns.
 
 ## Stack
 
-- **Next.js 15** (App Router) + TypeScript + Tailwind
-- **Turso** (libSQL) + **Drizzle ORM** for the database
-- **Auth.js v5** for Google OAuth (uses the same OAuth grant for Calendar API access in Phase 3)
+- **Next.js 15** App Router + TypeScript + Tailwind
+- **Turso** (libSQL) + **Drizzle ORM**
+- **Auth.js v5** with Google OAuth — admin-only, one email in `.env`
 
 ## Setup
 
-### 1. Install dependencies
+### 1. Install
 
 ```bash
-npm install
+pnpm install
 ```
 
-### 2. Set up environment variables
+### 2. Environment variables
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
-Then fill in:
+| Variable | Where to get it |
+|---|---|
+| `AUTH_SECRET` | `openssl rand -base64 32` |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client (Web), redirect URI: `http://localhost:3000/api/auth/callback/google` |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Turso dashboard → your database → Connect |
+| `ADMIN_EMAIL` | Your Google account email — only this address gets the admin dashboard |
 
-#### `AUTH_SECRET`
-```bash
-openssl rand -base64 32
-```
-
-#### Google OAuth credentials
-1. Go to [Google Cloud Console](https://console.cloud.google.com) → your project → APIs & Services → Credentials
-2. Make sure **Google Calendar API** is enabled (APIs & Services → Library)
-3. Create OAuth client ID (Web application)
-4. Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
-5. Copy Client ID → `AUTH_GOOGLE_ID`, Client Secret → `AUTH_GOOGLE_SECRET`
-
-#### Turso credentials
-1. From the Turso dashboard, create a database (or use an existing one)
-2. Get the connection URL → `TURSO_DATABASE_URL`
-3. Get an auth token → `TURSO_AUTH_TOKEN`
-
-### 3. Push the schema to Turso
+### 3. Push schema
 
 ```bash
-npm run db:push
+pnpm db:push
 ```
 
-This creates all tables defined in `src/db/schema.ts`.
-
-### 4. Run the dev server
+### 4. Run
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+[http://localhost:3000](http://localhost:3000) — the secret admin login is in the footer.
 
-## What works in Phase 1
+## Seeding dates
 
-✅ Sign in with Google
-✅ Create a group
-✅ Get a shareable invite link
-✅ Join a group via invite link
-✅ See the heatmap and top suggestions (with **mock** data)
-✅ Click cells to see who's free/busy
+```bash
+node scripts/seed-dates.mjs
+```
 
-## What's mocked
-
-❌ Calendar sync — busy blocks are generated client-side as random work hours + evening conflicts.
-   Wire this to the real Google Calendar API in Phase 3 (see below).
-
-## Roadmap
-
-### Phase 2 — Polish & multi-tenant (next)
-- [ ] Empty states & loading skeletons
-- [ ] Group settings (rename, delete, leave)
-- [ ] Member list with sync status
-
-### Phase 3 — Real Google Calendar sync
-- [ ] Server route that fetches `/freeBusy` from Google Calendar API using the stored OAuth tokens (in the `account` table)
-- [ ] Refresh access tokens via `refresh_token` when expired
-- [ ] Cron job (or on-demand "Refresh" button) to re-sync
-- [ ] Replace `generateMockBusyBlocks` in `app/g/[slug]/page.tsx` with a real DB query against `busyBlocks`
-
-### Phase 4 — Other providers
-- [ ] Microsoft Graph (Outlook)
-- [ ] `.ics` file upload / URL subscription (covers Apple iCloud)
-
-### Phase 5 — Nice-to-haves
-- [ ] Email notification when a great slot opens
-- [ ] "Lock" a chosen time and send calendar invites back
-- [ ] Mobile-optimized heatmap
-- [ ] Timezone handling across members
+Batch-inserts all Fridays and Saturdays in a date range (plus German holidays with labels). Edit the file to adjust the range before running.
 
 ## File map
 
 ```
 src/
 ├── app/
-│   ├── page.tsx                  Landing
-│   ├── dashboard/page.tsx        List of user's groups
-│   ├── groups/new/page.tsx       Create group form
-│   ├── g/[slug]/page.tsx         Group view (heatmap)
-│   ├── join/[code]/page.tsx     Invite landing
-│   └── api/auth/[...nextauth]/   Auth.js handler
+│   ├── page.tsx               Public voting/results page
+│   ├── dashboard/page.tsx     Admin dashboard (date mgmt, results, RSVPs)
+│   └── api/
+│       ├── event/             GET event + date options + vote counts
+│       ├── vote/              POST a vote
+│       └── rsvp/              POST an RSVP
 ├── components/
-│   ├── Nav.tsx                   Top nav with sign-in
-│   ├── Heatmap.tsx              The overlap visualization
-│   └── InviteBox.tsx             Copy-link banner
+│   ├── Footer.tsx             Secret login button (logged out) / admin link (logged in)
+│   ├── Nav.tsx                Exists, unused, vibes only
+│   └── Toast.tsx              Little success notification
 ├── db/
-│   ├── schema.ts                Drizzle schema (users, groups, busyBlocks)
-│   └── index.ts                  DB client
+│   ├── schema.ts              Drizzle schema
+│   └── index.ts               Turso client
 └── lib/
-    ├── auth.ts                   Auth.js v5 config
-    ├── overlap.ts                Time-range overlap algorithm
-    └── slug.ts                   Invite slug generator
+    └── auth.ts                Auth.js config
 ```
-
-## Key design decisions
-
-1. **No event details stored.** The `busy_block` table holds only `(userId, startTs, endTs)`. Even if compromised, the data leak is minimal.
-2. **Overlap is computed at query time** in `lib/overlap.ts`. For groups of 5–15 and a horizon of 4–8 weeks, this is plenty fast.
-3. **Slots are 30 minutes** in `lib/overlap.ts` (SLOT_MS). The heatmap renders them in 2-hour cells by taking the minimum free count per cell — a cell is only as free as its most-conflicted half hour.
-4. **Auth.js stores OAuth tokens** in the `account` table. In Phase 3, the sync worker reads `account.access_token` (refreshing via `refresh_token` when needed) to call the Google Calendar API.
