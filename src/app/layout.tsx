@@ -3,13 +3,13 @@ import "./globals.css";
 import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "Vennwhen — find the when in everyone's calendar",
-  description: "Group scheduling without the chaos. Connect your calendar privately, see the overlap, find when you're all free.",
+  title: "wirsindalt.wtf — Abitur 2016 · 10 Jahre Treffen",
+  description: "10 Jahre. Zeit für eine Party. Stimm ab, wann du kannst.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body>
         <Nav />
         <main>{children}</main>

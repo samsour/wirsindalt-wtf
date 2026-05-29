@@ -1,8 +1,7 @@
-import { sqliteTable, text, integer, primaryKey, index } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
 // ─── Auth.js tables ───
-// Required by @auth/drizzle-adapter. Don't rename columns.
 
 export const users = sqliteTable("user", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -52,49 +51,47 @@ export const verificationTokens = sqliteTable(
 
 // ─── App tables ───
 
-export const groups = sqliteTable("group", {
+// Single-row table — one event per deployment
+export const event = sqliteTable("event", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(), // used in invite URL: vennwhen.app/g/{slug}
-  ownerId: text("ownerId").notNull().references(() => users.id, { onDelete: "cascade" }),
-  horizonWeeks: integer("horizonWeeks").notNull().default(4),
+  name: text("name").notNull().default("Abitur 2016 · 10 Jahre Treffen"),
+  description: text("description"),
+  finalDateOptionId: text("finalDateOptionId"), // set by admin once decided
+  location: text("location"),
+  time: text("time"), // e.g. "19:00"
+  rsvpsEnabled: integer("rsvpsEnabled", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
 });
 
-export const memberships = sqliteTable(
-  "membership",
-  {
-    userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
-    groupId: text("groupId").notNull().references(() => groups.id, { onDelete: "cascade" }),
-    joinedAt: integer("joinedAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
-  },
-  (m) => ({
-    pk: primaryKey({ columns: [m.userId, m.groupId] }),
-  })
-);
-
-// Busy blocks — the ONLY calendar data we store.
-// No titles, no descriptions, no locations. Just time ranges.
-export const busyBlocks = sqliteTable(
-  "busy_block",
-  {
-    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-    userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
-    // Unix milliseconds — keeps range comparisons cheap with B-tree indexes
-    startTs: integer("startTs").notNull(),
-    endTs: integer("endTs").notNull(),
-    source: text("source").notNull(), // 'google' | 'outlook' | 'ics'
-    syncedAt: integer("syncedAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
-  },
-  (b) => ({
-    // Range queries: WHERE userId = ? AND startTs < windowEnd AND endTs > windowStart
-    userTimeIdx: index("busy_user_time_idx").on(b.userId, b.startTs, b.endTs),
-  })
-);
-
-export const syncState = sqliteTable("sync_state", {
-  userId: text("userId").primaryKey().references(() => users.id, { onDelete: "cascade" }),
-  provider: text("provider").notNull(),
-  lastSyncedAt: integer("lastSyncedAt", { mode: "timestamp_ms" }),
-  nextSyncAt: integer("nextSyncAt", { mode: "timestamp_ms" }),
+export const rsvps = sqliteTable("rsvp", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  status: text("status", { enum: ["attending", "maybe", "not_attending"] }).notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
 });
+
+export const dateOptions = sqliteTable("date_option", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  eventId: text("eventId").notNull().references(() => event.id, { onDelete: "cascade" }),
+  date: text("date").notNull(), // ISO "2026-06-14"
+  label: text("label"), // optional override, e.g. "Pfingstsamstag"
+  sortOrder: integer("sortOrder").notNull().default(0),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+});
+
+export const votes = sqliteTable("vote", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  voterName: text("voterName").notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+});
+
+export const voteSelections = sqliteTable(
+  "vote_selection",
+  {
+    voteId: text("voteId").notNull().references(() => votes.id, { onDelete: "cascade" }),
+    dateOptionId: text("dateOptionId").notNull().references(() => dateOptions.id, { onDelete: "cascade" }),
+  },
+  (vs) => ({
+    pk: primaryKey({ columns: [vs.voteId, vs.dateOptionId] }),
+  })
+);
