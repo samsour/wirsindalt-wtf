@@ -1,0 +1,24 @@
+{
+	"/": [],
+	"/api/auth": [
+		"src/routes/api/auth/+server.ts"
+	],
+	"/api/contributions": [
+		"src/routes/api/contributions/+server.ts"
+	],
+	"/api/ideas": [
+		"src/routes/api/ideas/+server.ts"
+	],
+	"/api/init": [
+		"src/routes/api/init/+server.ts"
+	],
+	"/api/locations": [
+		"src/routes/api/locations/+server.ts"
+	],
+	"/api/rsvp": [
+		"src/routes/api/rsvp/+server.ts"
+	],
+	"/api/votes": [
+		"src/routes/api/votes/+server.ts"
+	]
+}

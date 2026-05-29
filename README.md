@@ -1,85 +1,63 @@
-# wirsindalt.wtf
+# ABI '16 – 10 Jahre Reunion App
 
-A single-purpose date poll for one class reunion. No SaaS, no multi-tenancy, no investors.
-
-It's basically Doodle but we own it and it doesn't look like it was designed in 2009.
-
-## What it does
-
-1. Admin picks a bunch of candidate dates
-2. People vote for the ones they can make
-3. Admin declares the winner
-4. People RSVP
-
-That's it. No accounts for guests, no emails, no dark patterns.
-
-## Stack
-
-- **Next.js 15** App Router + TypeScript + Tailwind
-- **Turso** (libSQL) + **Drizzle ORM**
-- **Auth.js v5** with Google OAuth — admin-only, one email in `.env`
+SvelteKit + Turso (libsql) app for coordinating the 10-year Abitur reunion.
 
 ## Setup
 
-### 1. Install
-
+### 1. Install dependencies
 ```bash
-pnpm install
+npm install
 ```
 
-### 2. Environment variables
-
+### 2. Configure environment
+Copy `.env.example` to `.env` and fill in your Turso credentials:
 ```bash
 cp .env.example .env
 ```
 
-| Variable | Where to get it |
-|---|---|
-| `AUTH_SECRET` | `openssl rand -base64 32` |
-| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client (Web), redirect URI: `http://localhost:3000/api/auth/callback/google` |
-| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Turso dashboard → your database → Connect |
-| `ADMIN_EMAIL` | Your Google account email — only this address gets the admin dashboard |
-
-### 3. Push schema
-
+Get your credentials from [Turso dashboard](https://turso.tech) or the CLI:
 ```bash
-pnpm db:push
+turso db show your-db-name
+turso db tokens create your-db-name
 ```
+
+`.env`:
+```
+TURSO_URL=libsql://your-db-name-yourname.turso.io
+TURSO_AUTH_TOKEN=eyJ...
+```
+
+### 3. Initialize the database
+Start the dev server, then open in browser:
+```
+http://localhost:5173/api/init
+```
+This creates all tables. Only needs to run once.
 
 ### 4. Run
-
 ```bash
-pnpm dev
+npm run dev
 ```
 
-[http://localhost:3000](http://localhost:3000) — the secret admin login is in the footer.
-
-## Seeding dates
-
+## Deploy (e.g. Vercel or Netlify)
 ```bash
-node scripts/seed-dates.mjs
+npm run build
 ```
+Set `TURSO_URL` and `TURSO_AUTH_TOKEN` as environment variables in your hosting dashboard.
 
-Batch-inserts all Fridays and Saturdays in a date range (plus German holidays with labels). Edit the file to adjust the range before running.
-
-## File map
-
+For Vercel, install the adapter:
+```bash
+npm install @sveltejs/adapter-vercel
 ```
-src/
-├── app/
-│   ├── page.tsx               Public voting/results page
-│   ├── dashboard/page.tsx     Admin dashboard (date mgmt, results, RSVPs)
-│   └── api/
-│       ├── event/             GET event + date options + vote counts
-│       ├── vote/              POST a vote
-│       └── rsvp/              POST an RSVP
-├── components/
-│   ├── Footer.tsx             Secret login button (logged out) / admin link (logged in)
-│   ├── Nav.tsx                Exists, unused, vibes only
-│   └── Toast.tsx              Little success notification
-├── db/
-│   ├── schema.ts              Drizzle schema
-│   └── index.ts               Turso client
-└── lib/
-    └── auth.ts                Auth.js config
-```
+Then update `svelte.config.js` to use `adapter-vercel`.
+
+## Features
+- **Phase 1 – Terminwahl**: Vote on Fri/Sat weekends Jun–Aug 2026
+- **Phase 2 – Anmeldung**: RSVP with guest count and dietary notes  
+- **Phase 3 – Planung**: Contributions, idea upvoting, location suggestions
+- **Gate**: Abi motto as login ("immer blau, trotzdem schlau")
+- Persists login in `localStorage`
+
+## Motto
+The gate checks for `immer blau, trotzdem schlau` (case-insensitive, punctuation-tolerant).
+Change it in `src/lib/dates.ts`.
