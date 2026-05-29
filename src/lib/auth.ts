@@ -15,17 +15,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      authorization: {
-        params: {
-          // Ask for read-only access to Google Calendar's free/busy info.
-          // Using calendar.readonly here for Phase 1; we can downgrade to
-          // calendar.freebusy later for stricter privacy.
-          scope:
-            "openid email profile https://www.googleapis.com/auth/calendar.readonly",
-          access_type: "offline",
-          prompt: "consent", // forces refresh_token issuance on every login
-        },
-      },
     }),
   ],
   session: { strategy: "database" },
