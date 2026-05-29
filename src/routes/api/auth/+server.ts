@@ -5,7 +5,7 @@ import { checkMotto } from '$lib/dates';
 export async function POST({ request }) {
   const { clientId, name, motto } = await request.json();
 
-  if (!checkMotto(motto)) {
+  if (checkMotto(motto) === 'wrong') {
     return json({ error: 'Motto falsch - versuch es nochmal!' }, { status: 401 });
   }
   if (!name?.trim()) {

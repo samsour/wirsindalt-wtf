@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { DATES } from '$lib/dates';
+  import { DATES, checkMotto } from '$lib/dates';
 
   // --- Auth state ---
   let user: { userId: number; userName: string; token: string } | null = $state(null);
@@ -8,6 +8,7 @@
   let authMotto = $state('');
   let authError = $state('');
   let authLoading = $state(false);
+  let mottoHint = $derived(checkMotto(authMotto) === 'comma_missing' ? 'Interpunktion üben wir nochmal, ja?' : '');
 
   function getClientId(): string {
     let id = localStorage.getItem('abi2016_clientId');
@@ -273,6 +274,7 @@
       <h1 class="gate-title">Zeig, dass du dabei warst.</h1>
       <p class="gate-sub">Wie lautete unser Abi-Motto?</p>
       <input class="gate-input" bind:value={authMotto} placeholder="Abi-Motto eingeben…" onkeydown={e => e.key === 'Enter' && login()} />
+      {#if mottoHint}<p class="gate-motto-hint">{mottoHint}</p>{/if}
       <input class="gate-input" bind:value={authName} placeholder="Dein Name" onkeydown={e => e.key === 'Enter' && login()} />
       {#if authError}<p class="gate-error">{authError}</p>{/if}
       <button class="btn btn-primary gate-btn" onclick={login} disabled={authLoading}>
@@ -580,6 +582,7 @@
   .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
   .gate-input:focus { border-color: var(--accent); }
   .gate-error { color: var(--red); font-size: 13px; margin: .5rem 0; }
+  .gate-motto-hint { color: var(--maybe); font-size: 12px; margin: -.25rem 0 .5rem; text-align: left; }
   .gate-btn { width: 100%; justify-content: center; margin-top: .5rem; }
   .gate-hint { font-size: 12px; color: var(--ink3); margin-top: 1rem; }
 

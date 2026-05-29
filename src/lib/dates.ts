@@ -11,7 +11,12 @@ export const DATES = [
 
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';
 
-export function checkMotto(input: string): boolean {
-  return input.trim().toLowerCase().replace(/[^a-zäöü, ]/g, '') ===
-    ABI_MOTTO.toLowerCase().replace(/[^a-zäöü, ]/g, '');
+export type MottoCheck = 'correct' | 'comma_missing' | 'wrong';
+
+export function checkMotto(input: string): MottoCheck {
+  const withComma = (s: string) => s.trim().toLowerCase().replace(/[^a-zäöü, ]/g, '');
+  const noComma   = (s: string) => s.trim().toLowerCase().replace(/[^a-zäöü]/g, '');
+  if (withComma(input) === withComma(ABI_MOTTO)) return 'correct';
+  if (noComma(input)   === noComma(ABI_MOTTO))   return 'comma_missing';
+  return 'wrong';
 }
