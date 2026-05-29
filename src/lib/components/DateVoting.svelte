@@ -17,17 +17,12 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">10 Jahre Abitur 2016</div>
+  <div class="eyebrow">10 Jahre Abi 2016. uff</div>
   <h1>Wann feiern wir <em>zusammen?</em></h1>
-  <p class="hero-sub">Stimme für alle Wochenenden, die dir passen. Mehr als eine Stimme erlaubt!</p>
+  <p class="hero-sub">Stimme für alle Wochenenden, die dir passen.<br />Wir finden erstmal nen Termin.</p>
 </div>
 
 <div class="section">
-  <div class="vote-intro">
-    <span>🗳️</span>
-    <p><strong>Für jedes Wochenende:</strong> ✓ Ja, ~ Vielleicht oder ✗ Nein. Nochmal klicken = zurücknehmen.</p>
-  </div>
-
   {#each Object.entries(byMonth) as [month, ds]}
     <div class="date-week">
       <div class="week-label">{month}</div>
