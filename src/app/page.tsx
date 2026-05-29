@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const VOTED_KEY = "wirsindalt_voted";
+const VOTE_ID_KEY = "wirsindalt_vote_id";
 const RSVP_KEY = "wirsindalt_rsvp";
 
 type DateOption = { id: string; date: string; label: string | null; voteCount: number };
@@ -57,7 +58,9 @@ export default function HomePage() {
       body: JSON.stringify({ voterName: name.trim(), dateOptionIds: [...selected] }),
     });
     if (res.ok) {
+      const { voteId } = await res.json();
       localStorage.setItem(VOTED_KEY, "1");
+      localStorage.setItem(VOTE_ID_KEY, voteId);
       setHasVoted(true);
       setSubmitted(true);
       fetchEvent();
@@ -130,10 +133,20 @@ export default function HomePage() {
       ) : eventData.dateOptions.length === 0 ? (
         <p className="text-center text-ink-muted">Termine werden bald bekannt gegeben.</p>
       ) : hasVoted ? (
-        <Results options={sorted} maxVotes={maxVotes} submitted={submitted} onReset={() => {
+        <Results options={sorted} maxVotes={maxVotes} submitted={submitted} onReset={async () => {
+          const voteId = localStorage.getItem(VOTE_ID_KEY);
+          if (voteId) {
+            await fetch("/api/vote", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ voteId }),
+            });
+          }
           localStorage.removeItem(VOTED_KEY);
+          localStorage.removeItem(VOTE_ID_KEY);
           setHasVoted(false);
           setSubmitted(false);
+          fetchEvent();
         }} />
       ) : (
         <VoteForm
