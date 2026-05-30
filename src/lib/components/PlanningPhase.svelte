@@ -5,7 +5,7 @@
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
     newIdeaText = $bindable(''), newIdeaTag = $bindable('Programm'),
     newLocDesc = $bindable(''), newLocAddr = $bindable(''),
-    onaddcontrib, ondeletecontrib, onaddidea, ontoggleideavote, onaddlocation, onshare,
+    onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation,
   }: {
     ideas: any[];
     myIdeaVotes: number[];
@@ -22,9 +22,10 @@
     onaddcontrib: () => void;
     ondeletecontrib: (id: number) => void;
     onaddidea: () => void;
+    ondeleteidea: (id: number) => void;
     ontoggleideavote: (id: number) => void;
     onaddlocation: () => void;
-    onshare: () => void;
+    ondeletelocation: (id: number) => void;
   } = $props();
 
   function initials(name: string) {
@@ -95,6 +96,9 @@
           </div>
           <span class="idea-text">{idea.text}</span>
           <span class="idea-tag">{idea.tag}</span>
+          {#if userId === idea.user_id}
+            <button class="del-btn" onclick={() => ondeleteidea(idea.id)} title="Löschen">✕</button>
+          {/if}
         </div>
       {/each}
       {#if ideas.length === 0}<p class="empty">Noch keine Ideen – leg los!</p>{/if}
@@ -119,6 +123,9 @@
             <div class="contrib-name">{loc.description}</div>
             <div class="contrib-item">{loc.address || 'Keine Adresse angegeben'} · von {loc.user_name}</div>
           </div>
+          {#if userId === loc.user_id}
+            <button class="del-btn" onclick={() => ondeletelocation(loc.id)} title="Löschen">✕</button>
+          {/if}
         </div>
       {/each}
       {#if locations.length === 0}<p class="empty">Noch kein Ort vorgeschlagen!</p>{/if}
@@ -131,9 +138,6 @@
     </div>
   {/if}
 
-  <div style="padding-top:1.5rem;margin-top:.5rem;border-top:1px solid var(--border)">
-    <button class="btn btn-primary" onclick={onshare}>Link teilen ↗</button>
-  </div>
 </div>
 
 <style>

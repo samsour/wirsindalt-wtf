@@ -4,7 +4,7 @@ import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(
-    `SELECT id, user_name, item, category, created_at FROM contributions ORDER BY created_at DESC`
+    `SELECT id, user_id, user_name, item, category, created_at FROM contributions ORDER BY created_at DESC`
   );
   return json(rows.rows);
 }

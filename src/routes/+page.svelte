@@ -205,8 +205,29 @@
     ideas = [...ideas].sort((a, b) => b.votes - a.votes);
   }
 
+  async function deleteIdea(ideaId: number) {
+    if (!user) return;
+    await fetch('/api/ideas', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, ideaId }),
+    });
+    ideas = ideas.filter(i => i.id !== ideaId);
+    myIdeaVotes = myIdeaVotes.filter(v => v !== ideaId);
+  }
+
   async function loadLocations() {
     locations = await (await fetch('/api/locations')).json();
+  }
+
+  async function deleteLocation(id: number) {
+    if (!user) return;
+    await fetch('/api/locations', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, id }),
+    });
+    locations = locations.filter(l => l.id !== id);
   }
 
   async function addLocation() {
@@ -293,9 +314,10 @@
       onaddcontrib={addContrib}
       ondeletecontrib={deleteContrib}
       onaddidea={addIdea}
+      ondeleteidea={deleteIdea}
       ontoggleideavote={toggleIdeaVote}
       onaddlocation={addLocation}
-      onshare={shareLink}
+      ondeletelocation={deleteLocation}
     />
   {/if}
 {/if}

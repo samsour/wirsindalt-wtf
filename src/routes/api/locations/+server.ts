@@ -4,7 +4,7 @@ import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(
-    `SELECT id, user_name, description, address, created_at FROM locations ORDER BY created_at ASC`
+    `SELECT id, user_id, user_name, description, address, created_at FROM locations ORDER BY created_at ASC`
   );
   return json(rows.rows);
 }
@@ -19,4 +19,14 @@ export async function POST({ request }) {
     args: [userId, userName, description.trim(), address?.trim() ?? null],
   });
   return json(result.rows[0]);
+}
+
+export async function DELETE({ request }) {
+  const { token, id } = await request.json();
+  const { userId } = await resolveToken(token);
+  await db.execute({
+    sql: `DELETE FROM locations WHERE id = ? AND user_id = ?`,
+    args: [id, userId],
+  });
+  return json({ ok: true });
 }

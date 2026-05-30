@@ -7,7 +7,7 @@
     onphase: (p: number) => void;
   } = $props();
 
-  const steps = ['Wann klappt\'s?', 'Ich bin dabei!', 'Wer bringt was?'];
+  const steps = ['Wann klappt\'s?', 'Ich bin dabei!', 'Und sonst so?'];
 
   function initials(name: string) {
     return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);

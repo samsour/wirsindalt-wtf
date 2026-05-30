@@ -5,7 +5,7 @@ import { resolveToken } from '$lib/server/auth';
 export async function GET({ url }) {
   const token = url.searchParams.get('token');
   const ideas = await db.execute(
-    `SELECT id, user_name, text, tag, votes, created_at FROM ideas ORDER BY votes DESC, created_at DESC`
+    `SELECT id, user_id, user_name, text, tag, votes, created_at FROM ideas ORDER BY votes DESC, created_at DESC`
   );
   let myVotes: number[] = [];
   if (token) {
@@ -35,6 +35,14 @@ export async function POST({ request }) {
     args: [userId, result.rows[0].id as number],
   });
   return json(result.rows[0]);
+}
+
+export async function DELETE({ request }) {
+  const { token, ideaId } = await request.json();
+  const { userId } = await resolveToken(token);
+  await db.execute({ sql: `DELETE FROM idea_votes WHERE idea_id = ?`, args: [ideaId] });
+  await db.execute({ sql: `DELETE FROM ideas WHERE id = ? AND user_id = ?`, args: [ideaId, userId] });
+  return json({ ok: true });
 }
 
 export async function PUT({ request }) {
