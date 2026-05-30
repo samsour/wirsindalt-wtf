@@ -54,56 +54,22 @@
     <div class="done-card">
       <div class="done-icon">{rsvpChoice === 'yes' ? '🎉' : '😔'}</div>
       <h3>{rsvpChoice === 'yes' ? 'Nice, du bist dabei!' : 'Schade — nächstes Mal!'}</h3>
-      <p>{rsvpChoice === 'yes' ? `${rsvpGuests} Person(en) · ${rsvpDietary || 'kein Spezialwunsch'}` : ''}</p>
+      <p>{rsvpChoice === 'yes' ? 'Wir freuen uns auf dich!' : ''}</p>
       <button class="btn btn-outline" style="margin-top:1rem" onclick={() => (rsvpDone = false)}>Doch nochmal ändern</button>
     </div>
   {:else}
     <div class="rsvp-grid">
-      <button class="rsvp-card" class:attending={rsvpChoice === 'yes'} onclick={() => (rsvpChoice = 'yes')}>
+      <button class="rsvp-card" class:attending={rsvpChoice === 'yes'} disabled={rsvpLoading} onclick={() => { rsvpChoice = 'yes'; onsubmit(); }}>
         <div class="rsvp-icon">🎉</div>
         <h3>Ja, ich komm!</h3>
         <p>Ich bin dabei</p>
       </button>
-      <button class="rsvp-card" class:declining={rsvpChoice === 'no'} onclick={() => (rsvpChoice = 'no')}>
+      <button class="rsvp-card" class:declining={rsvpChoice === 'no'} disabled={rsvpLoading} onclick={() => { rsvpChoice = 'no'; onsubmit(); }}>
         <div class="rsvp-icon">😔</div>
         <h3>Geht leider nicht</h3>
         <p>Schade, aber okay</p>
       </button>
     </div>
-
-    {#if rsvpChoice}
-      <div class="rsvp-form">
-        {#if rsvpChoice === 'yes'}
-          <div class="form-row">
-            <label>Wie viele kommt ihr? (du zählst mit)</label>
-            <div class="counter-row">
-              <button class="ctr-btn" onclick={() => rsvpGuests = Math.max(1, rsvpGuests - 1)}>−</button>
-              <span class="ctr-val">{rsvpGuests}</span>
-              <button class="ctr-btn" onclick={() => rsvpGuests = Math.min(10, rsvpGuests + 1)}>+</button>
-              <span class="ctr-label">Person(en)</span>
-            </div>
-          </div>
-          <div class="form-row">
-            <label>Isst du irgendwas nicht?</label>
-            <select bind:value={rsvpDietary}>
-              <option value="">Alles gut bei mir</option>
-              <option>Vegetarisch</option><option>Vegan</option>
-              <option>Laktosefrei</option><option>Glutenfrei</option><option>Mehreres</option>
-            </select>
-          </div>
-        {/if}
-        <div class="form-row">
-          <label>Noch was? (optional)</label>
-          <textarea bind:value={rsvpNote} placeholder="Irgendwas das wir wissen sollten…"></textarea>
-        </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick={onsubmit} disabled={rsvpLoading}>
-            {rsvpLoading ? 'Einen Moment…' : 'Abschicken ✓'}
-          </button>
-          <button class="btn btn-outline" onclick={() => (rsvpChoice = null)}>Zurück</button>
-        </div>
-      </div>
-    {/if}
   {/if}
 
 </div>
