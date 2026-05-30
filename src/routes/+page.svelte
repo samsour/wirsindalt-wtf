@@ -54,7 +54,17 @@
     pingInterval = setInterval(ping, 20_000);
   }
 
-  onDestroy(() => { clearInterval(presenceInterval); clearInterval(pingInterval); });
+  let votePollInterval: ReturnType<typeof setInterval>;
+
+  function startVotePoll() {
+    votePollInterval = setInterval(loadVotes, 5_000);
+  }
+
+  onDestroy(() => {
+    clearInterval(presenceInterval);
+    clearInterval(pingInterval);
+    clearInterval(votePollInterval);
+  });
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
   let myVotes: Record<string, string> = $state({});
@@ -106,6 +116,7 @@
     }
     await loadVotes();
     await loadRsvpStats();
+    startVotePoll();
   });
 
   async function login() {
