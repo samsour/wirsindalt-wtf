@@ -24,6 +24,8 @@
 
   let { data } = $props();
   let maxPhase = $derived(data.maxPhase); // set MAX_PHASE in .env: 0=Terminwahl only, 1=+Anmeldung, 2=all
+  let phase = $state(0);
+  $effect(() => { phase = maxPhase; }); // start at the current active phase
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
   let myVotes: Record<string, string> = $state({});
@@ -246,11 +248,13 @@
 {:else}
   <AppHeader
     userName={user.userName}
+    {phase}
     {maxPhase}
     onlogout={logout}
+    onphase={(p) => (phase = p)}
   />
 
-  {#if maxPhase === 0}
+  {#if phase === 0}
     <DateVoting
       {voteCounts}
       {myVotes}
@@ -259,7 +263,7 @@
       {myVoteCount}
       oncastvote={castVote}
     />
-  {:else if maxPhase === 1}
+  {:else if phase === 1}
     <RsvpPhase
       {rsvpStats}
       {voteLeader}
@@ -270,8 +274,9 @@
       bind:rsvpNote
       {rsvpLoading}
       onsubmit={submitRsvp}
+      onnext={maxPhase >= 2 ? () => (phase = 2) : undefined}
     />
-  {:else}
+  {:else if phase === 2}
     <PlanningPhase
       {ideas}
       {myIdeaVotes}

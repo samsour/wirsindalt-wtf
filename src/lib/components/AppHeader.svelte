@@ -1,8 +1,10 @@
 <script lang="ts">
-  let { userName, maxPhase, onlogout }: {
+  let { userName, phase, maxPhase, onlogout, onphase }: {
     userName: string;
+    phase: number;
     maxPhase: number;
     onlogout: () => void;
+    onphase: (p: number) => void;
   } = $props();
 
   const steps = ['Wann klappt\'s?', 'Ich bin dabei!', 'Wer bringt was?'];
@@ -23,7 +25,12 @@
 
   <div class="stepper">
     {#each steps as label, i}
-      <div class="step" class:active={i === maxPhase} class:done={i < maxPhase} class:upcoming={i > maxPhase}>
+      <div class="step" class:active={i === phase} class:done={i < phase} class:upcoming={i > maxPhase}
+        role={i >= 1 && i <= maxPhase ? 'button' : undefined}
+        tabindex={i >= 1 && i <= maxPhase ? 0 : undefined}
+        onclick={i >= 1 && i <= maxPhase ? () => onphase(i) : undefined}
+        onkeydown={i >= 1 && i <= maxPhase ? (e) => e.key === 'Enter' && onphase(i) : undefined}
+        style={i >= 1 && i <= maxPhase ? 'cursor:pointer' : ''}>
         <div class="step-circle">
           {#if i < maxPhase}✓{:else}{i + 1}{/if}
         </div>

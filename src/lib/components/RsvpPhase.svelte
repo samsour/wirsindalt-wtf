@@ -11,6 +11,7 @@
     rsvpNote = $bindable(''),
     rsvpLoading,
     onsubmit,
+    onnext,
   }: {
     rsvpStats: { attending: number; notAttending: number; totalGuests: number };
     voteLeader: string | undefined;
@@ -21,6 +22,7 @@
     rsvpNote?: string;
     rsvpLoading: boolean;
     onsubmit: () => void;
+    onnext?: () => void;
   } = $props();
 </script>
 
@@ -72,6 +74,12 @@
     </div>
   {/if}
 
+  {#if onnext}
+    <div class="plan-nudge">
+      Schon neugierig? <button class="plan-link" onclick={onnext}>Zur Planung schauen →</button>
+    </div>
+  {/if}
+
 </div>
 
 <style>
@@ -97,5 +105,8 @@
   .ctr-btn:hover { background: #f0f0f0; }
   .ctr-val { font-size: 20px; font-weight: 500; min-width: 2rem; text-align: center; }
   .ctr-label { font-size: 13px; color: var(--ink2); }
+  .plan-nudge { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 14px; color: var(--ink3); text-align: center; }
+  .plan-link { background: none; border: none; color: var(--accent); cursor: pointer; font-family: var(--sans); font-size: 14px; font-weight: 500; padding: 0; }
+  .plan-link:hover { text-decoration: underline; }
   @media (max-width: 500px) { .rsvp-grid { grid-template-columns: 1fr; } }
 </style>
