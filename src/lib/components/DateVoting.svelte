@@ -1,12 +1,13 @@
 <script lang="ts">
   import { DATES } from '$lib/dates';
 
-  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, userName = '', oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
     myVoteCount: number;
+    userName?: string;
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
 
@@ -20,7 +21,7 @@
 
 <div class="hero">
   <div class="eyebrow">10 Jahre. uff.</div>
-  <h1>Wann passt's <em>allen?</em></h1>
+  <h1>Wann passt's dir, <em>{userName}?</em></h1>
   <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
 </div>
 

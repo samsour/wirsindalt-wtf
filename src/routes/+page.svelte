@@ -326,6 +326,7 @@
       {voteLeader}
       {votingKey}
       {myVoteCount}
+      userName={user.userName}
       oncastvote={castVote}
     />
   {:else if phase === 1}
