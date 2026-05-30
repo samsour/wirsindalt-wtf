@@ -91,8 +91,18 @@
     const stored = localStorage.getItem('abi2016_user');
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed.token) { user = parsed; await loadAll(); startPresence(); }
-      else localStorage.removeItem('abi2016_user');
+      if (parsed.token) {
+        user = parsed;
+        try {
+          await loadAll();
+          startPresence();
+        } catch {
+          // token invalid — wipe session and show gate
+          logout();
+        }
+      } else {
+        localStorage.removeItem('abi2016_user');
+      }
     }
     await loadVotes();
     await loadRsvpStats();
@@ -127,11 +137,13 @@
 
   async function loadMyVotes() {
     if (!user) return;
-    myVotes = await (await fetch('/api/votes', {
+    const res = await fetch('/api/votes', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: user.token }),
-    })).json();
+    });
+    if (res.status === 401) throw new Error('invalid session');
+    myVotes = await res.json();
   }
 
   async function castVote(dateKey: string, vote: string) {
