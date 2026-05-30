@@ -2,7 +2,7 @@
   <details class="about">
     <summary>Über diese Seite</summary>
     <div class="about-body">
-      <p>Made with 🫩 um 02:25 an nem Donnerstag.</p>
+      <p>Made with 🫩 um 02:25 an nem Dienstag.</p>
       <p>Helft gerne das Ding bugfrei zu bekommen. lol</p>
       <a href="https://github.com/samsour/wirsindalt-wtf" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
