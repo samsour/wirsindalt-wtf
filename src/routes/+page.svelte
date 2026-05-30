@@ -47,7 +47,6 @@
   let newContribItem = $state('');
   let newContribCat = $state('Essen');
   let newIdeaText = $state('');
-  let newIdeaTag = $state('Programm');
   let newLocDesc = $state('');
   let newLocAddr = $state('');
 
@@ -180,7 +179,7 @@
     const idea = await (await fetch('/api/ideas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: user.token, text: newIdeaText, tag: newIdeaTag }),
+      body: JSON.stringify({ token: user.token, text: newIdeaText, tag: 'Sonstiges' }),
     })).json();
     ideas = [idea, ...ideas];
     myIdeaVotes = [...myIdeaVotes, idea.id];
@@ -308,7 +307,6 @@
       bind:newContribItem
       bind:newContribCat
       bind:newIdeaText
-      bind:newIdeaTag
       bind:newLocDesc
       bind:newLocAddr
       onaddcontrib={addContrib}

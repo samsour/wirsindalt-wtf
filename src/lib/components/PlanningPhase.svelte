@@ -3,7 +3,7 @@
     ideas, myIdeaVotes, contributions, locations, userId,
     planTab = $bindable<'contrib' | 'ideas' | 'locations'>('contrib'),
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
-    newIdeaText = $bindable(''), newIdeaTag = $bindable('Programm'),
+    newIdeaText = $bindable(''),
     newLocDesc = $bindable(''), newLocAddr = $bindable(''),
     onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation,
   }: {
@@ -16,7 +16,6 @@
     newContribItem?: string;
     newContribCat?: string;
     newIdeaText?: string;
-    newIdeaTag?: string;
     newLocDesc?: string;
     newLocAddr?: string;
     onaddcontrib: () => void;
@@ -66,24 +65,19 @@
         </div>
       {/each}
       {#if contributions.length === 0}
-        <p class="empty">Noch keine Beiträge – sei die/der Erste!</p>
+        <p class="empty">Noch keine Beiträge - kommmt rannnn!</p>
       {/if}
     </div>
     <div class="add-box">
       <h4>+ Ich bringe etwas mit</h4>
-      <div class="form-2col">
-        <div class="form-row">
-          <label>Was bringst du mit?</label>
-          <input bind:value={newContribItem} placeholder="z.B. Salat, Grill, Musik…" onkeydown={e => e.key === 'Enter' && onaddcontrib()} />
-        </div>
-        <div class="form-row">
-          <label>Kategorie</label>
-          <select bind:value={newContribCat}>
-            <option>Essen</option><option>Getränke</option><option>Equipment</option><option>Sonstiges</option>
-          </select>
+      <div class="form-row"><label>Was bringst du mit?</label>
+        <div style="display:flex;gap:.5rem">
+          <input bind:value={newContribItem} placeholder="z.B. Salat, Grill, 5000W Bassmachine..." onkeydown={e => e.key === 'Enter' && onaddcontrib()} style="flex:1" />
+          <button class="submit-icon-btn" onclick={onaddcontrib} title="Eintragen">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick={onaddcontrib}>Eintragen</button>
     </div>
 
   {:else if planTab === 'ideas'}
@@ -95,23 +89,21 @@
             <span class="idea-count">{idea.votes}</span>
           </div>
           <span class="idea-text">{idea.text}</span>
-          <span class="idea-tag">{idea.tag}</span>
           {#if userId === idea.user_id}
             <button class="del-btn" onclick={() => ondeleteidea(idea.id)} title="Löschen">✕</button>
           {/if}
         </div>
       {/each}
-      {#if ideas.length === 0}<p class="empty">Noch keine Ideen – leg los!</p>{/if}
+      {#if ideas.length === 0}<p class="empty">Noch keine Beiträge.<br />Boa ist das langweilig hier.</p>{/if}
     </div>
     <div class="add-box">
       <h4>💡 Neue Idee</h4>
-      <div style="display:flex;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap">
-        <input bind:value={newIdeaText} placeholder="Deine Idee…" style="flex:1;min-width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--paper)" onkeydown={e => e.key === 'Enter' && onaddidea()} />
-        <select bind:value={newIdeaTag} style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:13px;background:var(--paper)">
-          <option>Programm</option><option>Deko</option><option>Musik</option><option>Spiel</option><option>Sonstiges</option>
-        </select>
+      <div style="display:flex;gap:.5rem">
+        <input bind:value={newIdeaText} placeholder="Bierpong Turnier, IFFY live concert, ..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--paper)" onkeydown={e => e.key === 'Enter' && onaddidea()} />
+        <button class="submit-icon-btn" onclick={onaddidea} title="Einreichen">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
-      <button class="btn btn-primary btn-sm" onclick={onaddidea}>Einreichen</button>
     </div>
 
   {:else}
@@ -128,13 +120,19 @@
           {/if}
         </div>
       {/each}
-      {#if locations.length === 0}<p class="empty">Noch kein Ort vorgeschlagen!</p>{/if}
+      {#if locations.length === 0}<p class="empty">Noch kein Ort vorgeschlagen!<br />Irgendwo müssen wir aber hin :D</p>{/if}
     </div>
     <div class="add-box">
       <h4>📍 Ort vorschlagen</h4>
-      <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Garten bei Familie Müller, Grillplatz Stadtpark…" /></div>
-      <div class="form-row"><label>Adresse / Hinweis</label><input bind:value={newLocAddr} placeholder="Straße, PLZ oder Link" /></div>
-      <button class="btn btn-primary btn-sm" onclick={onaddlocation}>Vorschlagen</button>
+      <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Garten bei Familie Müller, Grillplatz Stadtpark…" onkeydown={e => e.key === 'Enter' && newLocAddr ? onaddlocation() : null} /></div>
+      <div class="form-row"><label>Adresse / Hinweis</label>
+        <div style="display:flex;gap:.5rem">
+          <input bind:value={newLocAddr} placeholder="Straße, PLZ oder Link" onkeydown={e => e.key === 'Enter' && onaddlocation()} style="flex:1" />
+          <button class="submit-icon-btn" onclick={onaddlocation} title="Vorschlagen">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
   {/if}
 
@@ -156,6 +154,8 @@
   .badge-drinks { background: #e3f2fd; color: #1565c0; }
   .badge-equipment { background: #f3e5f5; color: #6a1b9a; }
   .badge-other { background: #f5f5f5; color: #555; }
+  .submit-icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; border: none; background: var(--ink); color: #fff; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+  .submit-icon-btn:hover { background: #333; }
   .del-btn { border: none; background: none; cursor: pointer; color: var(--ink3); font-size: 14px; padding: 4px; }
   .del-btn:hover { color: var(--red); }
   .ideas-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
