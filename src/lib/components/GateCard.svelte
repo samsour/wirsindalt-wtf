@@ -20,7 +20,7 @@
     <p class="gate-sub">
       Wie lautete unser Abi-Motto?
       <span class="gate-tip" aria-label="Hinweis">ℹ︎
-        <span class="gate-tip-text">Das mit dem Captain Blaubährt, komm schon…</span>
+        <span class="gate-tip-text">Das mit dem blau, komm schon...</span>
       </span>
     </p>
     <input class="gate-input" bind:value={authMotto} placeholder="Abi-Motto eingeben…" onkeydown={e => e.key === 'Enter' && onlogin()} />
