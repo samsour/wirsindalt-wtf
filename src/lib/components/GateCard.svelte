@@ -49,7 +49,7 @@
   .gate-tip-text { visibility: hidden; opacity: 0; position: absolute; top: calc(100% + 6px); right: 0; background: var(--ink); color: #fff; font-size: 12px; white-space: nowrap; padding: 5px 10px; border-radius: 6px; transition: opacity .15s; pointer-events: none; }
   .gate-tip-text::after { content: ''; position: absolute; bottom: 100%; right: 8px; border: 5px solid transparent; border-bottom-color: var(--ink); }
   .gate-tip:hover .gate-tip-text { visibility: visible; opacity: 1; }
-  .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
+  .gate-input { display: block; width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; font-family: var(--sans); background: #faf9f6; margin-bottom: .75rem; outline: none; }
   .gate-input:focus { border-color: var(--accent); }
   .gate-error { color: var(--red); font-size: 13px; margin: .5rem 0; }
   .gate-btn { width: 100%; justify-content: center; margin-top: .5rem; }

@@ -95,6 +95,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   .cannon-btn:hover { transform: scale(1.1); }
+  .cannon-btn:active { transform: scale(.92); transition: transform .08s; }
 
   .emoji-grid {
     background: #fff; border: 1px solid var(--border); border-radius: 14px;
@@ -107,4 +108,5 @@
     transition: background .1s;
   }
   .emoji-grid button:hover { background: #f0f0f0; transform: scale(1.2); }
+  .emoji-grid button:active { transform: scale(.9); transition: transform .08s; }
 </style>
