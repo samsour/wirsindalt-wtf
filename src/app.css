@@ -16,7 +16,7 @@ body {
   --sans: 'DM Sans', system-ui, sans-serif;
   --ink: #1a1a1a; --ink2: #555; --ink3: #999;
   --paper: #faf9f6; --border: rgba(0,0,0,0.1);
-  --accent: #c8531a; --green: #3a7d44; --red: #b52020; --maybe: #8a6a00;
+  --accent: #c0392b; --green: #3a7d44; --red: #b52020; --maybe: #8a6a00;
 }
 
 /* HERO */

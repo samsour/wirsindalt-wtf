@@ -19,7 +19,7 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">10 Jahre. Alter.</div>
+  <div class="eyebrow">10 Jahre. uff.</div>
   <h1>Wann passt's <em>allen?</em></h1>
   <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
 </div>
@@ -29,30 +29,47 @@
     <div class="date-month-group">
       <div class="month-label">{month}</div>
       {#each Object.entries(weekends) as [weekendLabel, days]}
-        <div class="date-week">
-          <div class="week-label">{weekendLabel}</div>
-          <div class="date-row">
-            {#each days as d}
-              {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
-              {@const total = c.yes + c.maybe + c.no || 1}
-              {@const mv = myVotes[d.key]}
-              <div class="date-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
-                {#if d.key === voteLeader}<span class="top-badge">🔥</span>{/if}
-                <div class="date-day">{d.day}</div>
-                <div class="date-month">{d.label}</div>
-                <div class="vote-bar">
-                  <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
-                </div>
-                <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
-                <div class="vote-actions">
-                  <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
-                  <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
-                  <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
-                </div>
-              </div>
-            {/each}
+        {@const isQuestion = days[0]?.isQuestion}
+        {#if isQuestion}
+          {@const d = days[0]}
+          {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
+          {@const mv = myVotes[d.key]}
+          <div class="question-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
+            <div class="question-text">September auch ne Option?</div>
+            <div class="question-sub">Braucht ihr noch mehr Termine?</div>
+            <div class="vote-count" style="margin:.5rem 0">{c.yes} dafür · {c.maybe} vielleicht · {c.no} nope</div>
+            <div class="vote-actions">
+              <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja, gerne</button>
+              <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Egal</button>
+              <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Zu spät</button>
+            </div>
           </div>
-        </div>
+        {:else}
+          <div class="date-week">
+            <div class="week-label">{weekendLabel}</div>
+            <div class="date-row">
+              {#each days as d}
+                {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
+                {@const total = c.yes + c.maybe + c.no || 1}
+                {@const mv = myVotes[d.key]}
+                <div class="date-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
+                  {#if d.key === voteLeader}<span class="top-badge">🔥</span>{/if}
+                  <div class="date-day">{d.day}</div>
+                  <div class="date-month">{d.label}</div>
+                  <div class="vote-bar">
+                    <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
+                  </div>
+                  <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
+                  <div class="vote-actions">
+                    <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
+                    <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
+                    <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
       {/each}
     </div>
   {/each}
@@ -89,6 +106,12 @@
   .date-card.voted-no { border-color: #ddd; opacity: .55; }
   .date-month-group { margin-bottom: 2rem; }
   .month-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+  .question-card { background: #fff; border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .question-card.voted-yes { border-color: var(--green); border-style: solid; background: #f4faf5; }
+  .question-card.voted-maybe { border-color: var(--maybe); border-style: solid; background: #fffdf0; }
+  .question-card.voted-no { border-color: #ddd; border-style: solid; opacity: .6; }
+  .question-text { font-family: var(--serif); font-size: 1.1rem; margin-bottom: .25rem; }
+  .question-sub { font-size: 13px; color: var(--ink2); margin-bottom: .25rem; }
   .top-badge { position: absolute; top: 6px; right: 6px; font-size: 12px; }
   .date-day { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); line-height: 1; margin-bottom: 2px; }
   .date-month { font-size: 11px; color: var(--ink3); margin-top: 2px; }

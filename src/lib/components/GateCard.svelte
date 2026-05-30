@@ -26,7 +26,7 @@
     <input class="gate-input" bind:value={authName} placeholder="Dein Name" onkeydown={e => e.key === 'Enter' && onlogin()} />
     {#if authError}<p class="gate-error">{authError}</p>{/if}
     <button class="btn btn-primary gate-btn" onclick={onlogin} disabled={authLoading}>
-      {authLoading ? 'Limes gegen Null geht auf' : 'Rein da →'}
+      {authLoading ? 'Prüfe Limes gegen Null...' : 'Rein da →'}
     </button>
     <p class="gate-hint">Kein Account nötig — nur dein Name und das Motto.</p>
   </div>

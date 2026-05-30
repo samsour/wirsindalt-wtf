@@ -19,6 +19,7 @@ export const DATES = [
   { key: '2026-08-22', label: 'Sa 22. Aug', day: 'Sa', month: 'August', weekend: '21.–22. Aug' },
   { key: '2026-08-28', label: 'Fr 28. Aug', day: 'Fr', month: 'August', weekend: '28.–29. Aug' },
   { key: '2026-08-29', label: 'Sa 29. Aug', day: 'Sa', month: 'August', weekend: '28.–29. Aug' },
+  { key: '2026-09', label: 'September?', day: '?', month: 'Meeeeehr', weekend: 'Und noch was', isQuestion: true },
 ];
 
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';
