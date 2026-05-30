@@ -53,7 +53,8 @@
   .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
   .user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; }
+  .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; overflow-x: auto; scrollbar-width: none; }
+  .stepper::-webkit-scrollbar { display: none; }
   .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
   .step-circle {
     width: 30px; height: 30px; border-radius: 50%;
