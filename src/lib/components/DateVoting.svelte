@@ -10,10 +10,12 @@
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
 
+  // Group by month, then by weekend within each month
   const byMonth = DATES.reduce((acc, d) => {
-    (acc[d.month] ||= []).push(d);
+    if (!acc[d.month]) acc[d.month] = {};
+    (acc[d.month][d.weekend] ||= []).push(d);
     return acc;
-  }, {} as Record<string, typeof DATES>);
+  }, {} as Record<string, Record<string, typeof DATES>>);
 </script>
 
 <div class="hero">
@@ -23,41 +25,42 @@
 </div>
 
 <div class="section">
-  {#each Object.entries(byMonth) as [month, ds]}
-    <div class="date-week">
-      <div class="week-label">{month}</div>
-      <div class="date-row">
-        {#each ds as d}
-          {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
-          {@const total = c.yes + c.maybe + c.no || 1}
-          {@const mv = myVotes[d.key]}
-          <div class="date-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
-            {#if d.key === voteLeader}<span class="top-badge">🔥 Favorit</span>{/if}
-            <div class="date-top">
-              <div>
-                <div class="date-day">{d.label.split('–')[0].trim()}</div>
-                <div class="date-month">{d.label} · Fr–Sa</div>
+  {#each Object.entries(byMonth) as [month, weekends]}
+    <div class="date-month-group">
+      <div class="month-label">{month}</div>
+      {#each Object.entries(weekends) as [weekendLabel, days]}
+        <div class="date-week">
+          <div class="week-label">{weekendLabel}</div>
+          <div class="date-row">
+            {#each days as d}
+              {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
+              {@const total = c.yes + c.maybe + c.no || 1}
+              {@const mv = myVotes[d.key]}
+              <div class="date-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
+                {#if d.key === voteLeader}<span class="top-badge">🔥</span>{/if}
+                <div class="date-day">{d.day}</div>
+                <div class="date-month">{d.label}</div>
+                <div class="vote-bar">
+                  <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
+                </div>
+                <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
+                <div class="vote-actions">
+                  <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
+                  <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
+                  <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
+                </div>
               </div>
-            </div>
-            <div class="vote-bar">
-              <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
-            </div>
-            <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
-            <div class="vote-actions">
-              <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
-              <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
-              <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
-            </div>
+            {/each}
           </div>
-        {/each}
-      </div>
+        </div>
+      {/each}
     </div>
   {/each}
 
   {#if Object.keys(voteCounts).length}
     <div class="results-panel">
       <h3>Aktuelle Ergebnisse</h3>
-      {#each [...DATES].sort((a, b) => (voteCounts[b.key]?.yes ?? 0) - (voteCounts[a.key]?.yes ?? 0)).slice(0, 5) as d}
+      {#each [...DATES].sort((a, b) => (voteCounts[b.key]?.yes ?? 0) - (voteCounts[a.key]?.yes ?? 0)).slice(0, 6) as d}
         {@const yes = voteCounts[d.key]?.yes ?? 0}
         {@const max = Math.max(...DATES.map(x => voteCounts[x.key]?.yes ?? 0), 1)}
         <div class="result-row">
@@ -84,9 +87,10 @@
   .date-card.voted-yes { border-color: var(--green); background: #f4faf5; }
   .date-card.voted-maybe { border-color: var(--maybe); background: #fffdf0; }
   .date-card.voted-no { border-color: #ddd; opacity: .55; }
-  .top-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 2px 8px; background: #fff3e0; color: #b86000; border-radius: 100px; font-weight: 500; border: 1px solid #f0c060; }
-  .date-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .6rem; }
-  .date-day { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); line-height: 1; }
+  .date-month-group { margin-bottom: 2rem; }
+  .month-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+  .top-badge { position: absolute; top: 6px; right: 6px; font-size: 12px; }
+  .date-day { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); line-height: 1; margin-bottom: 2px; }
   .date-month { font-size: 11px; color: var(--ink3); margin-top: 2px; }
   .vote-bar { height: 4px; background: #eee; border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; }
   .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
