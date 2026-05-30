@@ -14,6 +14,7 @@
     {#if mottoHint}
       <div class="motto-stamp" aria-hidden="true">{mottoHint}</div>
     {/if}
+    <img src="/immerblau-pixel.png" alt="Immer Blau" class="gate-logo" />
     <div class="gate-year">2016 → 2026</div>
     <h1 class="gate-title">Zeig, dass du dabei warst.</h1>
     <p class="gate-sub">
@@ -34,6 +35,7 @@
 
 <style>
   .gate-bg { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: #faf9f6; }
+  .gate-logo { width: 200px; height: auto; margin-bottom: .75rem; image-rendering: pixelated; }
   .gate-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2.5rem; max-width: 420px; width: 100%; text-align: center; position: relative; overflow: hidden; }
   .motto-stamp { position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%) rotate(-12deg); background: #fffbe6; border: 2px solid #c8a400; border-radius: 5px; padding: 4px 12px; font-family: var(--serif); font-size: .8rem; color: #8a6a00; white-space: nowrap; pointer-events: none; z-index: 10; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); letter-spacing: .02em; animation: stamp-in .2s ease-out; }
   @keyframes stamp-in {
