@@ -17,9 +17,9 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">10 Jahre Abi 2016. uff</div>
-  <h1>Wann feiern wir <em>zusammen?</em></h1>
-  <p class="hero-sub">Stimme für alle Wochenenden, die dir passen.<br />Wir finden erstmal nen Termin.</p>
+  <div class="eyebrow">10 Jahre. Alter.</div>
+  <h1>Wann passt's <em>allen?</em></h1>
+  <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
 </div>
 
 <div class="section">

@@ -5,7 +5,7 @@
     onlogout: () => void;
   } = $props();
 
-  const steps = ['Terminwahl', 'Anmeldung', 'Planung'];
+  const steps = ['Wann klappt\'s?', 'Ich bin dabei!', 'Wer bringt was?'];
 
   function initials(name: string) {
     return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);

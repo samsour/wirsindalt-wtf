@@ -37,9 +37,9 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">Phase 3 · Planung</div>
-  <h1>Lass uns <em>planen!</em></h1>
-  <p class="hero-sub">Wer bringt was? Welche Ideen haben wir? Wo feiern wir?</p>
+  <div class="eyebrow">Fast fertig. Versprochen.</div>
+  <h1>Wer bringt <em>was mit?</em></h1>
+  <p class="hero-sub">Einfach eintragen was du mitbringen kannst — und abstimmen was ihr euch wünscht.</p>
 </div>
 
 <div class="section">

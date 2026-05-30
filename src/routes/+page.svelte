@@ -262,6 +262,7 @@
   {:else if maxPhase === 1}
     <RsvpPhase
       {rsvpStats}
+      {voteLeader}
       bind:rsvpDone
       bind:rsvpChoice
       bind:rsvpGuests
