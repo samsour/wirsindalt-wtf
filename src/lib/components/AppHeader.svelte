@@ -50,7 +50,7 @@
 </header>
 
 <style>
-  .app-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .app-header { background: #fff; border-bottom: 1px solid var(--border); }
 
   .header-top { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
   .nav-logo { font-family: var(--serif); font-size: 18px; color: var(--accent); }
