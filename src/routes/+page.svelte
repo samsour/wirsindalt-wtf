@@ -29,12 +29,14 @@
   $effect(() => { phase = maxPhase; }); // start at the current active phase
 
   let onlineCount = $state(0);
+  let onlineNames = $state<string[]>([]);
   let presenceInterval: ReturnType<typeof setInterval>;
   let pingInterval: ReturnType<typeof setInterval>;
 
   async function fetchPresence() {
     const d = await (await fetch('/api/presence')).json();
     onlineCount = d.count;
+    onlineNames = d.names;
   }
 
   function startPresence() {
@@ -300,6 +302,7 @@
     {phase}
     {maxPhase}
     {onlineCount}
+    {onlineNames}
     onlogout={logout}
     onphase={(p) => (phase = p)}
   />

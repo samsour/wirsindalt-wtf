@@ -28,7 +28,9 @@
   } = $props();
 
   function initials(name: string) {
-    return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return parts.map(p => p[0]).join('').toUpperCase().slice(0, 2);
   }
 
   const catClass: Record<string, string> = {
