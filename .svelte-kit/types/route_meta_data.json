@@ -8,6 +8,9 @@
 	"/api/contributions": [
 		"src/routes/api/contributions/+server.ts"
 	],
+	"/api/emoji": [
+		"src/routes/api/emoji/+server.ts"
+	],
 	"/api/ideas": [
 		"src/routes/api/ideas/+server.ts"
 	],
@@ -16,6 +19,9 @@
 	],
 	"/api/locations": [
 		"src/routes/api/locations/+server.ts"
+	],
+	"/api/presence": [
+		"src/routes/api/presence/+server.ts"
 	],
 	"/api/rsvp": [
 		"src/routes/api/rsvp/+server.ts"

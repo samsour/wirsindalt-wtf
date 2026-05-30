@@ -74,6 +74,19 @@ export async function initDb() {
       user_id INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS presence (
+      user_id INTEGER PRIMARY KEY REFERENCES users(id),
+      user_name TEXT NOT NULL,
+      last_seen TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS emoji_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_name TEXT NOT NULL,
+      emoji TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `);
   // migration: add client_id to existing users tables
   try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }

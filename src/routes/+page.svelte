@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { checkMotto } from '$lib/dates';
   import Toast from '$lib/components/Toast.svelte';
   import GateCard from '$lib/components/GateCard.svelte';
@@ -7,6 +7,7 @@
   import DateVoting from '$lib/components/DateVoting.svelte';
   import RsvpPhase from '$lib/components/RsvpPhase.svelte';
   import PlanningPhase from '$lib/components/PlanningPhase.svelte';
+  import EmojiCannon from '$lib/components/EmojiCannon.svelte';
 
   // --- Auth ---
   let user: { userId: number; userName: string; token: string } | null = $state(null);
@@ -14,7 +15,7 @@
   let authMotto = $state('');
   let authError = $state('');
   let authLoading = $state(false);
-  let mottoHint = $derived(checkMotto(authMotto) === 'comma_missing' ? 'Interpunktion üben wir nochmal, ja?' : '');
+  let mottoHint = $derived(checkMotto(authMotto) === 'comma_missing' ? 'Passt. Aber Interpunktion üben wir nochmal, ja?' : '');
 
   function getClientId(): string {
     let id = localStorage.getItem('abi2016_clientId');
@@ -26,6 +27,32 @@
   let maxPhase = $derived(data.maxPhase); // set MAX_PHASE in .env: 0=Terminwahl only, 1=+Anmeldung, 2=all
   let phase = $state(0);
   $effect(() => { phase = maxPhase; }); // start at the current active phase
+
+  let onlineCount = $state(0);
+  let presenceInterval: ReturnType<typeof setInterval>;
+  let pingInterval: ReturnType<typeof setInterval>;
+
+  async function fetchPresence() {
+    const d = await (await fetch('/api/presence')).json();
+    onlineCount = d.count;
+  }
+
+  function startPresence() {
+    fetchPresence();
+    presenceInterval = setInterval(fetchPresence, 10_000);
+    const ping = async () => {
+      if (!user) return;
+      await fetch('/api/presence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: user.token }),
+      });
+    };
+    ping();
+    pingInterval = setInterval(ping, 20_000);
+  }
+
+  onDestroy(() => { clearInterval(presenceInterval); clearInterval(pingInterval); });
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
   let myVotes: Record<string, string> = $state({});
@@ -62,7 +89,7 @@
     const stored = localStorage.getItem('abi2016_user');
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed.token) { user = parsed; await loadAll(); }
+      if (parsed.token) { user = parsed; await loadAll(); startPresence(); }
       else localStorage.removeItem('abi2016_user');
     }
     await loadVotes();
@@ -82,6 +109,7 @@
     user = data;
     localStorage.setItem('abi2016_user', JSON.stringify(user));
     await loadAll();
+    startPresence();
     showToast(`Willkommen, ${user!.userName}!`);
   }
 
@@ -266,10 +294,12 @@
     onlogin={login}
   />
 {:else}
+  <EmojiCannon token={user.token} />
   <AppHeader
     userName={user.userName}
     {phase}
     {maxPhase}
+    {onlineCount}
     onlogout={logout}
     onphase={(p) => (phase = p)}
   />

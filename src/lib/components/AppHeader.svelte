@@ -1,8 +1,9 @@
 <script lang="ts">
-  let { userName, phase, maxPhase, onlogout, onphase }: {
+  let { userName, phase, maxPhase, onlineCount = 0, onlogout, onphase }: {
     userName: string;
     phase: number;
     maxPhase: number;
+    onlineCount?: number;
     onlogout: () => void;
     onphase: (p: number) => void;
   } = $props();
@@ -17,6 +18,11 @@
 <header class="app-header">
   <div class="header-top">
     <span class="nav-logo">ABI '16</span>
+    {#if onlineCount > 0}
+      <span class="online-pill">
+        <span class="online-dot"></span>{onlineCount} gerade hier
+      </span>
+    {/if}
     <button class="nav-user" onclick={onlogout} title="Ausloggen">
       <span class="user-avatar">{initials(userName)}</span>
       <span class="user-name">{userName}</span>
@@ -48,6 +54,9 @@
 
   .header-top { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
   .nav-logo { font-family: var(--serif); font-size: 18px; color: var(--accent); }
+  .online-pill { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink3); margin-left: .5rem; }
+  .online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
   .nav-user { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; font-family: var(--sans); font-size: 13px; color: var(--ink2); }
   .nav-user:hover { background: #f5f5f5; }
   .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
