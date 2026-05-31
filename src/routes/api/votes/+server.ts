@@ -4,11 +4,10 @@ import { DATES } from '$lib/dates';
 import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
-  const rows = await db.execute(`
-    SELECT date_key, vote, COUNT(*) as count
-    FROM date_votes
-    GROUP BY date_key, vote
-  `);
+  const [rows, uniqueRow] = await Promise.all([
+    db.execute(`SELECT date_key, vote, COUNT(*) as count FROM date_votes GROUP BY date_key, vote`),
+    db.execute(`SELECT COUNT(DISTINCT user_id) as n FROM date_votes`),
+  ]);
 
   const counts: Record<string, { yes: number; maybe: number; no: number }> = {};
   for (const d of DATES) {
@@ -19,7 +18,8 @@ export async function GET() {
     const vote = row.vote as 'yes' | 'maybe' | 'no';
     if (counts[key]) counts[key][vote] = row.count as number;
   }
-  return json(counts);
+
+  return json({ counts, uniqueVoters: uniqueRow.rows[0].n as number });
 }
 
 export async function POST({ request }) {

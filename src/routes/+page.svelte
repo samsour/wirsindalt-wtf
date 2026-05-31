@@ -67,6 +67,7 @@
   });
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
+  let uniqueVoters = $state(0);
   let myVotes: Record<string, string> = $state({});
   let votingKey = $state<string | null>(null);
 
@@ -143,7 +144,9 @@
   }
 
   async function loadVotes() {
-    voteCounts = await (await fetch('/api/votes')).json();
+    const d = await (await fetch('/api/votes')).json();
+    voteCounts = d.counts;
+    uniqueVoters = d.uniqueVoters;
   }
 
   async function loadMyVotes() {
@@ -338,6 +341,7 @@
       {votingKey}
       {myVoteCount}
       userName={user.userName}
+      {uniqueVoters}
       oncastvote={castVote}
     />
   {:else if phase === 1}

@@ -1,13 +1,14 @@
 <script lang="ts">
   import { DATES } from '$lib/dates';
 
-  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, userName = '', oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, userName = '', uniqueVoters = 0, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
     myVoteCount: number;
     userName?: string;
+    uniqueVoters?: number;
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
 
@@ -26,6 +27,43 @@
 </div>
 
 <div class="section">
+  {#if Object.keys(voteCounts).length}
+    {@const scored = [...DATES]
+      .filter(d => !d.isQuestion)
+      .map(d => {
+        const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 };
+        return { ...d, yes: c.yes, maybe: c.maybe, score: c.yes + c.maybe * 0.5 };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)}
+    {@const maxScore = Math.max(...scored.map(d => d.score), 1)}
+    <div class="results-panel">
+      <div class="results-header">
+        <h3>Stand der Dinge 🗳️ {#if uniqueVoters > 0}<span class="voter-count">{uniqueVoters} dabei</span>{/if}</h3>
+        <span class="results-legend">
+          <span class="leg-yes"></span> Ja &nbsp;
+          <span class="leg-maybe"></span> Vielleicht
+        </span>
+      </div>
+      {#each scored as d, i}
+        {@const yesW = Math.round(d.yes / maxScore * 100)}
+        {@const maybeW = Math.round(d.maybe * 0.5 / maxScore * 100)}
+        <div class="result-row" class:top-one={i === 0}>
+          <span class="result-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+          <span class="result-label">{d.label}</span>
+          <div class="result-track">
+            <div class="result-fill-yes" style="width:{yesW}%"></div>
+            <div class="result-fill-maybe" style="width:{maybeW}%"></div>
+          </div>
+          <span class="result-num">
+            {#if d.yes > 0}<span class="num-yes">{d.yes} ✓</span>{/if}
+            {#if d.maybe > 0}<span class="num-maybe">{d.maybe} ~</span>{/if}
+          </span>
+        </div>
+      {/each}
+    </div>
+  {/if}
+
   {#each Object.entries(byMonth) as [month, weekends]}
     <div class="date-month-group">
       <div class="month-label">{month}</div>
@@ -75,38 +113,6 @@
     </div>
   {/each}
 
-  {#if Object.keys(voteCounts).length}
-    {@const scored = [...DATES]
-      .filter(d => !d.isQuestion)
-      .map(d => {
-        const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 };
-        return { ...d, yes: c.yes, maybe: c.maybe, score: c.yes + c.maybe * 0.5 };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8)}
-    {@const maxScore = Math.max(...scored.map(d => d.score), 1)}
-    <div class="results-panel">
-      <div class="results-header">
-        <h3>Aktuelle Ergebnisse</h3>
-        <span class="results-legend"><span class="leg-yes"></span> Ja &nbsp; <span class="leg-maybe"></span> Vielleicht</span>
-      </div>
-      {#each scored as d, i}
-        <div class="result-row">
-          <span class="result-rank">{i + 1}</span>
-          <span class="result-label">{d.label}</span>
-          <div class="result-track">
-            <div class="result-fill-yes" style="width:{Math.round(d.yes / maxScore * 100)}%"></div>
-            <div class="result-fill-maybe" style="width:{Math.round(d.maybe * 0.5 / maxScore * 100)}%"></div>
-          </div>
-          <span class="result-num">
-            {#if d.yes > 0}<span class="num-yes">{d.yes} ✓</span>{/if}
-            {#if d.maybe > 0}<span class="num-maybe">{d.maybe} ~</span>{/if}
-          </span>
-        </div>
-      {/each}
-    </div>
-  {/if}
-
   <div class="vote-stat">
     <div class="stat-pill"><span class="sn">{myVoteCount}</span><span class="sl">meine Stimmen</span></div>
   </div>
@@ -143,21 +149,33 @@
   .vbtn.yes.active, .vbtn.yes:not(:disabled):hover { background: #e8f5e9; color: var(--green); border-color: var(--green); }
   .vbtn.maybe.active, .vbtn.maybe:not(:disabled):hover { background: #fffde7; color: var(--maybe); border-color: #c8a400; }
   .vbtn.no.active, .vbtn.no:not(:disabled):hover { background: #fdecea; color: var(--red); border-color: var(--red); }
-  .results-panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 2rem; }
-  .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; }
-  .results-header h3 { font-family: var(--serif); font-size: 1.1rem; }
+  .results-panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+  .results-header h3 { font-family: var(--serif); font-size: 1.15rem; display: flex; align-items: center; gap: .6rem; }
+  .voter-count { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--ink3); background: #f0f0f0; padding: 2px 8px; border-radius: 100px; }
   .results-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
   .leg-yes { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--green); }
   .leg-maybe { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #c8a400; }
-  .result-row { display: flex; align-items: center; gap: 8px; margin-bottom: .6rem; font-size: 12px; }
-  .result-rank { font-size: 11px; color: var(--ink3); width: 14px; flex-shrink: 0; text-align: center; }
+  .result-row { display: flex; align-items: center; gap: 9px; margin-bottom: .55rem; }
+  .result-row.top-one .result-label { font-weight: 600; color: var(--ink); }
+  .result-row.top-one .result-track { height: 12px; }
+  .result-rank { font-size: 13px; width: 22px; flex-shrink: 0; text-align: center; line-height: 1; }
   .result-label { width: 90px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-  .result-track { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; display: flex; }
-  .result-fill-yes { height: 100%; background: var(--green); transition: width .5s; }
-  .result-fill-maybe { height: 100%; background: #c8a400; transition: width .5s; }
-  .result-num { display: flex; gap: 6px; flex-shrink: 0; white-space: nowrap; }
-  .num-yes { color: var(--green); font-weight: 500; }
+  .result-track { flex: 1; height: 9px; background: #eee; border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
+  .result-fill-yes { height: 100%; background: var(--green); transition: width .6s ease; }
+  .result-fill-maybe { height: 100%; background: #c8a400; transition: width .6s ease; }
+  .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; }
+  .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }
   .vote-stat { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid var(--border); }
-  @media (max-width: 500px) { .date-row { grid-template-columns: 1fr; } }
+  @media (max-width: 500px) {
+    .date-row { grid-template-columns: 1fr; }
+    .results-panel { padding: 1rem; }
+    .results-header { flex-direction: column; align-items: flex-start; gap: .4rem; margin-bottom: .875rem; }
+    .result-row { flex-wrap: wrap; gap: 4px 8px; margin-bottom: .75rem; }
+    .result-label { width: auto; flex: 1; min-width: 0; }
+    .result-num { margin-left: auto; }
+    .result-track { width: 100%; flex-basis: 100%; order: 3; height: 8px; }
+    .result-row.top-one .result-track { height: 10px; }
+  }
 </style>
