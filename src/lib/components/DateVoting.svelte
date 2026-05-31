@@ -171,6 +171,7 @@
                 {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
                 {@const total = c.yes + c.maybe + c.no || 1}
                 {@const mv = myVotes[d.key]}
+                {@const highDecline = total >= 3 && c.no / total >= 0.5}
                 <div class="date-card" class:voted-yes={mv === 'yes'} class:voted-maybe={mv === 'maybe'} class:voted-no={mv === 'no'}>
                   {#if d.key === voteLeader}<span class="top-badge">🔥</span>{/if}
                   <div class="date-day">{d.day}</div>
@@ -181,6 +182,7 @@
                     <div class="vote-bar-no" style="width:{Math.round(c.no/total*100)}%"></div>
                   </div>
                   <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
+                  {#if highDecline}<div class="decline-alert">Mehrheit sagt Nein</div>{/if}
                   <div class="vote-actions">
                     <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
                     <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
@@ -245,6 +247,7 @@
   .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
   .vote-bar-maybe { height: 100%; background: #c8a400; transition: width .4s; }
   .vote-bar-no { height: 100%; background: var(--red); transition: width .4s; opacity: .6; }
+  .decline-alert { font-size: 10px; font-weight: 600; color: var(--red); background: #fdecea; border: 1px solid #f5c0c0; border-radius: 4px; padding: 2px 6px; margin-bottom: .5rem; display: inline-block; }
   .vote-count { font-size: 11px; color: var(--ink3); margin-bottom: .6rem; }
   .vote-actions { display: flex; gap: 5px; }
   .vbtn { flex: 1; padding: 5px 3px; border: 1px solid var(--border); border-radius: 6px; background: none; cursor: pointer; font-size: 11px; font-family: var(--sans); color: var(--ink2); transition: all .12s; }
