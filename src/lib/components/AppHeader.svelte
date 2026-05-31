@@ -18,11 +18,16 @@
   }
 
   let showOnline = $state(false);
+  let menuOpen = $state(false);
 </script>
+
+{#if menuOpen}
+  <button class="menu-backdrop" onclick={() => (menuOpen = false)} aria-label="Menü schließen"></button>
+{/if}
 
 <header class="app-header">
   <div class="header-top">
-    <span class="nav-logo">ABI '16</span>
+    <img src="/immerblau.png" class="nav-logo-img" alt="ABI '16" />
 
     {#if onlineCount > 0}
       <div class="online-wrap">
@@ -39,12 +44,29 @@
       </div>
     {/if}
 
-    <button class="nav-user" onclick={onlogout} title="Ausloggen">
-      <span class="user-avatar">{initials(userName)}</span>
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/><path d="M11 12l4-4-4-4"/><line x1="15" y1="8" x2="7" y2="8"/>
-      </svg>
-    </button>
+    <div class="menu-wrap">
+      <button class="hamburger" onclick={() => (menuOpen = !menuOpen)} aria-label="Menü öffnen">
+        <span class="bar" class:open={menuOpen}></span>
+        <span class="bar" class:open={menuOpen}></span>
+        <span class="bar" class:open={menuOpen}></span>
+      </button>
+
+      {#if menuOpen}
+        <div class="menu-popover">
+          <div class="menu-user">
+            <div class="user-avatar">{initials(userName)}</div>
+            <span class="menu-username">{userName}</span>
+          </div>
+          <div class="menu-divider"></div>
+          <button class="menu-logout" onclick={() => { menuOpen = false; onlogout(); }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/><path d="M11 12l4-4-4-4"/><line x1="15" y1="8" x2="7" y2="8"/>
+            </svg>
+            Ausloggen
+          </button>
+        </div>
+      {/if}
+    </div>
   </div>
 
   <div class="stepper">
@@ -71,7 +93,8 @@
   .app-header { background: #fff; border-bottom: 1px solid var(--border); }
 
   .header-top { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
-  .nav-logo { font-family: var(--serif); font-size: 18px; color: var(--accent); }
+
+  .nav-logo-img { height: 44px; width: 44px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
 
   .online-wrap { position: relative; margin-left: .5rem; }
   .online-pill { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink3); background: none; border: none; cursor: pointer; padding: 2px 0; font-family: var(--sans); }
@@ -93,10 +116,32 @@
     font-size: 11px; font-weight: 600;
   }
 
-  .nav-user { display: flex; align-items: center; gap: 7px; padding: 5px 10px 5px 5px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; font-family: var(--sans); font-size: 13px; color: var(--ink3); transition: all .15s; }
-  .nav-user:hover { background: #fdf4f4; border-color: #f5c0c0; color: var(--red); }
-  .nav-user:hover .user-avatar { background: #fdecea; color: var(--red); }
-  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; transition: all .15s; }
+  .menu-backdrop { position: fixed; inset: 0; z-index: 150; background: none; border: none; cursor: default; }
+
+  .menu-wrap { position: relative; }
+
+  .hamburger { display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; padding: 6px; background: none; border: none; border-radius: 8px; cursor: pointer; }
+  .hamburger:hover { background: #f5f5f5; }
+  .bar { display: block; height: 1.5px; background: var(--ink); border-radius: 2px; transition: all .2s; }
+  .bar.open:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .bar.open:nth-child(2) { opacity: 0; }
+  .bar.open:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .menu-popover {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: #fff; border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 200;
+    min-width: 180px; overflow: hidden;
+  }
+
+  .menu-user { display: flex; align-items: center; gap: 10px; padding: .9rem 1rem; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .menu-username { font-size: 14px; font-weight: 500; color: var(--ink); }
+
+  .menu-divider { height: 1px; background: var(--border); }
+
+  .menu-logout { display: flex; align-items: center; gap: 8px; width: 100%; padding: .75rem 1rem; background: none; border: none; cursor: pointer; font-size: 14px; font-family: var(--sans); color: var(--ink3); transition: all .12s; }
+  .menu-logout:hover { background: #fdecea; color: var(--red); }
 
   .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; overflow-x: auto; scrollbar-width: none; }
   .stepper::-webkit-scrollbar { display: none; }
