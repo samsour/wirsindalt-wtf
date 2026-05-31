@@ -178,6 +178,7 @@
                   <div class="vote-bar">
                     <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
                     <div class="vote-bar-maybe" style="width:{Math.round(c.maybe/total*100)}%"></div>
+                    <div class="vote-bar-no" style="width:{Math.round(c.no/total*100)}%"></div>
                   </div>
                   <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
                   <div class="vote-actions">
@@ -243,6 +244,7 @@
   .vote-bar { height: 4px; background: #eee; border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; display: flex; }
   .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
   .vote-bar-maybe { height: 100%; background: #c8a400; transition: width .4s; }
+  .vote-bar-no { height: 100%; background: var(--red); transition: width .4s; opacity: .6; }
   .vote-count { font-size: 11px; color: var(--ink3); margin-bottom: .6rem; }
   .vote-actions { display: flex; gap: 5px; }
   .vbtn { flex: 1; padding: 5px 3px; border: 1px solid var(--border); border-radius: 6px; background: none; cursor: pointer; font-size: 11px; font-family: var(--sans); color: var(--ink2); transition: all .12s; }
