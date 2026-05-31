@@ -48,6 +48,6 @@ declare module "$app/types" {
 		};
 		Pathname(): "/" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/votes";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
+		Asset(): "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}
 }
