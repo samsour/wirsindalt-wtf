@@ -103,7 +103,7 @@
       .filter(d => !d.isQuestion)
       .map(d => {
         const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 };
-        return { ...d, yes: c.yes, maybe: c.maybe, score: c.yes + c.maybe * 0.5 };
+        return { ...d, yes: c.yes, maybe: c.maybe, no: c.no, score: c.yes + c.maybe * 0.5 };
       })
       .sort((a, b) => b.score - a.score)
       .slice(0, 5)}
@@ -119,9 +119,14 @@
       {#each scored as d, i}
         {@const yesW = Math.round(d.yes / maxScore * 100)}
         {@const maybeW = Math.round(d.maybe * 0.5 / maxScore * 100)}
+        {@const totalVotes = d.yes + d.maybe + d.no}
+        {@const contested = totalVotes > 0 && d.no / totalVotes >= 0.35}
         <div class="result-row" class:top-one={i === 0}>
           <span class="result-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
           <span class="result-label">{d.label}</span>
+          <span class="result-contested-slot">
+            {#if contested}<span class="result-contested" title="{Math.round(d.no/totalVotes*100)}% Nein-Stimmen">!</span>{/if}
+          </span>
           <div class="result-track">
             <div class="result-fill-yes" style="width:{yesW}%"></div>
             <div class="result-fill-maybe" style="width:{maybeW}%"></div>
@@ -266,6 +271,8 @@
   .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 72px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
   .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }
+  .result-contested-slot { width: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .result-contested { font-size: 10px; font-weight: 700; color: #b86000; background: #fff3cd; border: 1px solid #f0c060; border-radius: 100px; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; cursor: default; }
   .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
   .sep-hint button { border: none; background: none; cursor: pointer; color: var(--green); font-size: 14px; opacity: .6; flex-shrink: 0; }
   .sep-hint button:hover { opacity: 1; }
