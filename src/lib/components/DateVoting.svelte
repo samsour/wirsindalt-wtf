@@ -174,6 +174,7 @@
                   <div class="date-month">{d.label}</div>
                   <div class="vote-bar">
                     <div class="vote-bar-yes" style="width:{Math.round(c.yes/total*100)}%"></div>
+                    <div class="vote-bar-maybe" style="width:{Math.round(c.maybe/total*100)}%"></div>
                   </div>
                   <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
                   <div class="vote-actions">
@@ -236,8 +237,9 @@
   .top-badge { position: absolute; top: 6px; right: 6px; font-size: 12px; }
   .date-day { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); line-height: 1; margin-bottom: 2px; }
   .date-month { font-size: 11px; color: var(--ink3); margin-top: 2px; }
-  .vote-bar { height: 4px; background: #eee; border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; }
+  .vote-bar { height: 4px; background: #eee; border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; display: flex; }
   .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
+  .vote-bar-maybe { height: 100%; background: #c8a400; transition: width .4s; }
   .vote-count { font-size: 11px; color: var(--ink3); margin-bottom: .6rem; }
   .vote-actions { display: flex; gap: 5px; }
   .vbtn { flex: 1; padding: 5px 3px; border: 1px solid var(--border); border-radius: 6px; background: none; cursor: pointer; font-size: 11px; font-family: var(--sans); color: var(--ink2); transition: all .12s; }
@@ -261,7 +263,7 @@
   .result-track { flex: 1; height: 9px; background: #eee; border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
   .result-fill-yes { height: 100%; background: var(--green); transition: width .6s ease; }
   .result-fill-maybe { height: 100%; background: #c8a400; transition: width .6s ease; }
-  .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; }
+  .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 72px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
   .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }
   .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
