@@ -9,7 +9,7 @@
     onphase: (p: number) => void;
   } = $props();
 
-  const steps = ['Wann klappt\'s?', 'Ich bin dabei!', 'Und sonst so?'];
+  const steps = ['Wann klappt\'s?', 'Wer ist dabei?', 'Was, wie wo?'];
 
   function initials(name: string) {
     const parts = name.trim().split(' ');

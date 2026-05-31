@@ -14,13 +14,14 @@
     localStorage.setItem('abi2016_sep_hint_seen', '1');
   }
 
-  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, voteDeadline = null, oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, totalUsers = 0, voteDeadline = null, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
     userName?: string;
     uniqueVoters?: number;
+    totalUsers?: number;
     voteDeadline?: string | null;
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
@@ -110,7 +111,7 @@
     {@const maxScore = Math.max(...scored.map(d => d.score), 1)}
     <div class="results-panel">
       <div class="results-header">
-        <h3>Stand der Dinge 🗳️ {#if uniqueVoters > 0}<span class="voter-count">{uniqueVoters} dabei</span>{/if}</h3>
+        <h3>Stand der Dinge 🗳️ {#if totalUsers > 0}<span class="voter-count">{uniqueVoters} von {totalUsers} abgestimmt</span>{:else if uniqueVoters > 0}<span class="voter-count">{uniqueVoters} dabei</span>{/if}</h3>
         <span class="results-legend">
           <span class="leg-yes"></span> Ja &nbsp;
           <span class="leg-maybe"></span> Vielleicht &nbsp;

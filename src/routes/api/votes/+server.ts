@@ -4,9 +4,10 @@ import { DATES } from '$lib/dates';
 import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
-  const [rows, uniqueRow] = await Promise.all([
+  const [rows, uniqueRow, totalRow] = await Promise.all([
     db.execute(`SELECT date_key, vote, COUNT(*) as count FROM date_votes GROUP BY date_key, vote`),
     db.execute(`SELECT COUNT(DISTINCT user_id) as n FROM date_votes`),
+    db.execute(`SELECT COUNT(*) as n FROM users`),
   ]);
 
   const counts: Record<string, { yes: number; maybe: number; no: number }> = {};
@@ -19,7 +20,7 @@ export async function GET() {
     if (counts[key]) counts[key][vote] = row.count as number;
   }
 
-  return json({ counts, uniqueVoters: uniqueRow.rows[0].n as number });
+  return json({ counts, uniqueVoters: uniqueRow.rows[0].n as number, totalUsers: totalRow.rows[0].n as number });
 }
 
 export async function POST({ request }) {
