@@ -113,20 +113,16 @@
         <h3>Stand der Dinge 🗳️ {#if uniqueVoters > 0}<span class="voter-count">{uniqueVoters} dabei</span>{/if}</h3>
         <span class="results-legend">
           <span class="leg-yes"></span> Ja &nbsp;
-          <span class="leg-maybe"></span> Vielleicht
+          <span class="leg-maybe"></span> Vielleicht &nbsp;
+          <span class="leg-no"></span> Nein
         </span>
       </div>
       {#each scored as d, i}
         {@const yesW = Math.round(d.yes / maxScore * 100)}
         {@const maybeW = Math.round(d.maybe * 0.5 / maxScore * 100)}
-        {@const totalVotes = d.yes + d.maybe + d.no}
-        {@const contested = totalVotes > 0 && d.no / totalVotes >= 0.35}
         <div class="result-row" class:top-one={i === 0}>
           <span class="result-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
           <span class="result-label">{d.label}</span>
-          <span class="result-contested-slot">
-            {#if contested}<span class="result-contested" title="{Math.round(d.no/totalVotes*100)}% Nein-Stimmen">!</span>{/if}
-          </span>
           <div class="result-track">
             <div class="result-fill-yes" style="width:{yesW}%"></div>
             <div class="result-fill-maybe" style="width:{maybeW}%"></div>
@@ -134,6 +130,7 @@
           <span class="result-num">
             {#if d.yes > 0}<span class="num-yes">{d.yes} ✓</span>{/if}
             {#if d.maybe > 0}<span class="num-maybe">{d.maybe} ~</span>{/if}
+            {#if d.no > 0}<span class="num-no">{d.no} ✗</span>{/if}
           </span>
         </div>
       {/each}
@@ -260,6 +257,7 @@
   .results-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
   .leg-yes { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--green); }
   .leg-maybe { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #c8a400; }
+  .leg-no { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--red); }
   .result-row { display: flex; align-items: center; gap: 9px; margin-bottom: .55rem; }
   .result-row.top-one .result-label { font-weight: 600; color: var(--ink); }
   .result-row.top-one .result-track { height: 12px; }
@@ -268,11 +266,10 @@
   .result-track { flex: 1; height: 9px; background: #eee; border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
   .result-fill-yes { height: 100%; background: var(--green); transition: width .6s ease; }
   .result-fill-maybe { height: 100%; background: #c8a400; transition: width .6s ease; }
-  .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 72px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
+  .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 100px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
   .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }
-  .result-contested-slot { width: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .result-contested { font-size: 10px; font-weight: 700; color: #b86000; background: #fff3cd; border: 1px solid #f0c060; border-radius: 100px; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; cursor: default; }
+  .num-no { color: var(--red); }
   .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
   .sep-hint button { border: none; background: none; cursor: pointer; color: var(--green); font-size: 14px; opacity: .6; flex-shrink: 0; }
   .sep-hint button:hover { opacity: 1; }
