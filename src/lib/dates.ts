@@ -17,9 +17,16 @@ export const DATES = [
   { key: '2026-08-15', label: 'Sa 15. Aug', day: 'Sa', month: 'August', weekend: '14.–15. Aug' },
   { key: '2026-08-21', label: 'Fr 21. Aug', day: 'Fr', month: 'August', weekend: '21.–22. Aug' },
   { key: '2026-08-22', label: 'Sa 22. Aug', day: 'Sa', month: 'August', weekend: '21.–22. Aug' },
-  { key: '2026-08-28', label: 'Fr 28. Aug', day: 'Fr', month: 'August', weekend: '28.–29. Aug' },
-  { key: '2026-08-29', label: 'Sa 29. Aug', day: 'Sa', month: 'August', weekend: '28.–29. Aug' },
-  { key: '2026-09', label: 'September?', day: '?', month: 'Meeeeehr', weekend: 'Und noch was', isQuestion: true },
+  { key: '2026-08-28', label: 'Fr 28. Aug', day: 'Fr', month: 'August',    weekend: '28.–29. Aug' },
+  { key: '2026-08-29', label: 'Sa 29. Aug', day: 'Sa', month: 'August',    weekend: '28.–29. Aug' },
+  { key: '2026-09-04', label: 'Fr 4. Sep',  day: 'Fr', month: 'September', weekend: '4.–5. Sep' },
+  { key: '2026-09-05', label: 'Sa 5. Sep',  day: 'Sa', month: 'September', weekend: '4.–5. Sep' },
+  { key: '2026-09-11', label: 'Fr 11. Sep', day: 'Fr', month: 'September', weekend: '11.–12. Sep' },
+  { key: '2026-09-12', label: 'Sa 12. Sep', day: 'Sa', month: 'September', weekend: '11.–12. Sep' },
+  { key: '2026-09-18', label: 'Fr 18. Sep', day: 'Fr', month: 'September', weekend: '18.–19. Sep' },
+  { key: '2026-09-19', label: 'Sa 19. Sep', day: 'Sa', month: 'September', weekend: '18.–19. Sep' },
+  { key: '2026-09-25', label: 'Fr 25. Sep', day: 'Fr', month: 'September', weekend: '25.–26. Sep' },
+  { key: '2026-09-26', label: 'Sa 26. Sep', day: 'Sa', month: 'September', weekend: '25.–26. Sep' },
 ];
 
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';

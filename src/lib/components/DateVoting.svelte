@@ -1,5 +1,17 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { DATES } from '$lib/dates';
+
+  let showSepHint = $state(false);
+
+  onMount(() => {
+    if (!localStorage.getItem('abi2016_sep_hint_seen')) showSepHint = true;
+  });
+
+  function dismissSepHint() {
+    showSepHint = false;
+    localStorage.setItem('abi2016_sep_hint_seen', '1');
+  }
 
   let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, userName = '', uniqueVoters = 0, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
@@ -27,6 +39,13 @@
 </div>
 
 <div class="section">
+  {#if showSepHint}
+    <div class="sep-hint">
+      <span>🎉 Neu: September ist jetzt auch dabei!</span>
+      <button onclick={dismissSepHint}>✕</button>
+    </div>
+  {/if}
+
   {#if Object.keys(voteCounts).length}
     {@const scored = [...DATES]
       .filter(d => !d.isQuestion)
@@ -167,6 +186,9 @@
   .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; }
   .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }
+  .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
+  .sep-hint button { border: none; background: none; cursor: pointer; color: var(--green); font-size: 14px; opacity: .6; flex-shrink: 0; }
+  .sep-hint button:hover { opacity: 1; }
   .vote-stat { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid var(--border); }
   @media (max-width: 500px) {
     .date-row { grid-template-columns: 1fr; }
