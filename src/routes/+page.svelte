@@ -25,6 +25,7 @@
 
   let { data } = $props();
   let maxPhase = $derived(data.maxPhase); // set MAX_PHASE in .env: 0=Terminwahl only, 1=+Anmeldung, 2=all
+  let voteDeadline = $derived(data.voteDeadline); // set VOTE_DEADLINE in .env: YYYY-MM-DD
   let phase = $state(0);
   $effect(() => { phase = maxPhase; }); // start at the current active phase
 
@@ -340,6 +341,7 @@
       {votingKey}
       userName={user.userName}
       {uniqueVoters}
+      {voteDeadline}
       oncastvote={castVote}
     />
   {:else if phase === 1}

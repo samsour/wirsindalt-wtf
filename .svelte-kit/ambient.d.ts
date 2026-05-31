@@ -41,6 +41,7 @@ declare module '$env/static/private' {
 	export const MAX_PHASE: string;
 	export const TURSO_AUTH_TOKEN: string;
 	export const TURSO_URL: string;
+	export const VOTE_DEADLINE: string;
 	export const NVM_INC: string;
 	export const TERM_PROGRAM: string;
 	export const NODE: string;
@@ -52,6 +53,7 @@ declare module '$env/static/private' {
 	export const TERM_PROGRAM_VERSION: string;
 	export const MallocNanoZone: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
+	export const ZDOTDIR: string;
 	export const ZSH: string;
 	export const PNPM_HOME: string;
 	export const USER: string;
@@ -62,12 +64,14 @@ declare module '$env/static/private' {
 	export const SSH_AUTH_SOCK: string;
 	export const CLAUDE_CODE_SSE_PORT: string;
 	export const __CF_USER_TEXT_ENCODING: string;
+	export const VSCODE_PROFILE_INITIALIZED: string;
 	export const npm_execpath: string;
 	export const PAGER: string;
 	export const LSCOLORS: string;
 	export const PATH: string;
 	export const npm_package_json: string;
 	export const __CFBundleIdentifier: string;
+	export const USER_ZDOTDIR: string;
 	export const PWD: string;
 	export const npm_command: string;
 	export const EDITOR: string;
@@ -81,6 +85,7 @@ declare module '$env/static/private' {
 	export const XPC_SERVICE_NAME: string;
 	export const npm_package_version: string;
 	export const pnpm_config_verify_deps_before_run: string;
+	export const VSCODE_INJECTION: string;
 	export const HOME: string;
 	export const SHLVL: string;
 	export const VSCODE_GIT_ASKPASS_MAIN: string;
@@ -185,6 +190,7 @@ declare module '$env/dynamic/private' {
 		MAX_PHASE: string;
 		TURSO_AUTH_TOKEN: string;
 		TURSO_URL: string;
+		VOTE_DEADLINE: string;
 		NVM_INC: string;
 		TERM_PROGRAM: string;
 		NODE: string;
@@ -196,6 +202,7 @@ declare module '$env/dynamic/private' {
 		TERM_PROGRAM_VERSION: string;
 		MallocNanoZone: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
+		ZDOTDIR: string;
 		ZSH: string;
 		PNPM_HOME: string;
 		USER: string;
@@ -206,12 +213,14 @@ declare module '$env/dynamic/private' {
 		SSH_AUTH_SOCK: string;
 		CLAUDE_CODE_SSE_PORT: string;
 		__CF_USER_TEXT_ENCODING: string;
+		VSCODE_PROFILE_INITIALIZED: string;
 		npm_execpath: string;
 		PAGER: string;
 		LSCOLORS: string;
 		PATH: string;
 		npm_package_json: string;
 		__CFBundleIdentifier: string;
+		USER_ZDOTDIR: string;
 		PWD: string;
 		npm_command: string;
 		EDITOR: string;
@@ -225,6 +234,7 @@ declare module '$env/dynamic/private' {
 		XPC_SERVICE_NAME: string;
 		npm_package_version: string;
 		pnpm_config_verify_deps_before_run: string;
+		VSCODE_INJECTION: string;
 		HOME: string;
 		SHLVL: string;
 		VSCODE_GIT_ASKPASS_MAIN: string;

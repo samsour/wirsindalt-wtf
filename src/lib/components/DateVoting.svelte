@@ -14,15 +14,31 @@
     localStorage.setItem('abi2016_sep_hint_seen', '1');
   }
 
-  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, voteDeadline = null, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
     userName?: string;
     uniqueVoters?: number;
+    voteDeadline?: string | null;
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
+
+  let now = $state(Date.now());
+  onMount(() => {
+    const t = setInterval(() => (now = Date.now()), 60_000);
+    return () => clearInterval(t);
+  });
+
+  let countdown = $derived.by(() => {
+    if (!voteDeadline) return null;
+    const diff = new Date(voteDeadline).getTime() + 86_400_000 - now; // end of deadline day
+    if (diff <= 0) return { expired: true, days: 0, hours: 0 };
+    const days = Math.floor(diff / 86_400_000);
+    const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+    return { expired: false, days, hours };
+  });
 
   let myYes   = $derived(Object.values(myVotes).filter(v => v === 'yes').length);
   let myMaybe = $derived(Object.values(myVotes).filter(v => v === 'maybe').length);
@@ -61,6 +77,17 @@
   <div class="eyebrow">10 Jahre. uff.</div>
   <h1>Wann passt's dir, <em>{userName}?</em></h1>
   <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
+  {#if countdown}
+    {#if countdown.expired}
+      <div class="deadline-badge expired">Abstimmung beendet</div>
+    {:else if countdown.days === 0}
+      <div class="deadline-badge urgent">Heute ist der letzte Tag! ⏰</div>
+    {:else}
+      <div class="deadline-badge">
+        ⏳ Noch {countdown.days} {countdown.days === 1 ? 'Tag' : 'Tage'}{countdown.hours > 0 ? ` und ${countdown.hours} Std.` : ''} zum Abstimmen
+      </div>
+    {/if}
+  {/if}
 </div>
 
 <div class="section">
@@ -188,6 +215,9 @@
   .date-week { margin-bottom: 1.5rem; }
   .week-label { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 0; margin-bottom: .75rem; cursor: pointer; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; font-family: var(--sans); }
   .week-label:hover { color: var(--ink); }
+  .deadline-badge { display: inline-block; margin-top: .75rem; font-size: 13px; font-weight: 500; background: #fff8f0; color: #b86000; border: 1px solid #f0c060; border-radius: 100px; padding: 4px 14px; }
+  .deadline-badge.urgent { background: #fdecea; color: var(--red); border-color: #f5c0c0; }
+  .deadline-badge.expired { background: #f5f5f5; color: var(--ink3); border-color: var(--border); }
   .week-arrow { color: var(--ink3); flex-shrink: 0; transform: rotate(-90deg); transition: transform .2s; }
   .week-arrow.open { transform: rotate(0deg); }
   .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
