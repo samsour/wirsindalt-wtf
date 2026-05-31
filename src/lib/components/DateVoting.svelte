@@ -30,6 +30,27 @@
     (acc[d.month][d.weekend] ||= []).push(d);
     return acc;
   }, {} as Record<string, Record<string, typeof DATES>>);
+
+  let manualCollapsed = $state(new Set<string>());
+  let manualExpanded  = $state(new Set<string>());
+
+  function isCollapsed(label: string, days: typeof DATES): boolean {
+    if (manualExpanded.has(label)) return false;
+    if (manualCollapsed.has(label)) return true;
+    return days.filter(d => !(d as any).isQuestion).every(d => myVotes[d.key] === 'no');
+  }
+
+  function toggle(label: string, days: typeof DATES) {
+    if (isCollapsed(label, days)) {
+      const me = new Set(manualExpanded); me.add(label);
+      const mc = new Set(manualCollapsed); mc.delete(label);
+      manualExpanded = me; manualCollapsed = mc;
+    } else {
+      const mc = new Set(manualCollapsed); mc.add(label);
+      const me = new Set(manualExpanded); me.delete(label);
+      manualCollapsed = mc; manualExpanded = me;
+    }
+  }
 </script>
 
 <div class="hero">
@@ -104,7 +125,13 @@
           </div>
         {:else}
           <div class="date-week">
-            <div class="week-label">{weekendLabel}</div>
+            <button class="week-label" onclick={() => toggle(weekendLabel, days)}>
+              {weekendLabel}
+              <svg class="week-arrow" class:open={!isCollapsed(weekendLabel, days)} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="2,4 6,8 10,4"/>
+              </svg>
+            </button>
+            {#if !isCollapsed(weekendLabel, days)}
             <div class="date-row">
               {#each days as d}
                 {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
@@ -126,6 +153,7 @@
                 </div>
               {/each}
             </div>
+            {/if}
           </div>
         {/if}
       {/each}
@@ -138,10 +166,11 @@
 </div>
 
 <style>
-  .vote-intro { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; font-size: 14px; color: var(--ink2); line-height: 1.6; }
-  .vote-intro strong { color: var(--ink); }
   .date-week { margin-bottom: 1.5rem; }
-  .week-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; margin-bottom: .75rem; }
+  .week-label { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 0; margin-bottom: .75rem; cursor: pointer; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; font-family: var(--sans); }
+  .week-label:hover { color: var(--ink); }
+  .week-arrow { color: var(--ink3); flex-shrink: 0; transform: rotate(-90deg); transition: transform .2s; }
+  .week-arrow.open { transform: rotate(0deg); }
   .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
   .date-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; position: relative; overflow: hidden; transition: border-color .15s; }
   .date-card.voted-yes { border-color: var(--green); background: #f4faf5; }
