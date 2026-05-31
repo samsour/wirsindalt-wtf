@@ -14,16 +14,19 @@
     localStorage.setItem('abi2016_sep_hint_seen', '1');
   }
 
-  let { voteCounts, myVotes, voteLeader, votingKey, myVoteCount, userName = '', uniqueVoters = 0, oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, oncastvote }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
     votingKey: string | null;
-    myVoteCount: number;
     userName?: string;
     uniqueVoters?: number;
     oncastvote: (dateKey: string, vote: string) => void;
   } = $props();
+
+  let myYes   = $derived(Object.values(myVotes).filter(v => v === 'yes').length);
+  let myMaybe = $derived(Object.values(myVotes).filter(v => v === 'maybe').length);
+  let myNo    = $derived(Object.values(myVotes).filter(v => v === 'no').length);
 
   // Group by month, then by weekend within each month
   const byMonth = DATES.reduce((acc, d) => {
@@ -161,8 +164,23 @@
     </div>
   {/each}
 
-  <div class="vote-stat">
-    <div class="stat-pill"><span class="sn">{myVoteCount}</span><span class="sl">meine Stimmen</span></div>
+  <div class="my-votes-card">
+    <div class="my-votes-title">Deine Stimmen</div>
+    <div class="my-votes-row">
+      {#if myYes === 0 && myMaybe === 0 && myNo === 0}
+        <span class="my-votes-empty">Noch keine Stimmen abgegeben</span>
+      {:else}
+        {#if myYes > 0}
+          <div class="my-vote-pill yes"><span>{myYes}</span> ✓ Ja</div>
+        {/if}
+        {#if myMaybe > 0}
+          <div class="my-vote-pill maybe"><span>{myMaybe}</span> ~ Vielleicht</div>
+        {/if}
+        {#if myNo > 0}
+          <div class="my-vote-pill no"><span>{myNo}</span> ✗ Nein</div>
+        {/if}
+      {/if}
+    </div>
   </div>
 </div>
 
@@ -219,7 +237,15 @@
   .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
   .sep-hint button { border: none; background: none; cursor: pointer; color: var(--green); font-size: 14px; opacity: .6; flex-shrink: 0; }
   .sep-hint button:hover { opacity: 1; }
-  .vote-stat { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid var(--border); }
+  .my-votes-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1.5rem; }
+  .my-votes-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--ink3); margin-bottom: .75rem; }
+  .my-votes-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .my-vote-pill { display: flex; align-items: center; gap: .35rem; font-size: 13px; padding: .35rem .75rem; border-radius: 100px; font-weight: 500; }
+  .my-vote-pill span { font-family: var(--serif); font-size: 1rem; }
+  .my-vote-pill.yes { background: #e8f5e9; color: var(--green); }
+  .my-vote-pill.maybe { background: #fffde7; color: var(--maybe); }
+  .my-vote-pill.no { background: #f5f5f5; color: var(--ink3); }
+  .my-votes-empty { font-size: 13px; color: var(--ink3); }
   @media (max-width: 500px) {
     .date-row { grid-template-columns: 1fr; }
     .results-panel { padding: 1rem; }

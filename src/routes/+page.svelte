@@ -303,7 +303,6 @@
   }
 
   let voteLeader = $derived(Object.entries(voteCounts).sort((a, b) => b[1].yes - a[1].yes)[0]?.[0]);
-  let myVoteCount = $derived(Object.values(myVotes).filter(v => v !== 'no').length);
 </script>
 
 <svelte:head>
@@ -339,7 +338,6 @@
       {myVotes}
       {voteLeader}
       {votingKey}
-      {myVoteCount}
       userName={user.userName}
       {uniqueVoters}
       oncastvote={castVote}
