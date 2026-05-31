@@ -76,15 +76,32 @@
   {/each}
 
   {#if Object.keys(voteCounts).length}
+    {@const scored = [...DATES]
+      .filter(d => !d.isQuestion)
+      .map(d => {
+        const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 };
+        return { ...d, yes: c.yes, maybe: c.maybe, score: c.yes + c.maybe * 0.5 };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)}
+    {@const maxScore = Math.max(...scored.map(d => d.score), 1)}
     <div class="results-panel">
-      <h3>Aktuelle Ergebnisse</h3>
-      {#each [...DATES].sort((a, b) => (voteCounts[b.key]?.yes ?? 0) - (voteCounts[a.key]?.yes ?? 0)).slice(0, 6) as d}
-        {@const yes = voteCounts[d.key]?.yes ?? 0}
-        {@const max = Math.max(...DATES.map(x => voteCounts[x.key]?.yes ?? 0), 1)}
+      <div class="results-header">
+        <h3>Aktuelle Ergebnisse</h3>
+        <span class="results-legend"><span class="leg-yes"></span> Ja &nbsp; <span class="leg-maybe"></span> Vielleicht</span>
+      </div>
+      {#each scored as d, i}
         <div class="result-row">
+          <span class="result-rank">{i + 1}</span>
           <span class="result-label">{d.label}</span>
-          <div class="result-track"><div class="result-fill" style="width:{Math.round(yes/max*100)}%"></div></div>
-          <span class="result-num">{yes}</span>
+          <div class="result-track">
+            <div class="result-fill-yes" style="width:{Math.round(d.yes / maxScore * 100)}%"></div>
+            <div class="result-fill-maybe" style="width:{Math.round(d.maybe * 0.5 / maxScore * 100)}%"></div>
+          </div>
+          <span class="result-num">
+            {#if d.yes > 0}<span class="num-yes">{d.yes} ✓</span>{/if}
+            {#if d.maybe > 0}<span class="num-maybe">{d.maybe} ~</span>{/if}
+          </span>
         </div>
       {/each}
     </div>
@@ -127,12 +144,20 @@
   .vbtn.maybe.active, .vbtn.maybe:not(:disabled):hover { background: #fffde7; color: var(--maybe); border-color: #c8a400; }
   .vbtn.no.active, .vbtn.no:not(:disabled):hover { background: #fdecea; color: var(--red); border-color: var(--red); }
   .results-panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 2rem; }
-  .results-panel h3 { font-family: var(--serif); font-size: 1.1rem; margin-bottom: 1rem; }
-  .result-row { display: flex; align-items: center; gap: 10px; margin-bottom: .5rem; font-size: 13px; }
-  .result-label { width: 110px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .result-track { flex: 1; height: 7px; background: #eee; border-radius: 4px; overflow: hidden; }
-  .result-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .5s; }
-  .result-num { font-size: 12px; color: var(--ink3); min-width: 24px; text-align: right; }
+  .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; }
+  .results-header h3 { font-family: var(--serif); font-size: 1.1rem; }
+  .results-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
+  .leg-yes { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--green); }
+  .leg-maybe { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #c8a400; }
+  .result-row { display: flex; align-items: center; gap: 8px; margin-bottom: .6rem; font-size: 12px; }
+  .result-rank { font-size: 11px; color: var(--ink3); width: 14px; flex-shrink: 0; text-align: center; }
+  .result-label { width: 90px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+  .result-track { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; display: flex; }
+  .result-fill-yes { height: 100%; background: var(--green); transition: width .5s; }
+  .result-fill-maybe { height: 100%; background: #c8a400; transition: width .5s; }
+  .result-num { display: flex; gap: 6px; flex-shrink: 0; white-space: nowrap; }
+  .num-yes { color: var(--green); font-weight: 500; }
+  .num-maybe { color: var(--maybe); }
   .vote-stat { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px solid var(--border); }
   @media (max-width: 500px) { .date-row { grid-template-columns: 1fr; } }
 </style>
