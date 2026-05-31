@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { slide } from 'svelte/transition';
   import { DATES } from '$lib/dates';
 
   let showSepHint = $state(false);
@@ -132,7 +133,7 @@
               </svg>
             </button>
             {#if !isCollapsed(weekendLabel, days)}
-            <div class="date-row">
+            <div class="date-row" transition:slide={{ duration: 220 }}>
               {#each days as d}
                 {@const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 }}
                 {@const total = c.yes + c.maybe + c.no || 1}
