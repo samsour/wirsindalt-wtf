@@ -5,6 +5,7 @@
   import GateCard from '$lib/components/GateCard.svelte';
   import AppHeader from '$lib/components/AppHeader.svelte';
   import DateVoting from '$lib/components/DateVoting.svelte';
+  import Quiz2016 from '$lib/components/Quiz2016.svelte';
   import RsvpPhase from '$lib/components/RsvpPhase.svelte';
   import PlanningPhase from '$lib/components/PlanningPhase.svelte';
   import EmojiCannon from '$lib/components/EmojiCannon.svelte';
@@ -347,6 +348,7 @@
       {voteDeadline}
       oncastvote={castVote}
     />
+    <Quiz2016 />
   {:else if phase === 1}
     <RsvpPhase
       {rsvpStats}
