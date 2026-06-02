@@ -108,11 +108,13 @@
     </div>
     <div class="add-box">
       <h4>💡 Neue Idee</h4>
-      <div style="display:flex;gap:.5rem">
-        <input bind:value={newIdeaText} placeholder="Bierpong Turnier, Karaoke, ..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--paper)" onkeydown={e => e.key === 'Enter' && onaddidea()} />
-        <button class="submit-icon-btn" onclick={onaddidea} title="Einreichen">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="form-row" style="margin-bottom:0">
+        <div style="display:flex;gap:.5rem">
+          <input bind:value={newIdeaText} placeholder="Bierpong Turnier, Karaoke, ..." style="flex:1" onkeydown={e => e.key === 'Enter' && onaddidea()} />
+          <button class="submit-icon-btn" onclick={onaddidea} title="Einreichen">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
