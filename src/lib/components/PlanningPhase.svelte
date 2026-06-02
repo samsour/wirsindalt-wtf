@@ -42,8 +42,8 @@
 
 <div class="hero">
   <div class="eyebrow">Meeehr Plaaanung.</div>
-  <h1>Wer bringt <em>was mit?</em></h1>
-  <p class="hero-sub">Einfach eintragen was du mitbringen kannst — und abstimmen was ihr euch wünscht.</p>
+  <h1>Wo, was, <em>und wie?</em></h1>
+  <p class="hero-sub">Ein Ort wäre cool. Ansonsten einfach mal Brainstormen.<br />Kann jemand was mitbringen, wird irgendwas organisiert?<br />Seid kreativ!</p>
 </div>
 
 <div class="section">
