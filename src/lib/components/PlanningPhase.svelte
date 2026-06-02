@@ -29,15 +29,10 @@
     onunstrikelocation: (id: number) => void;
   } = $props();
 
-  function initials(name: string) {
-    const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return parts.map(p => p[0]).join('').toUpperCase().slice(0, 2);
-  }
-
-  const catClass: Record<string, string> = {
-    Essen: 'badge-food', Getränke: 'badge-drinks', Equipment: 'badge-equipment', Sonstiges: 'badge-other',
+  const catEmoji: Record<string, string> = {
+    Essen: '🍕', Getränke: '🍺', Equipment: '🎒', Sonstiges: '✨',
   };
+  const cats = Object.keys(catEmoji);
 </script>
 
 <div class="hero">
@@ -57,7 +52,7 @@
     <div class="contrib-list">
       {#each contributions as c}
         <div class="contrib-card">
-          <div class="avatar">{initials(c.user_name)}</div>
+          <div class="avatar cat-avatar">{catEmoji[c.category] ?? '✨'}</div>
           <div class="contrib-info">
             <div class="contrib-name">{c.item}</div>
             <div class="contrib-item">{c.user_name}</div>
@@ -73,9 +68,16 @@
     </div>
     <div class="add-box">
       <h4>+ Ich bringe etwas mit</h4>
-      <div class="form-row"><label>Was bringst du mit?</label>
+      <div class="cat-pills">
+        {#each cats as cat}
+          <button type="button" class="cat-pill" class:selected={newContribCat === cat} onclick={() => (newContribCat = cat)}>
+            {catEmoji[cat]} {cat}
+          </button>
+        {/each}
+      </div>
+      <div class="form-row" style="margin-top:.75rem"><label for="contrib-item">Was bringst du mit?</label>
         <div style="display:flex;gap:.5rem">
-          <input bind:value={newContribItem} placeholder="z.B. Salat, Grill, 5000W Bassmachine..." onkeydown={e => e.key === 'Enter' && onaddcontrib()} style="flex:1" />
+          <input id="contrib-item" bind:value={newContribItem} placeholder="z.B. Salat, Grill, 5000W Bassmachine..." onkeydown={e => e.key === 'Enter' && onaddcontrib()} style="flex:1" />
           <button class="submit-icon-btn" onclick={onaddcontrib} title="Eintragen">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -159,6 +161,11 @@
   .contrib-list { display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.5rem; }
   .contrib-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem; }
   .avatar { width: 36px; height: 36px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .cat-avatar { background: #f5f5f5; font-size: 18px; }
+  .cat-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .25rem; }
+  .cat-pill { padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; font-family: var(--sans); color: var(--ink2); transition: all .15s; }
+  .cat-pill:hover { border-color: var(--ink2); }
+  .cat-pill.selected { background: var(--ink); color: #fff; border-color: var(--ink); }
   .contrib-info { flex: 1; min-width: 0; }
   .contrib-name { font-weight: 500; font-size: 13px; }
   .contrib-item { font-size: 12px; color: var(--ink2); }
