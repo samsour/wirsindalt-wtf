@@ -2,6 +2,7 @@
   import favicon from '$lib/assets/favicon.svg';
   import '../app.css';
   import Footer from '$lib/components/Footer.svelte';
+  import RainBackground from '$lib/components/RainBackground.svelte';
 
   let { children } = $props();
 </script>
@@ -17,5 +18,6 @@
   <meta name="twitter:image" content="/og-image.png" />
 </svelte:head>
 
+<RainBackground />
 {@render children()}
 <Footer />
