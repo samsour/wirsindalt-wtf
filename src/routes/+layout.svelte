@@ -18,6 +18,12 @@
   <meta name="twitter:image" content="/og-image.png" />
 </svelte:head>
 
+<style>
+  .content { position: relative; z-index: 1; }
+</style>
+
 <RainBackground />
-{@render children()}
-<Footer />
+<div class="content">
+  {@render children()}
+  <Footer />
+</div>
