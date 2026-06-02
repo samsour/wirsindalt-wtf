@@ -340,7 +340,7 @@
 
 {#if loading}
   <div class="loading-screen">
-    <div class="spinner"></div>
+    <img src="/immerblau.png" alt="" class="loading-logo" />
   </div>
 {:else if !user}
   <GateCard
@@ -417,6 +417,6 @@
 
 <style>
   .loading-screen { display: flex; align-items: center; justify-content: center; min-height: 100dvh; }
-  .spinner { width: 32px; height: 32px; border: 3px solid #eee; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  .loading-logo { width: 52px; height: 52px; border-radius: 12px; animation: spin 1.2s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
