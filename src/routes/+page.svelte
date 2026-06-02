@@ -67,16 +67,25 @@
     pingInterval = setInterval(ping, 20_000);
   }
 
-  let votePollInterval: ReturnType<typeof setInterval>;
+  let pollInterval: ReturnType<typeof setInterval>;
 
-  function startVotePoll() {
-    votePollInterval = setInterval(loadVotes, 5_000);
+  function startPoll() {
+    clearInterval(pollInterval);
+    pollInterval = setInterval(() => {
+      if (phase === 0) loadVotes();
+      else if (phase === 1) Promise.all([loadContribs(), loadIdeas(), loadLocations()]);
+    }, 5_000);
   }
+
+  $effect(() => {
+    phase; // reactive — restart poll whenever phase changes
+    if (!loading) startPoll();
+  });
 
   onDestroy(() => {
     clearInterval(presenceInterval);
     clearInterval(pingInterval);
-    clearInterval(votePollInterval);
+    clearInterval(pollInterval);
   });
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
@@ -132,7 +141,6 @@
     }
     await loadVotes();
     await loadRsvpStats();
-    startVotePoll();
     loading = false;
   });
 
