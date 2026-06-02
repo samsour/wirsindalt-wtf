@@ -98,6 +98,9 @@
       <div class="deadline-badge">
         ⏳ Noch {countdown.days} {countdown.days === 1 ? 'Tag' : 'Tage'}{countdown.hours > 0 ? ` und ${countdown.hours} Std.` : ''} zum Abstimmen
       </div>
+      {#if onnext}
+        <div class="planning-hint">Zur Planung gehts <button class="hint-link" onclick={onnext}>hier lang →</button></div>
+      {/if}
     {/if}
   {/if}
 </div>
@@ -238,6 +241,9 @@
   .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
   .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
   .winner-cta:hover { opacity: .85; }
+  .planning-hint { margin-top: 1rem; font-size: 13px; color: var(--ink3); }
+  .hint-link { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 13px; color: var(--accent); font-weight: 500; padding: 0; }
+  .hint-link:hover { text-decoration: underline; }
   .deadline-badge { display: inline-block; margin-top: .75rem; font-size: 13px; font-weight: 500; background: #fff8f0; color: #b86000; border: 1px solid #f0c060; border-radius: 100px; padding: 4px 14px; }
   .deadline-badge.urgent { background: #fdecea; color: var(--red); border-color: #f5c0c0; }
   .deadline-badge.expired { background: #f5f5f5; color: var(--ink3); border-color: var(--border); }
