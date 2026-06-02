@@ -338,19 +338,21 @@
 
 <Toast message={toast} />
 
-{#if loading}
-  <div class="loading-screen">
-    <img src="/immerblau.png" alt="" class="loading-logo" />
-  </div>
-{:else if !user}
-  <GateCard
-    bind:authName
-    bind:authMotto
-    {authError}
-    {authLoading}
-    {mottoHint}
-    onlogin={login}
-  />
+{#if !user}
+  {#if loading}
+    <div class="loading-screen">
+      <img src="/immerblau.png" alt="" class="loading-logo" />
+    </div>
+  {:else}
+    <GateCard
+      bind:authName
+      bind:authMotto
+      {authError}
+      {authLoading}
+      {mottoHint}
+      onlogin={login}
+    />
+  {/if}
 {:else}
   <EmojiCannon token={user.token} />
   <AppHeader
@@ -363,7 +365,11 @@
     onphase={(p) => (phase = p)}
   />
 
-  {#if phase === 0}
+  {#if loading}
+    <div class="loading-screen loading-content">
+      <img src="/immerblau.png" alt="" class="loading-logo" />
+    </div>
+  {:else if phase === 0}
     <DateVoting
       {voteCounts}
       {myVotes}
@@ -417,6 +423,7 @@
 
 <style>
   .loading-screen { display: flex; align-items: center; justify-content: center; min-height: 100dvh; }
+  .loading-content { min-height: 50dvh; }
   .loading-logo { width: 52px; height: 52px; border-radius: 12px; animation: spin 1.2s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
