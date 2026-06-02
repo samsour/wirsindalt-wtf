@@ -84,7 +84,7 @@
   {#if countdown?.expired && winnerDate}
     <div class="winner-card">
       <div class="winner-eyebrow">🎉 Der Termin steht fest</div>
-      <div class="winner-date">{winnerDate.weekend}</div>
+      <div class="winner-date">{winnerDate.label}</div>
       {#if onnext}
         <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
       {/if}

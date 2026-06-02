@@ -316,7 +316,7 @@
     showToast('Link kopiert! Teile ihn in der Gruppe');
   }
 
-  let voteLeader = $derived(Object.entries(voteCounts).sort((a, b) => b[1].yes - a[1].yes)[0]?.[0]);
+  let voteLeader = $derived(Object.entries(voteCounts).sort((a, b) => (b[1].yes + b[1].maybe * 0.5) - (a[1].yes + a[1].maybe * 0.5))[0]?.[0]);
 </script>
 
 <svelte:head>

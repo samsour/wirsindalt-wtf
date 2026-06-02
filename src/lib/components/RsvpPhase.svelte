@@ -46,7 +46,7 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">Termin steht — jetzt zählen wir durch.</div>
+  <div class="eyebrow">So, einmal durchzählen bidde</div>
   <h1>Kommst du <em>oder was?</em></h1>
   <p class="hero-sub">Kurz Bescheid geben, bring ruhig jemanden mit.</p>
 </div>
@@ -59,11 +59,11 @@
         <span class="chosen-icon">{deadlineExpired ? '📅' : '🗳️'}</span>
         <div>
           <div class="chosen-label">{deadlineExpired ? 'Der Termin' : 'Aktuell vorne'}</div>
-          <div class="chosen-value">{winDate.weekend}</div>
+          <div class="chosen-value">{winDate.label}</div>
           {#if countdown}
             <div class="chosen-countdown">
-              Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}
             </div>
+            Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}. Änderungen vorbehalten, falls wir keine gescheite Location finden.
           {/if}
         </div>
       </div>
