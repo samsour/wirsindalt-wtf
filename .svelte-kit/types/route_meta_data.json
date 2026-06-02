@@ -2,6 +2,9 @@
 	"/": [
 		"src/routes/+page.server.ts"
 	],
+	"/anmeldung": [
+		"src/routes/anmeldung/+page.server.ts"
+	],
 	"/api/auth": [
 		"src/routes/api/auth/+server.ts"
 	],
@@ -28,5 +31,8 @@
 	],
 	"/api/votes": [
 		"src/routes/api/votes/+server.ts"
+	],
+	"/planung": [
+		"src/routes/planung/+page.server.ts"
 	]
 }

@@ -29,12 +29,13 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/api" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/votes";
+		RouteId(): "/" | "/anmeldung" | "/api" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/votes" | "/planung";
 		RouteParams(): {
 			
 		};
 		LayoutParams(): {
 			"/": Record<string, never>;
+			"/anmeldung": Record<string, never>;
 			"/api": Record<string, never>;
 			"/api/auth": Record<string, never>;
 			"/api/contributions": Record<string, never>;
@@ -44,9 +45,10 @@ declare module "$app/types" {
 			"/api/locations": Record<string, never>;
 			"/api/presence": Record<string, never>;
 			"/api/rsvp": Record<string, never>;
-			"/api/votes": Record<string, never>
+			"/api/votes": Record<string, never>;
+			"/planung": Record<string, never>
 		};
-		Pathname(): "/" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/votes";
+		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/votes" | "/planung";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/.DS_Store" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}

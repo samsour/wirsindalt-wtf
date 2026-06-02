@@ -28,7 +28,18 @@
   let voteDeadline = $derived(data.voteDeadline); // set VOTE_DEADLINE in .env: YYYY-MM-DD
   let deadlineExpired = $derived(!voteDeadline || Date.now() > new Date(voteDeadline).getTime() + 86_400_000);
   let phase = $state(0);
-  $effect(() => { phase = maxPhase; }); // start at the current active phase
+
+  onMount(() => {
+    const p = new URLSearchParams(window.location.search).get('step');
+    phase = p !== null && !isNaN(+p) ? Math.min(2, Math.max(0, +p)) : maxPhase;
+  });
+
+  $effect(() => {
+    const url = new URL(window.location.href);
+    if (phase === 0) url.searchParams.delete('step');
+    else url.searchParams.set('step', String(phase));
+    history.replaceState({}, '', url);
+  });
 
   let onlineCount = $state(0);
   let onlineNames = $state<string[]>([]);
