@@ -86,6 +86,9 @@
       <button class="btn btn-outline" style="margin-top:1rem" onclick={() => (rsvpDone = false)}>Doch nochmal ändern</button>
     </div>
   {:else}
+    {#if !deadlineExpired}
+      <p class="pending-label">Sobald der Termin feststeht, kannst du hier zusagen.</p>
+    {/if}
     <div class="rsvp-grid">
       <button class="rsvp-card" class:attending={rsvpChoice === 'yes'} disabled={rsvpLoading || !deadlineExpired} onclick={() => { rsvpChoice = 'yes'; onsubmit(); }}>
         <div class="rsvp-icon">🎉</div>
@@ -98,9 +101,6 @@
         <p>Schade, aber okay</p>
       </button>
     </div>
-    {#if !deadlineExpired}
-      <p class="pending-label">Sobald der Termin feststeht, kannst du hier zusagen.</p>
-    {/if}
   {/if}
 
   {#if onnext}
@@ -126,7 +126,7 @@
   .chosen-date.pending .chosen-label { color: var(--ink3); }
   .chosen-value { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); }
   .chosen-countdown { font-size: 11px; color: var(--ink3); margin-top: 3px; }
-  .pending-label { text-align: center; font-size: 13px; color: var(--ink3); margin-top: .75rem; }
+  .pending-label { text-align: center; font-size: 13px; color: var(--ink3); margin-bottom: 1rem; }
   .rsvp-card h3 { font-family: var(--serif); font-size: 1.25rem; margin-bottom: .25rem; }
   .rsvp-card p { font-size: 13px; color: var(--ink2); }
   .done-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem; }

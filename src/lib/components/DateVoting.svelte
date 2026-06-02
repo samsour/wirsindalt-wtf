@@ -4,6 +4,7 @@
   import { DATES } from '$lib/dates';
 
   let showSepHint = $state(false);
+  let showAllResults = $state(false);
 
   onMount(() => {
     if (!localStorage.getItem('abi2016_sep_hint_seen')) showSepHint = true;
@@ -99,7 +100,7 @@
         ⏳ Noch {countdown.days} {countdown.days === 1 ? 'Tag' : 'Tage'}{countdown.hours > 0 ? ` und ${countdown.hours} Std.` : ''} zum Abstimmen
       </div>
       {#if onnext}
-        <div class="planning-hint">Zur Planung gehts <button class="hint-link" onclick={onnext}>hier lang →</button></div>
+        <div class="planning-hint"><button class="hint-link" onclick={onnext}>Zur Planung →</button></div>
       {/if}
     {/if}
   {/if}
@@ -114,7 +115,7 @@
   {/if}
 
   {#if Object.keys(voteCounts).length}
-    {@const scored = [...DATES]
+    {@const allScored = [...DATES]
       .filter(d => !d.isQuestion)
       .map(d => {
         const c = voteCounts[d.key] ?? { yes: 0, maybe: 0, no: 0 };
@@ -122,7 +123,8 @@
       })
       .sort((a, b) => b.score - a.score)
       .slice(0, 5)}
-    {@const maxScore = Math.max(...scored.map(d => d.score), 1)}
+    {@const scored = showAllResults ? allScored : allScored.slice(0, 3)}
+    {@const maxScore = Math.max(...allScored.map(d => d.score), 1)}
     <div class="results-panel">
       <div class="results-header">
         <h3>Stand der Dinge 🗳️ {#if totalUsers > 0}<span class="voter-count">{uniqueVoters} von {totalUsers} abgestimmt</span>{:else if uniqueVoters > 0}<span class="voter-count">{uniqueVoters} dabei</span>{/if}</h3>
@@ -149,6 +151,9 @@
           </span>
         </div>
       {/each}
+      {#if !showAllResults}
+        <button class="expand-btn" onclick={() => (showAllResults = true)}>Mehr anzeigen ↓</button>
+      {/if}
     </div>
   {/if}
 
@@ -241,9 +246,9 @@
   .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
   .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
   .winner-cta:hover { opacity: .85; }
-  .planning-hint { margin-top: 1rem; font-size: 13px; color: var(--ink3); }
-  .hint-link { background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 13px; color: var(--accent); font-weight: 500; padding: 0; }
-  .hint-link:hover { text-decoration: underline; }
+  .planning-hint { margin-top: 1rem; }
+  .hint-link { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 1px solid var(--border); border-radius: 100px; cursor: pointer; font-family: var(--sans); font-size: 15px; color: var(--accent); font-weight: 500; padding: .65rem 1.25rem; transition: background .15s, border-color .15s; }
+  .hint-link:hover { background: #fff; border-color: var(--accent); }
   .deadline-badge { display: inline-block; margin-top: .75rem; font-size: 13px; font-weight: 500; background: #fff8f0; color: #b86000; border: 1px solid #f0c060; border-radius: 100px; padding: 4px 14px; }
   .deadline-badge.urgent { background: #fdecea; color: var(--red); border-color: #f5c0c0; }
   .deadline-badge.expired { background: #f5f5f5; color: var(--ink3); border-color: var(--border); }
@@ -278,6 +283,8 @@
   .vbtn.yes.active, .vbtn.yes:not(:disabled):hover { background: #e8f5e9; color: var(--green); border-color: var(--green); }
   .vbtn.maybe.active, .vbtn.maybe:not(:disabled):hover { background: #fffde7; color: var(--maybe); border-color: #c8a400; }
   .vbtn.no.active, .vbtn.no:not(:disabled):hover { background: #fdecea; color: var(--red); border-color: var(--red); }
+  .expand-btn { width: 100%; margin-top: .75rem; padding: .4rem; background: none; border: none; cursor: pointer; font-size: 12px; color: var(--ink3); font-family: var(--sans); transition: color .15s; }
+  .expand-btn:hover { color: var(--ink); }
   .results-panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
   .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
   .results-header h3 { font-family: var(--serif); font-size: 1.15rem; display: flex; align-items: center; gap: .6rem; }
