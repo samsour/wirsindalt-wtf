@@ -112,6 +112,8 @@
     toastTimer = setTimeout(() => (toast = ''), 2600);
   }
 
+  let loading = $state(true);
+
   onMount(async () => {
     const stored = localStorage.getItem('abi2016_user');
     if (stored) {
@@ -122,7 +124,6 @@
           await loadAll();
           startPresence();
         } catch {
-          // token invalid — wipe session and show gate
           logout();
         }
       } else {
@@ -132,6 +133,7 @@
     await loadVotes();
     await loadRsvpStats();
     startVotePoll();
+    loading = false;
   });
 
   async function login() {
@@ -336,7 +338,11 @@
 
 <Toast message={toast} />
 
-{#if !user}
+{#if loading}
+  <div class="loading-screen">
+    <div class="spinner"></div>
+  </div>
+{:else if !user}
   <GateCard
     bind:authName
     bind:authMotto
@@ -408,3 +414,9 @@
     />
   {/if}
 {/if}
+
+<style>
+  .loading-screen { display: flex; align-items: center; justify-content: center; min-height: 100dvh; }
+  .spinner { width: 32px; height: 32px; border: 3px solid #eee; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
