@@ -26,6 +26,7 @@
   let { data } = $props();
   let maxPhase = $derived(data.maxPhase); // set MAX_PHASE in .env: 0=Terminwahl only, 1=+Anmeldung, 2=all
   let voteDeadline = $derived(data.voteDeadline); // set VOTE_DEADLINE in .env: YYYY-MM-DD
+  let deadlineExpired = $derived(!voteDeadline || Date.now() > new Date(voteDeadline).getTime() + 86_400_000);
   let phase = $state(0);
   $effect(() => { phase = maxPhase; }); // start at the current active phase
 
@@ -85,7 +86,7 @@
   let ideas: any[] = $state([]);
   let myIdeaVotes: number[] = $state([]);
   let locations: any[] = $state([]);
-  let planTab = $state<'contrib' | 'ideas' | 'locations'>('contrib');
+  let planTab = $state<'contrib' | 'ideas' | 'locations'>('locations');
   let newContribItem = $state('');
   let newContribCat = $state('Essen');
   let newIdeaText = $state('');
@@ -278,6 +279,16 @@
     locations = await (await fetch('/api/locations')).json();
   }
 
+  async function strikeLocation(id: number, struck: boolean) {
+    if (!user) return;
+    await fetch('/api/locations', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, id, struck }),
+    });
+    locations = locations.map(l => l.id === id ? { ...l, struck: struck ? 1 : 0 } : l);
+  }
+
   async function deleteLocation(id: number) {
     if (!user) return;
     await fetch('/api/locations', {
@@ -346,21 +357,9 @@
       {totalUsers}
       {voteDeadline}
       oncastvote={castVote}
+      onnext={() => (phase = 1)}
     />
   {:else if phase === 1}
-    <RsvpPhase
-      {rsvpStats}
-      {voteLeader}
-      bind:rsvpDone
-      bind:rsvpChoice
-      bind:rsvpGuests
-      bind:rsvpDietary
-      bind:rsvpNote
-      {rsvpLoading}
-      onsubmit={submitRsvp}
-      onnext={maxPhase >= 2 ? () => (phase = 2) : undefined}
-    />
-  {:else if phase === 2}
     <PlanningPhase
       {ideas}
       {myIdeaVotes}
@@ -380,6 +379,21 @@
       ontoggleideavote={toggleIdeaVote}
       onaddlocation={addLocation}
       ondeletelocation={deleteLocation}
+      onstrikelocation={(id) => strikeLocation(id, true)}
+      onunstrikelocation={(id) => strikeLocation(id, false)}
+    />
+  {:else if phase === 2}
+    <RsvpPhase
+      {rsvpStats}
+      {voteLeader}
+      {voteDeadline}
+      bind:rsvpDone
+      bind:rsvpChoice
+      bind:rsvpGuests
+      bind:rsvpDietary
+      bind:rsvpNote
+      {rsvpLoading}
+      onsubmit={submitRsvp}
     />
   {/if}
 {/if}

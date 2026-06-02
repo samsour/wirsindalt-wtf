@@ -1,11 +1,11 @@
 <script lang="ts">
   let {
     ideas, myIdeaVotes, contributions, locations, userId,
-    planTab = $bindable<'contrib' | 'ideas' | 'locations'>('contrib'),
+    planTab = $bindable<'contrib' | 'ideas' | 'locations'>('locations'),
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
     newIdeaText = $bindable(''),
     newLocDesc = $bindable(''), newLocAddr = $bindable(''),
-    onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation,
+    onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation, onstrikelocation, onunstrikelocation,
   }: {
     ideas: any[];
     myIdeaVotes: number[];
@@ -25,6 +25,8 @@
     ontoggleideavote: (id: number) => void;
     onaddlocation: () => void;
     ondeletelocation: (id: number) => void;
+    onstrikelocation: (id: number) => void;
+    onunstrikelocation: (id: number) => void;
   } = $props();
 
   function initials(name: string) {
@@ -39,14 +41,14 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">Fast fertig. Versprochen.</div>
+  <div class="eyebrow">Meeehr Plaaanung.</div>
   <h1>Wer bringt <em>was mit?</em></h1>
   <p class="hero-sub">Einfach eintragen was du mitbringen kannst — und abstimmen was ihr euch wünscht.</p>
 </div>
 
 <div class="section">
   <div class="plan-tabs">
-    {#each [['contrib','🙋 Mitbringen'], ['ideas','💡 Ideen'], ['locations','📍 Ort']] as [tab, label]}
+    {#each [['locations','📍 Ort'], ['contrib','🙋 Mitbringen'], ['ideas','💡 Ideen']] as [tab, label]}
       <button class="plan-tab" class:active={planTab === tab} onclick={() => (planTab = tab)}>{label}</button>
     {/each}
   </div>
@@ -57,12 +59,11 @@
         <div class="contrib-card">
           <div class="avatar">{initials(c.user_name)}</div>
           <div class="contrib-info">
-            <div class="contrib-name">{c.user_name}</div>
-            <div class="contrib-item">{c.item}</div>
+            <div class="contrib-name">{c.item}</div>
+            <div class="contrib-item">{c.user_name}</div>
           </div>
-          <span class="badge {catClass[c.category] ?? 'badge-other'}">{c.category}</span>
           {#if userId === c.user_id}
-            <button class="del-btn" onclick={() => ondeletecontrib(c.id)} title="Löschen">✕</button>
+            <button class="icon-btn strike-btn" onclick={() => ondeletecontrib(c.id)} title="Löschen">✕</button>
           {/if}
         </div>
       {/each}
@@ -86,14 +87,16 @@
     <div class="ideas-list">
       {#each ideas as idea}
         <div class="idea-card">
-          <div class="idea-votes">
-            <button class="idea-vote-btn" class:voted={myIdeaVotes.includes(idea.id)} onclick={() => ontoggleideavote(idea.id)}>▲</button>
-            <span class="idea-count">{idea.votes}</span>
-          </div>
           <span class="idea-text">{idea.text}</span>
-          {#if userId === idea.user_id}
-            <button class="del-btn" onclick={() => ondeleteidea(idea.id)} title="Löschen">✕</button>
-          {/if}
+          <div class="idea-actions">
+            <button class="like-pill" class:liked={myIdeaVotes.includes(idea.id)} onclick={() => ontoggleideavote(idea.id)}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 14s-6-3.9-6-8a4 4 0 0 1 6-3.46A4 4 0 0 1 14 6c0 4.1-6 8-6 8z"/></svg>
+              {idea.votes}
+            </button>
+            {#if userId === idea.user_id}
+              <button class="icon-btn strike-btn" onclick={() => ondeleteidea(idea.id)} title="Löschen">✕</button>
+            {/if}
+          </div>
         </div>
       {/each}
       {#if ideas.length === 0}<p class="empty">Noch keine Beiträge.<br />Boa ist das langweilig hier.</p>{/if}
@@ -101,7 +104,7 @@
     <div class="add-box">
       <h4>💡 Neue Idee</h4>
       <div style="display:flex;gap:.5rem">
-        <input bind:value={newIdeaText} placeholder="Bierpong Turnier, IFFY live concert, ..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--paper)" onkeydown={e => e.key === 'Enter' && onaddidea()} />
+        <input bind:value={newIdeaText} placeholder="Bierpong Turnier, Karaoke, ..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--paper)" onkeydown={e => e.key === 'Enter' && onaddidea()} />
         <button class="submit-icon-btn" onclick={onaddidea} title="Einreichen">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -111,14 +114,19 @@
   {:else}
     <div class="contrib-list">
       {#each locations as loc}
-        <div class="contrib-card">
-          <div class="avatar" style="background:#e8f0f8;color:#2a5c8a">📍</div>
+        {@const struck = !!loc.struck}
+        <div class="contrib-card" class:loc-struck={struck}>
+          <div class="avatar" style="background:#e8f0f8;color:#2a5c8a">{struck ? '🚫' : '📍'}</div>
           <div class="contrib-info">
-            <div class="contrib-name">{loc.description}</div>
-            <div class="contrib-item">{loc.address || 'Keine Adresse angegeben'} · von {loc.user_name}</div>
+            <div class="contrib-name" class:strike={struck}>{loc.description}</div>
+            <div class="contrib-item" class:strike={struck}>{[loc.address, `von ${loc.user_name}`].filter(Boolean).join(' · ')}</div>
+            {#if struck}<div class="struck-label">Nicht verfügbar</div>{/if}
           </div>
-          {#if userId === loc.user_id}
-            <button class="del-btn" onclick={() => ondeletelocation(loc.id)} title="Löschen">✕</button>
+          {#if struck}
+            <button class="icon-btn restore" onclick={() => onunstrikelocation(loc.id)} title="Wiederherstellen">↩</button>
+            <button class="icon-btn del-confirm" onclick={() => ondeletelocation(loc.id)} title="Endgültig löschen">🗑</button>
+          {:else}
+            <button class="icon-btn strike-btn" onclick={() => onstrikelocation(loc.id)} title="Als nicht verfügbar markieren">✕</button>
           {/if}
         </div>
       {/each}
@@ -126,7 +134,7 @@
     </div>
     <div class="add-box">
       <h4>📍 Ort vorschlagen</h4>
-      <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Garten bei Familie Müller, Grillplatz Stadtpark…" onkeydown={e => e.key === 'Enter' && newLocAddr ? onaddlocation() : null} /></div>
+      <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Gänsi, Waldi, irgendne Halle, ..." onkeydown={e => e.key === 'Enter' && newLocAddr ? onaddlocation() : null} /></div>
       <div class="form-row"><label>Adresse / Hinweis</label>
         <div style="display:flex;gap:.5rem">
           <input bind:value={newLocAddr} placeholder="Straße, PLZ oder Link" onkeydown={e => e.key === 'Enter' && onaddlocation()} style="flex:1" />
@@ -158,14 +166,21 @@
   .badge-other { background: #f5f5f5; color: #555; }
   .submit-icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; border: none; background: var(--ink); color: #fff; cursor: pointer; flex-shrink: 0; transition: background .15s; }
   .submit-icon-btn:hover { background: #333; }
-  .del-btn { border: none; background: none; cursor: pointer; color: var(--ink3); font-size: 14px; padding: 4px; }
-  .del-btn:hover { color: var(--red); }
+  .icon-btn { border: none; background: none; cursor: pointer; font-size: 14px; padding: 4px; flex-shrink: 0; transition: color .12s; }
+  .strike-btn { color: var(--ink3); }
+  .strike-btn:hover { color: var(--red); }
+  .restore { color: var(--ink3); }
+  .restore:hover { color: var(--green); }
+  .del-confirm { color: var(--red); opacity: .7; }
+  .del-confirm:hover { opacity: 1; }
+  .loc-struck { opacity: .6; background: #fafafa; }
+  .strike { text-decoration: line-through; color: var(--ink3); }
+  .struck-label { font-size: 11px; color: var(--red); margin-top: 2px; font-weight: 500; }
   .ideas-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
   .idea-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; display: flex; align-items: center; gap: .75rem; }
-  .idea-votes { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 30px; }
-  .idea-vote-btn { border: none; background: none; cursor: pointer; font-size: 14px; color: var(--ink3); transition: color .1s; line-height: 1; padding: 2px; }
-  .idea-vote-btn:hover, .idea-vote-btn.voted { color: var(--accent); }
-  .idea-count { font-family: var(--serif); font-size: 1rem; color: var(--ink); }
   .idea-text { flex: 1; font-size: 14px; }
-  .idea-tag { font-size: 11px; padding: 2px 8px; border-radius: 100px; background: #f0f0f0; color: var(--ink2); flex-shrink: 0; }
+  .idea-actions { display: flex; align-items: center; gap: .25rem; flex-shrink: 0; }
+  .like-pill { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 100px; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 13px; font-family: var(--sans); color: var(--ink3); transition: all .15s; }
+  .like-pill:hover { border-color: #e8a0a0; color: #c0392b; }
+  .like-pill.liked { background: #fdecea; border-color: #e88; color: #c0392b; }
 </style>

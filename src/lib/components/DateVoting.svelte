@@ -14,7 +14,7 @@
     localStorage.setItem('abi2016_sep_hint_seen', '1');
   }
 
-  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, totalUsers = 0, voteDeadline = null, oncastvote }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, totalUsers = 0, voteDeadline = null, oncastvote, onnext }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
@@ -24,7 +24,10 @@
     totalUsers?: number;
     voteDeadline?: string | null;
     oncastvote: (dateKey: string, vote: string) => void;
+    onnext?: () => void;
   } = $props();
+
+  let winnerDate = $derived(voteLeader ? DATES.find(d => d.key === voteLeader) : null);
 
   let now = $state(Date.now());
   onMount(() => {
@@ -78,7 +81,15 @@
   <div class="eyebrow">10 Jahre. uff.</div>
   <h1>Wann passt's dir, <em>{userName}?</em></h1>
   <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
-  {#if countdown}
+  {#if countdown?.expired && winnerDate}
+    <div class="winner-card">
+      <div class="winner-eyebrow">🎉 Der Termin steht fest</div>
+      <div class="winner-date">{winnerDate.weekend}</div>
+      {#if onnext}
+        <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
+      {/if}
+    </div>
+  {:else if countdown}
     {#if countdown.expired}
       <div class="deadline-badge expired">Abstimmung beendet</div>
     {:else if countdown.days === 0}
@@ -222,6 +233,11 @@
   .date-week { margin-bottom: 1.5rem; }
   .week-label { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 0; margin-bottom: .75rem; cursor: pointer; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; font-family: var(--sans); }
   .week-label:hover { color: var(--ink); }
+  .winner-card { margin-top: 1.25rem; background: linear-gradient(135deg, #f0faf2, #e8f5e9); border: 1.5px solid var(--green); border-radius: 16px; padding: 1.25rem 1.5rem; text-align: center; }
+  .winner-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: .4rem; }
+  .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
+  .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
+  .winner-cta:hover { opacity: .85; }
   .deadline-badge { display: inline-block; margin-top: .75rem; font-size: 13px; font-weight: 500; background: #fff8f0; color: #b86000; border: 1px solid #f0c060; border-radius: 100px; padding: 4px 14px; }
   .deadline-badge.urgent { background: #fdecea; color: var(--red); border-color: #f5c0c0; }
   .deadline-badge.expired { background: #f5f5f5; color: var(--ink3); border-color: var(--border); }

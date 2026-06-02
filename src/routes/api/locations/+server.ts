@@ -4,9 +4,16 @@ import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(
-    `SELECT id, user_id, user_name, description, address, created_at FROM locations ORDER BY created_at ASC`
+    `SELECT id, user_id, user_name, description, address, struck, created_at FROM locations ORDER BY created_at ASC`
   );
   return json(rows.rows);
+}
+
+export async function PATCH({ request }) {
+  const { token, id, struck } = await request.json();
+  await resolveToken(token);
+  await db.execute({ sql: `UPDATE locations SET struck = ? WHERE id = ?`, args: [struck ? 1 : 0, id] });
+  return json({ ok: true });
 }
 
 export async function POST({ request }) {

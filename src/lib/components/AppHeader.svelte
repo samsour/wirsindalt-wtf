@@ -9,7 +9,7 @@
     onphase: (p: number) => void;
   } = $props();
 
-  const steps = ['Wann klappt\'s?', 'Wer ist dabei?', 'Was, wie wo?'];
+  const steps = ['Wann klappt\'s?', 'Was, wie wo?', 'Wer ist dabei?'];
 
   function initials(name: string) {
     const parts = name.trim().split(' ');
@@ -71,12 +71,12 @@
 
   <div class="stepper">
     {#each steps as label, i}
-      <div class="step" class:active={i === phase} class:done={i < phase} class:upcoming={i > maxPhase}
-        role={i >= 1 && i <= maxPhase ? 'button' : undefined}
-        tabindex={i >= 1 && i <= maxPhase ? 0 : undefined}
-        onclick={i >= 1 && i <= maxPhase ? () => onphase(i) : undefined}
-        onkeydown={i >= 1 && i <= maxPhase ? (e) => e.key === 'Enter' && onphase(i) : undefined}
-        style={i >= 1 && i <= maxPhase ? 'cursor:pointer' : ''}>
+      <div class="step" class:active={i === phase} class:done={i < phase}
+        role="button"
+        tabindex={i !== phase ? 0 : -1}
+        onclick={i !== phase ? () => onphase(i) : undefined}
+        onkeydown={i !== phase ? (e) => e.key === 'Enter' && onphase(i) : undefined}
+        style={i !== phase ? 'cursor:pointer' : ''}>
         <div class="step-circle">
           {#if i < maxPhase}✓{:else}{i + 1}{/if}
         </div>
@@ -149,11 +149,9 @@
   .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: #fff; color: var(--ink3); transition: all .2s; }
   .step.active .step-circle { border-color: var(--accent); color: var(--accent); background: #fff8f5; }
   .step.done .step-circle { border-color: var(--green); background: var(--green); color: #fff; }
-  .step.upcoming .step-circle { opacity: .4; }
   .step-label { font-size: 10px; font-weight: 500; color: var(--ink3); white-space: nowrap; letter-spacing: .2px; }
   .step.active .step-label { color: var(--accent); font-weight: 600; }
   .step.done .step-label { color: var(--green); }
-  .step.upcoming .step-label { opacity: .4; }
   .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 8px 15px; transition: background .3s; }
   .step-line.filled { background: var(--green); }
 </style>

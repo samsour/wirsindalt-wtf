@@ -88,6 +88,7 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     );
   `);
-  // migration: add client_id to existing users tables
+  // migrations
   try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }
+  try { await db.execute(`ALTER TABLE locations ADD COLUMN struck INTEGER DEFAULT 0`); } catch { /* already exists */ }
 }
