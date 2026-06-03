@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   let { userName, phase, maxPhase, onlineCount = 0, onlineNames = [], onlogout, onphase }: {
     userName: string;
     phase: number;
@@ -19,6 +21,18 @@
 
   let showOnline = $state(false);
   let menuOpen = $state(false);
+  let theme = $state<'auto' | 'light' | 'dark'>('auto');
+
+  onMount(() => {
+    theme = (localStorage.getItem('abi2016_theme') as 'auto' | 'light' | 'dark') ?? 'auto';
+  });
+
+  function setTheme(t: 'auto' | 'light' | 'dark') {
+    theme = t;
+    localStorage.setItem('abi2016_theme', t);
+    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t);
+  }
 </script>
 
 {#if menuOpen}
@@ -58,6 +72,12 @@
             <span class="menu-username">{userName}</span>
           </div>
           <div class="menu-divider"></div>
+          <div class="menu-theme">
+            <button class="theme-btn" class:active={theme === 'auto'}  onclick={() => setTheme('auto')}>Auto</button>
+            <button class="theme-btn" class:active={theme === 'light'} onclick={() => setTheme('light')}>☀️</button>
+            <button class="theme-btn" class:active={theme === 'dark'}  onclick={() => setTheme('dark')}>🌙</button>
+          </div>
+          <div class="menu-divider"></div>
           <button class="menu-logout" onclick={() => { menuOpen = false; onlogout(); }}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/><path d="M11 12l4-4-4-4"/><line x1="15" y1="8" x2="7" y2="8"/>
@@ -90,7 +110,7 @@
 </header>
 
 <style>
-  .app-header { background: #fff; border-bottom: 1px solid var(--border); }
+  .app-header { background: var(--surface); border-bottom: 1px solid var(--border); }
 
   .header-top { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
 
@@ -104,7 +124,7 @@
 
   .online-popover {
     position: absolute; top: calc(100% + 8px); left: 0;
-    background: #fff; border: 1px solid var(--border); border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
     padding: .6rem; display: flex; flex-wrap: wrap; gap: .4rem;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 200;
     min-width: 120px;
@@ -121,7 +141,7 @@
   .menu-wrap { position: relative; }
 
   .hamburger { display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; padding: 6px; background: none; border: none; border-radius: 8px; cursor: pointer; }
-  .hamburger:hover { background: #f5f5f5; }
+  .hamburger:hover { background: var(--muted); }
   .bar { display: block; height: 1.5px; background: var(--ink); border-radius: 2px; transition: all .2s; }
   .bar.open:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
   .bar.open:nth-child(2) { opacity: 0; }
@@ -129,7 +149,7 @@
 
   .menu-popover {
     position: absolute; top: calc(100% + 8px); right: 0;
-    background: #fff; border: 1px solid var(--border); border-radius: 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 200;
     min-width: 180px; overflow: hidden;
   }
@@ -140,13 +160,17 @@
 
   .menu-divider { height: 1px; background: var(--border); }
 
+  .menu-theme { display: flex; gap: .4rem; padding: .6rem 1rem; }
+  .theme-btn { flex: 1; padding: .35rem .25rem; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; font-size: 12px; font-family: var(--sans); color: var(--ink3); transition: all .12s; }
+  .theme-btn:hover { background: var(--muted); color: var(--ink); }
+  .theme-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .menu-logout { display: flex; align-items: center; gap: 8px; width: 100%; padding: .75rem 1rem; background: none; border: none; cursor: pointer; font-size: 14px; font-family: var(--sans); color: var(--ink3); transition: all .12s; }
-  .menu-logout:hover { background: #fdecea; color: var(--red); }
+  .menu-logout:hover { background: var(--muted); color: var(--red); }
 
   .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; overflow-x: auto; scrollbar-width: none; }
   .stepper::-webkit-scrollbar { display: none; }
   .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: #fff; color: var(--ink3); transition: all .2s; }
+  .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: var(--surface); color: var(--ink3); transition: all .2s; }
   .step.active .step-circle { border-color: var(--accent); color: var(--accent); background: #fff8f5; }
   .step.done .step-circle { border-color: var(--green); background: var(--green); color: #fff; }
   .step-label { font-size: 10px; font-weight: 500; color: var(--ink3); white-space: nowrap; letter-spacing: .2px; }

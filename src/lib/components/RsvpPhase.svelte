@@ -113,14 +113,14 @@
 
 <style>
   .rsvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-  .rsvp-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all .15s; text-align: center; font-family: var(--sans); }
+  .rsvp-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all .15s; text-align: center; font-family: var(--sans); }
   .rsvp-card:hover:not(:disabled) { transform: translateY(-2px); }
   .rsvp-card:disabled { opacity: .35; cursor: default; filter: grayscale(0.4); }
   .rsvp-card.attending { border-color: var(--green); background: #f4faf5; }
   .rsvp-card.declining { border-color: var(--red); background: #fdf4f4; }
   .rsvp-icon { font-size: 2.5rem; margin-bottom: .75rem; }
-  .chosen-date { display: flex; align-items: center; gap: 1rem; background: #fff; border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
-  .chosen-date.pending { border-color: var(--border); border-style: dashed; background: #fafafa; }
+  .chosen-date { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
+  .chosen-date.pending { border-color: var(--border); border-style: dashed; background: var(--muted); }
   .chosen-icon { font-size: 1.75rem; flex-shrink: 0; }
   .chosen-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 2px; }
   .chosen-date.pending .chosen-label { color: var(--ink3); }
@@ -129,14 +129,14 @@
   .pending-label { text-align: center; font-size: 13px; color: var(--ink3); margin-bottom: 1rem; }
   .rsvp-card h3 { font-family: var(--serif); font-size: 1.25rem; margin-bottom: .25rem; }
   .rsvp-card p { font-size: 13px; color: var(--ink2); }
-  .done-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem; }
+  .done-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem; }
   .done-icon { font-size: 3rem; margin-bottom: 1rem; }
   .done-card h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: .4rem; }
   .done-card p { font-size: 14px; color: var(--ink2); }
-  .rsvp-form { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .rsvp-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
   .counter-row { display: flex; align-items: center; gap: 10px; }
-  .ctr-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; font-family: monospace; }
-  .ctr-btn:hover { background: #f0f0f0; }
+  .ctr-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; font-family: monospace; }
+  .ctr-btn:hover { background: var(--muted); }
   .ctr-val { font-size: 20px; font-weight: 500; min-width: 2rem; text-align: center; }
   .ctr-label { font-size: 13px; color: var(--ink2); }
   .plan-nudge { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 14px; color: var(--ink3); text-align: center; }

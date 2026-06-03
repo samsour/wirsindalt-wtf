@@ -248,20 +248,20 @@
   .winner-cta:hover { opacity: .85; }
   .planning-hint { margin-top: 1rem; }
   .hint-link { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 1px solid var(--border); border-radius: 100px; cursor: pointer; font-family: var(--sans); font-size: 15px; color: var(--accent); font-weight: 500; padding: .65rem 1.25rem; transition: background .15s, border-color .15s; }
-  .hint-link:hover { background: #fff; border-color: var(--accent); }
+  .hint-link:hover { background: var(--surface); border-color: var(--accent); }
   .deadline-badge { display: inline-block; margin-top: .75rem; font-size: 13px; font-weight: 500; background: #fff8f0; color: #b86000; border: 1px solid #f0c060; border-radius: 100px; padding: 4px 14px; }
   .deadline-badge.urgent { background: #fdecea; color: var(--red); border-color: #f5c0c0; }
-  .deadline-badge.expired { background: #f5f5f5; color: var(--ink3); border-color: var(--border); }
+  .deadline-badge.expired { background: var(--muted); color: var(--ink3); border-color: var(--border); }
   .week-arrow { color: var(--ink3); flex-shrink: 0; transform: rotate(-90deg); transition: transform .2s; }
   .week-arrow.open { transform: rotate(0deg); }
   .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-  .date-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; position: relative; overflow: hidden; transition: border-color .15s; }
+  .date-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; position: relative; overflow: hidden; transition: border-color .15s; }
   .date-card.voted-yes { border-color: var(--green); background: #f4faf5; }
   .date-card.voted-maybe { border-color: var(--maybe); background: #fffdf0; }
   .date-card.voted-no { border-color: #ddd; opacity: .55; }
   .date-month-group { margin-bottom: 2rem; }
   .month-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
-  .question-card { background: #fff; border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .question-card { background: var(--surface); border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
   .question-card.voted-yes { border-color: var(--green); border-style: solid; background: #f4faf5; }
   .question-card.voted-maybe { border-color: var(--maybe); border-style: solid; background: #fffdf0; }
   .question-card.voted-no { border-color: #ddd; border-style: solid; opacity: .6; }
@@ -270,7 +270,7 @@
   .top-badge { position: absolute; top: 6px; right: 6px; font-size: 12px; }
   .date-day { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); line-height: 1; margin-bottom: 2px; }
   .date-month { font-size: 11px; color: var(--ink3); margin-top: 2px; }
-  .vote-bar { height: 4px; background: #eee; border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; display: flex; }
+  .vote-bar { height: 4px; background: var(--muted); border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; display: flex; }
   .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
   .vote-bar-maybe { height: 100%; background: #c8a400; transition: width .4s; }
   .vote-bar-no { height: 100%; background: var(--red); transition: width .4s; opacity: .6; }
@@ -285,10 +285,10 @@
   .vbtn.no.active, .vbtn.no:not(:disabled):hover { background: #fdecea; color: var(--red); border-color: var(--red); }
   .expand-btn { width: 100%; margin-top: .75rem; padding: .4rem; background: none; border: none; cursor: pointer; font-size: 12px; color: var(--ink3); font-family: var(--sans); transition: color .15s; }
   .expand-btn:hover { color: var(--ink); }
-  .results-panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+  .results-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
   .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
   .results-header h3 { font-family: var(--serif); font-size: 1.15rem; display: flex; align-items: center; gap: .6rem; }
-  .voter-count { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--ink3); background: #f0f0f0; padding: 2px 8px; border-radius: 100px; }
+  .voter-count { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--ink3); background: var(--muted); padding: 2px 8px; border-radius: 100px; }
   .results-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
   .leg-yes { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--green); }
   .leg-maybe { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #c8a400; }
@@ -298,7 +298,7 @@
   .result-row.top-one .result-track { height: 12px; }
   .result-rank { font-size: 13px; width: 22px; flex-shrink: 0; text-align: center; line-height: 1; }
   .result-label { width: 90px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-  .result-track { flex: 1; height: 9px; background: #eee; border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
+  .result-track { flex: 1; height: 9px; background: var(--muted); border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
   .result-fill-yes { height: 100%; background: var(--green); transition: width .6s ease; }
   .result-fill-maybe { height: 100%; background: #c8a400; transition: width .6s ease; }
   .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 100px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
@@ -308,14 +308,14 @@
   .sep-hint { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0faf2; border: 1px solid var(--green); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: 14px; color: var(--green); font-weight: 500; }
   .sep-hint button { border: none; background: none; cursor: pointer; color: var(--green); font-size: 14px; opacity: .6; flex-shrink: 0; }
   .sep-hint button:hover { opacity: 1; }
-  .my-votes-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1.5rem; }
+  .my-votes-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1.5rem; }
   .my-votes-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--ink3); margin-bottom: .75rem; }
   .my-votes-row { display: flex; gap: .5rem; flex-wrap: wrap; }
   .my-vote-pill { display: flex; align-items: center; gap: .35rem; font-size: 13px; padding: .35rem .75rem; border-radius: 100px; font-weight: 500; }
   .my-vote-pill span { font-family: var(--serif); font-size: 1rem; }
   .my-vote-pill.yes { background: #e8f5e9; color: var(--green); }
   .my-vote-pill.maybe { background: #fffde7; color: var(--maybe); }
-  .my-vote-pill.no { background: #f5f5f5; color: var(--ink3); }
+  .my-vote-pill.no { background: var(--muted); color: var(--ink3); }
   .my-votes-empty { font-size: 13px; color: var(--ink3); }
   @media (max-width: 500px) {
     .date-row { grid-template-columns: 1fr; }

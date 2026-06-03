@@ -157,17 +157,17 @@
 
 <style>
   .plan-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .plan-tab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; cursor: pointer; background: #fff; color: var(--ink2); font-family: var(--sans); transition: all .15s; }
-  .plan-tab:hover { background: #f0f0f0; }
-  .plan-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .plan-tab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; cursor: pointer; background: var(--surface); color: var(--ink2); font-family: var(--sans); transition: all .15s; }
+  .plan-tab:hover { background: var(--muted); }
+  .plan-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .contrib-list { display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.5rem; }
-  .contrib-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem; }
+  .contrib-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem; }
   .avatar { width: 36px; height: 36px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
-  .cat-avatar { background: #f5f5f5; font-size: 18px; }
+  .cat-avatar { background: var(--muted); font-size: 18px; }
   .cat-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .25rem; }
-  .cat-pill { padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; font-family: var(--sans); color: var(--ink2); transition: all .15s; }
+  .cat-pill { padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; cursor: pointer; font-family: var(--sans); color: var(--ink2); transition: all .15s; }
   .cat-pill:hover { border-color: var(--ink2); }
-  .cat-pill.selected { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cat-pill.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .contrib-info { flex: 1; min-width: 0; }
   .contrib-name { font-weight: 500; font-size: 13px; }
   .contrib-item { font-size: 12px; color: var(--ink2); }
@@ -175,8 +175,8 @@
   .badge-food { background: #e8f5e9; color: #2e7d32; }
   .badge-drinks { background: #e3f2fd; color: #1565c0; }
   .badge-equipment { background: #f3e5f5; color: #6a1b9a; }
-  .badge-other { background: #f5f5f5; color: #555; }
-  .submit-icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; border: none; background: var(--ink); color: #fff; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+  .badge-other { background: var(--muted); color: #555; }
+  .submit-icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; border: none; background: var(--ink); color: var(--paper); cursor: pointer; flex-shrink: 0; transition: background .15s; }
   .submit-icon-btn:hover { background: #333; }
   .icon-btn { border: none; background: none; cursor: pointer; font-size: 14px; padding: 4px; flex-shrink: 0; transition: color .12s; }
   .strike-btn { color: var(--ink3); }
@@ -185,11 +185,11 @@
   .restore:hover { color: var(--green); }
   .del-confirm { color: var(--red); opacity: .7; }
   .del-confirm:hover { opacity: 1; }
-  .loc-struck { opacity: .6; background: #fafafa; }
+  .loc-struck { opacity: .6; background: var(--muted); }
   .strike { text-decoration: line-through; color: var(--ink3); }
   .struck-label { font-size: 11px; color: var(--red); margin-top: 2px; font-weight: 500; }
   .ideas-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
-  .idea-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; display: flex; align-items: center; gap: .75rem; }
+  .idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; display: flex; align-items: center; gap: .75rem; }
   .idea-body { flex: 1; min-width: 0; }
   .idea-text { font-size: 14px; display: block; }
   .idea-author { font-size: 11px; color: var(--ink3); margin-top: 2px; display: block; }
