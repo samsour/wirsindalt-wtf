@@ -100,7 +100,7 @@
                 {idea.votes}
               </button>
               {#if idea.likers?.length}
-                <div class="like-tooltip">{idea.likers.join(' · ')}</div>
+                <div class="like-tooltip">{idea.likers.join(', ')}</div>
               {/if}
             </div>
             {#if userId === idea.user_id}
