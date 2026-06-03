@@ -137,7 +137,7 @@
       {#each scored as d, i}
         {@const yesW = Math.round(d.yes / maxScore * 100)}
         {@const maybeW = Math.round(d.maybe * 0.5 / maxScore * 100)}
-        <div class="result-row" class:top-one={i === 0}>
+        <div class="result-row" class:top-one={i === 0} style="--i:{i}">
           <span class="result-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
           <span class="result-label">{d.label}</span>
           <div class="result-track">
@@ -271,9 +271,9 @@
   .date-day { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); line-height: 1; margin-bottom: 2px; }
   .date-month { font-size: 11px; color: var(--ink3); margin-top: 2px; }
   .vote-bar { height: 4px; background: var(--muted); border-radius: 2px; margin: .75rem 0 .4rem; overflow: hidden; display: flex; }
-  .vote-bar-yes { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; }
-  .vote-bar-maybe { height: 100%; background: #c8a400; transition: width .4s; }
-  .vote-bar-no { height: 100%; background: var(--red); transition: width .4s; opacity: .6; }
+  .vote-bar-yes   { height: 100%; background: var(--green); border-radius: 2px; transition: width .4s; transform-origin: left; animation: bar-grow 0.5s ease-out 0.1s backwards; }
+  .vote-bar-maybe { height: 100%; background: #c8a400;      transition: width .4s; transform-origin: left; animation: bar-grow 0.5s ease-out 0.18s backwards; }
+  .vote-bar-no    { height: 100%; background: var(--red);   transition: width .4s; opacity: .6; transform-origin: left; animation: bar-grow 0.5s ease-out 0.26s backwards; }
   .decline-alert { font-size: 10px; font-weight: 600; color: var(--red); background: #fdecea; border: 1px solid #f5c0c0; border-radius: 4px; padding: 2px 6px; margin-bottom: .5rem; display: inline-block; }
   .vote-count { font-size: 11px; color: var(--ink3); margin-bottom: .6rem; }
   .vote-actions { display: flex; gap: 5px; }
@@ -299,8 +299,9 @@
   .result-rank { font-size: 13px; width: 22px; flex-shrink: 0; text-align: center; line-height: 1; }
   .result-label { width: 90px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
   .result-track { flex: 1; height: 9px; background: var(--muted); border-radius: 100px; overflow: hidden; display: flex; transition: height .2s; }
-  .result-fill-yes { height: 100%; background: var(--green); transition: width .6s ease; }
-  .result-fill-maybe { height: 100%; background: #c8a400; transition: width .6s ease; }
+  @keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .result-fill-yes   { height: 100%; background: var(--green); transition: width .6s ease; transform-origin: left; animation: bar-grow 0.55s ease-out calc(var(--i,0) * 80ms + 200ms) backwards; }
+  .result-fill-maybe { height: 100%; background: #c8a400;      transition: width .6s ease; transform-origin: left; animation: bar-grow 0.55s ease-out calc(var(--i,0) * 80ms + 260ms) backwards; }
   .result-num { display: flex; gap: 5px; flex-shrink: 0; white-space: nowrap; font-size: 11px; width: 100px; justify-content: flex-end; font-variant-numeric: tabular-nums; }
   .num-yes { color: var(--green); font-weight: 600; }
   .num-maybe { color: var(--maybe); }

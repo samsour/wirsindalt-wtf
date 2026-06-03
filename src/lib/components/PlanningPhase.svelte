@@ -50,8 +50,8 @@
 
   {#if planTab === 'contrib'}
     <div class="contrib-list">
-      {#each contributions as c}
-        <div class="contrib-card">
+      {#each contributions as c, i}
+        <div class="contrib-card" style="--i:{i}">
           <div class="avatar cat-avatar">{catEmoji[c.category] ?? '✨'}</div>
           <div class="contrib-info">
             <div class="contrib-name">{c.item}</div>
@@ -87,8 +87,8 @@
 
   {:else if planTab === 'ideas'}
     <div class="ideas-list">
-      {#each ideas as idea}
-        <div class="idea-card">
+      {#each ideas as idea, i}
+        <div class="idea-card" style="--i:{i}">
           <div class="idea-body">
             <span class="idea-text">{idea.text}</span>
             <span class="idea-author">{idea.user_name}</span>
@@ -120,9 +120,9 @@
 
   {:else}
     <div class="contrib-list">
-      {#each locations as loc}
+      {#each locations as loc, i}
         {@const struck = !!loc.struck}
-        <div class="contrib-card" class:loc-struck={struck}>
+        <div class="contrib-card" class:loc-struck={struck} style="--i:{i}">
           <div class="avatar" style="background:#e8f0f8;color:#2a5c8a">{struck ? '🚫' : '📍'}</div>
           <div class="contrib-info">
             <div class="contrib-name" class:strike={struck}>{loc.description}</div>
@@ -160,8 +160,13 @@
   .plan-tab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; cursor: pointer; background: var(--surface); color: var(--ink2); font-family: var(--sans); transition: all .15s; }
   .plan-tab:hover { background: var(--muted); }
   .plan-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  @keyframes item-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .contrib-list { display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.5rem; }
-  .contrib-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem; }
+  .contrib-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem; animation: item-up 0.35s ease-out calc(var(--i,0) * 60ms + 50ms) backwards; }
+  .idea-card    { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; display: flex; align-items: center; gap: .75rem; animation: item-up 0.35s ease-out calc(var(--i,0) * 60ms + 50ms) backwards; }
   .avatar { width: 36px; height: 36px; border-radius: 50%; background: #f0e8e0; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
   .cat-avatar { background: var(--muted); font-size: 18px; }
   .cat-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .25rem; }
@@ -189,7 +194,6 @@
   .strike { text-decoration: line-through; color: var(--ink3); }
   .struck-label { font-size: 11px; color: var(--red); margin-top: 2px; font-weight: 500; }
   .ideas-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
-  .idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; display: flex; align-items: center; gap: .75rem; }
   .idea-body { flex: 1; min-width: 0; }
   .idea-text { font-size: 14px; display: block; }
   .idea-author { font-size: 11px; color: var(--ink3); margin-top: 2px; display: block; }

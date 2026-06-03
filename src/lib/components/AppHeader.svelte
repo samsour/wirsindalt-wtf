@@ -96,21 +96,34 @@
         tabindex={i !== phase ? 0 : -1}
         onclick={i !== phase ? () => onphase(i) : undefined}
         onkeydown={i !== phase ? (e) => e.key === 'Enter' && onphase(i) : undefined}
-        style={i !== phase ? 'cursor:pointer' : ''}>
+        style={`${i !== phase ? 'cursor:pointer;' : ''}--i:${i}`}>
         <div class="step-circle">
           {#if i < maxPhase}✓{:else}{i + 1}{/if}
         </div>
         <span class="step-label">{label}</span>
       </div>
       {#if i < steps.length - 1}
-        <div class="step-line" class:filled={i < maxPhase}></div>
+        <div class="step-line" class:filled={i < maxPhase} style="--i:{i}"></div>
       {/if}
     {/each}
   </div>
 </header>
 
 <style>
-  .app-header { background: var(--surface); border-bottom: 1px solid var(--border); }
+  @keyframes header-down {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.3); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes grow-right {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .app-header { background: var(--surface); border-bottom: 1px solid var(--border); animation: header-down 0.3s ease-out backwards; }
 
   .header-top { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
 
@@ -170,12 +183,12 @@
   .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; overflow-x: auto; scrollbar-width: none; }
   .stepper::-webkit-scrollbar { display: none; }
   .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: var(--surface); color: var(--ink3); transition: all .2s; }
+  .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: var(--surface); color: var(--ink3); transition: all .2s; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) calc(var(--i,0) * 90ms + 200ms) backwards; }
   .step.active .step-circle { border-color: var(--accent); color: var(--accent); background: #fff8f5; }
   .step.done .step-circle { border-color: var(--green); background: var(--green); color: #fff; }
   .step-label { font-size: 10px; font-weight: 500; color: var(--ink3); white-space: nowrap; letter-spacing: .2px; }
   .step.active .step-label { color: var(--accent); font-weight: 600; }
   .step.done .step-label { color: var(--green); }
-  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 8px 15px; transition: background .3s; }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 8px 15px; transition: background .3s; transform-origin: left; animation: grow-right 0.4s ease-out calc(var(--i,0) * 90ms + 280ms) backwards; }
   .step-line.filled { background: var(--green); }
 </style>
