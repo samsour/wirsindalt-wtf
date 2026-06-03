@@ -94,14 +94,19 @@
             <span class="idea-author">{idea.user_name}</span>
           </div>
           <div class="idea-actions">
-            <button class="like-pill" class:liked={myIdeaVotes.includes(idea.id)} onclick={() => ontoggleideavote(idea.id)}>
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 14s-6-3.9-6-8a4 4 0 0 1 6-3.46A4 4 0 0 1 14 6c0 4.1-6 8-6 8z"/></svg>
-              {idea.votes}
-            </button>
+            <div class="like-wrap">
+              <button class="like-pill" class:liked={myIdeaVotes.includes(idea.id)} onclick={() => ontoggleideavote(idea.id)}>
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 14s-6-3.9-6-8a4 4 0 0 1 6-3.46A4 4 0 0 1 14 6c0 4.1-6 8-6 8z"/></svg>
+                {idea.votes}
+              </button>
+              {#if idea.likers?.length}
+                <div class="like-tooltip">{idea.likers.join(' · ')}</div>
+              {/if}
+            </div>
             {#if userId === idea.user_id}
               <button class="icon-btn strike-btn" onclick={() => ondeleteidea(idea.id)} title="Löschen">✕</button>
             {/if}
-          </div>
+            </div>
         </div>
       {/each}
       {#if ideas.length === 0}<p class="empty">Noch keine Beiträge.<br />Boa ist das langweilig hier.</p>{/if}
@@ -198,6 +203,10 @@
   .idea-text { font-size: 14px; display: block; }
   .idea-author { font-size: 11px; color: var(--ink3); margin-top: 2px; display: block; }
   .idea-actions { display: flex; align-items: center; gap: .25rem; flex-shrink: 0; }
+  .like-wrap { position: relative; }
+  .like-tooltip { position: absolute; bottom: calc(100% + 6px); right: 0; background: var(--ink); color: var(--paper); font-size: 11px; padding: 5px 10px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 10; }
+  .like-tooltip::after { content: ''; position: absolute; top: 100%; right: 12px; border: 5px solid transparent; border-top-color: var(--ink); }
+  .like-wrap:hover .like-tooltip { opacity: 1; }
   .like-pill { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 100px; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 13px; font-family: var(--sans); color: var(--ink3); transition: all .15s; }
   .like-pill:hover { border-color: #e8a0a0; color: #c0392b; }
   .like-pill.liked { background: #fdecea; border-color: #e88; color: #c0392b; }

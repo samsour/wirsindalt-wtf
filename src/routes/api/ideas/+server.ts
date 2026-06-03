@@ -7,6 +7,22 @@ export async function GET({ url }) {
   const ideas = await db.execute(
     `SELECT id, user_id, user_name, text, tag, votes, created_at FROM ideas ORDER BY votes DESC, created_at DESC`
   );
+
+  const voterRows = await db.execute(
+    `SELECT iv.idea_id, u.name as user_name FROM idea_votes iv JOIN users u ON u.id = iv.user_id`
+  );
+  const likersByIdea: Record<number, string[]> = {};
+  for (const r of voterRows.rows) {
+    const id = r.idea_id as number;
+    (likersByIdea[id] ??= []).push(r.user_name as string);
+  }
+
+  const ideasWithLikers = ideas.rows.map(r => ({
+    id: r.id, user_id: r.user_id, user_name: r.user_name,
+    text: r.text, tag: r.tag, votes: r.votes, created_at: r.created_at,
+    likers: likersByIdea[r.id as number] ?? [],
+  }));
+
   let myVotes: number[] = [];
   if (token) {
     try {
@@ -18,7 +34,7 @@ export async function GET({ url }) {
       myVotes = vr.rows.map(r => r.idea_id as number);
     } catch { /* invalid token, skip myVotes */ }
   }
-  return json({ ideas: ideas.rows, myVotes });
+  return json({ ideas: ideasWithLikers, myVotes });
 }
 
 export async function POST({ request }) {
