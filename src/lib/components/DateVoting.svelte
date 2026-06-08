@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
-  import { DATES } from '$lib/dates';
+  import { DATES, DATE_ANNOUNCED } from '$lib/dates';
 
   let showSepHint = $state(false);
   let showAllResults = $state(false);
@@ -82,10 +82,20 @@
   <div class="eyebrow">10 Jahre. uff.</div>
   <h1>Wann passt's dir, <em>{userName}?</em></h1>
   <p class="hero-sub">Klick einfach bei jedem Wochenende an ob du kannst: ja, vielleicht, oder nope. Mehrfach erlaubt.</p>
-  {#if countdown?.expired && winnerDate}
+  {#if countdown?.expired && winnerDate && DATE_ANNOUNCED}
     <div class="winner-card">
       <div class="winner-eyebrow">🎉 Der Termin steht fest</div>
       <div class="winner-date">{winnerDate.label}</div>
+      {#if onnext}
+        <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
+      {/if}
+    </div>
+  {:else if countdown?.expired}
+    <div class="winner-card pending">
+      <div class="winner-eyebrow">🗳️ Abstimmung beendet</div>
+      <div class="winner-date">Termin wird noch bekannt gegeben</div>
+      <p class="winner-note">Wir checken jetzt ab, welcher Termin am besten passt.<br />
+        (zwecks Verfübarkeit einer Location undso)</p>
       {#if onnext}
         <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
       {/if}
@@ -246,6 +256,11 @@
   .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
   .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
   .winner-cta:hover { opacity: .85; }
+  .winner-card.pending { background: var(--muted); border-color: var(--border); border-style: dashed; }
+  .winner-card.pending .winner-eyebrow { color: var(--ink3); }
+  .winner-card.pending .winner-date { font-size: 1.3rem; margin-bottom: .5rem; }
+  .winner-note { font-size: 12px; line-height: 1.5; color: var(--ink2); margin-bottom: 1rem; }
+  .winner-card.pending .winner-cta { background: var(--ink); }
   .planning-hint { margin-top: 1rem; }
   .hint-link { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 1px solid var(--border); border-radius: 100px; cursor: pointer; font-family: var(--sans); font-size: 15px; color: var(--accent); font-weight: 500; padding: .65rem 1.25rem; transition: background .15s, border-color .15s; }
   .hint-link:hover { background: var(--surface); border-color: var(--accent); }

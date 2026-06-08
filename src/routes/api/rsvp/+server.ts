@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { resolveToken } from '$lib/server/auth';
+import { DATE_ANNOUNCED } from '$lib/dates';
 
 export async function GET() {
   const rows = await db.execute(`
@@ -16,6 +17,11 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
+  // RSVP stays closed until the planning team has locked in the final date.
+  if (!DATE_ANNOUNCED) {
+    return json({ ok: false, error: 'Der Termin steht noch nicht fest.' }, { status: 409 });
+  }
+
   const { token, attending, guests, dietary, note } = await request.json();
   const { userId } = await resolveToken(token);
 

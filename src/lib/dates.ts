@@ -29,6 +29,10 @@ export const DATES = [
   { key: '2026-09-26', label: 'Sa 26. Sep', day: 'Sa', month: 'September', weekend: '25.–26. Sep' },
 ];
 
+// Voting is done, but the final date still needs to be agreed in the planning team.
+// Flip to `true` once the date is locked — then the real date shows and RSVP opens.
+export const DATE_ANNOUNCED = false;
+
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';
 
 export type MottoCheck = 'correct' | 'comma_missing' | 'wrong';
