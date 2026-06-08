@@ -32,6 +32,21 @@ export const DATES = [
 // Voting is done, but the final date still needs to be agreed in the planning team.
 // Flip to `true` once the date is locked — then the real date shows and RSVP opens.
 export const DATE_ANNOUNCED = false;
+// export const DATE_ANNOUNCED = true;
+
+// The agreed date, once the planning team has decided.
+//  - Leave `null` to announce whatever date won the vote.
+//  - Set to a date key (e.g. '2026-08-15') to announce a specific date instead.
+// Only takes effect once DATE_ANNOUNCED is `true`.
+// export const FINAL_DATE: string | null = '2026-08-21';
+export const FINAL_DATE: string | null = null;
+
+// The date object to display once announced: the chosen FINAL_DATE if set,
+// otherwise the vote winner. Returns undefined if neither is available.
+export function resolveFinalDate(voteLeaderKey?: string | null) {
+  const key = FINAL_DATE ?? voteLeaderKey ?? null;
+  return key ? DATES.find((d) => d.key === key) : undefined;
+}
 
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';
 

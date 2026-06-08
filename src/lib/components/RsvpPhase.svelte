@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { DATES, DATE_ANNOUNCED } from '$lib/dates';
+  import { DATES, DATE_ANNOUNCED, resolveFinalDate } from '$lib/dates';
 
   let {
     rsvpStats,
@@ -39,6 +39,15 @@
   // Date is only final (show it + allow RSVP) once voting is done AND the team confirmed it.
   let dateConfirmed = $derived(deadlineExpired && DATE_ANNOUNCED);
 
+  // The current vote leader (shown while voting runs) and the announced final date.
+  let leaderDate = $derived(voteLeader ? DATES.find(d => d.key === voteLeader) : undefined);
+  let finalDate = $derived(resolveFinalDate(voteLeader));
+
+  // Which variant of the date card to render, by phase.
+  let showVotingLeader = $derived(!deadlineExpired && !!leaderDate);
+  let showPending = $derived(deadlineExpired && !DATE_ANNOUNCED);
+  let showFinal = $derived(dateConfirmed && !!finalDate);
+
   let countdown = $derived.by(() => {
     if (!voteDeadline || deadlineExpired) return null;
     const diff = new Date(voteDeadline).getTime() + 86_400_000 - now;
@@ -55,26 +64,23 @@
 </div>
 
 <div class="section">
-  {#if voteLeader}
-    {@const winDate = DATES.find(d => d.key === voteLeader)}
-    {#if winDate}
-      <div class="chosen-date" class:pending={!dateConfirmed}>
-        <span class="chosen-icon">{dateConfirmed ? '📅' : '🗳️'}</span>
-        <div>
-          <div class="chosen-label">{dateConfirmed ? 'Der Termin' : !deadlineExpired ? 'Aktuell vorne' : 'Der Termin'}</div>
-          <div class="chosen-value">{dateConfirmed || !deadlineExpired ? winDate.label : 'Wird noch bekannt gegeben'}</div>
-          {#if countdown}
-            <div class="chosen-countdown">
-            </div>
-            Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}. Änderungen vorbehalten, falls wir keine gescheite Location finden.
-          {:else if !dateConfirmed}
-            <div class="chosen-note">
-              Die Abstimmung ist durch — danke fürs Mitvoten! Den endgültigen Termin stimmen wir noch im Planungsteam ab und geben ihn hier bekannt. Sobald er steht, kannst du zusagen.
-            </div>
-          {/if}
-        </div>
+  {#if showVotingLeader || showPending || showFinal}
+    <div class="chosen-date" class:pending={!dateConfirmed}>
+      <span class="chosen-icon">{dateConfirmed ? '📅' : '🗳️'}</span>
+      <div>
+        <div class="chosen-label">{showVotingLeader ? 'Aktuell vorne' : 'Der Termin'}</div>
+        <div class="chosen-value">{showFinal ? finalDate?.label : showVotingLeader ? leaderDate?.label : 'Wird noch bekannt gegeben'}</div>
+        {#if countdown}
+          <div class="chosen-countdown">
+          </div>
+          Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}. Änderungen vorbehalten, falls wir keine gescheite Location finden.
+        {:else if showPending}
+          <div class="chosen-note">
+            Die Abstimmung ist durch — danke fürs Mitvoten! Den endgültigen Termin stimmen wir noch im Planungsteam ab und geben ihn hier bekannt. Sobald er steht, kannst du zusagen.
+          </div>
+        {/if}
       </div>
-    {/if}
+    </div>
   {/if}
 
   {#if dateConfirmed}

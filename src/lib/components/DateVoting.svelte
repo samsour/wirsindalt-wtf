@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
-  import { DATES, DATE_ANNOUNCED } from '$lib/dates';
+  import { DATES, DATE_ANNOUNCED, resolveFinalDate } from '$lib/dates';
 
   let showSepHint = $state(false);
   let showAllResults = $state(false);
@@ -28,7 +28,7 @@
     onnext?: () => void;
   } = $props();
 
-  let winnerDate = $derived(voteLeader ? DATES.find(d => d.key === voteLeader) : null);
+  let winnerDate = $derived(resolveFinalDate(voteLeader));
 
   let now = $state(Date.now());
   onMount(() => {
