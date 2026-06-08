@@ -32,7 +32,6 @@ export const DATES = [
 // Voting is done, but the final date still needs to be agreed in the planning team.
 // Flip to `true` once the date is locked — then the real date shows and RSVP opens.
 export const DATE_ANNOUNCED = false;
-// export const DATE_ANNOUNCED = true;
 
 // The agreed date, once the planning team has decided.
 //  - Leave `null` to announce whatever date won the vote.

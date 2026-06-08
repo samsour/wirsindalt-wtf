@@ -55,6 +55,17 @@
     const hours = Math.floor((diff % 86_400_000) / 3_600_000);
     return { days, hours };
   });
+
+  // Countdown to the party itself, once the final date is announced. Party kicks off at 18:00.
+  let eventCountdown = $derived.by(() => {
+    if (!showFinal || !finalDate) return null;
+    const diff = new Date(`${finalDate.key}T18:00:00`).getTime() - now;
+    if (diff <= 0) return { past: true, days: 0, hours: 0, minutes: 0 };
+    const days = Math.floor(diff / 86_400_000);
+    const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+    const minutes = Math.floor((diff % 3_600_000) / 60_000);
+    return { past: false, days, hours, minutes };
+  });
 </script>
 
 <div class="hero">
@@ -83,11 +94,36 @@
     </div>
   {/if}
 
+  {#if eventCountdown}
+    <div class="event-countdown" class:party-time={eventCountdown.past}>
+      {#if eventCountdown.past}
+        <div class="ec-emoji">🎉</div>
+        <div class="ec-title">Es ist so weit — heute wird gefeiert!</div>
+      {:else}
+        <div class="ec-title">Noch bis zur Feier 🎉</div>
+        <div class="ec-units">
+          <div class="ec-unit">
+            <span class="ec-num">{eventCountdown.days}</span>
+            <span class="ec-lbl">{eventCountdown.days === 1 ? 'Tag' : 'Tage'}</span>
+          </div>
+          <div class="ec-unit">
+            <span class="ec-num">{eventCountdown.hours}</span>
+            <span class="ec-lbl">Std.</span>
+          </div>
+          <div class="ec-unit">
+            <span class="ec-num">{eventCountdown.minutes}</span>
+            <span class="ec-lbl">Min.</span>
+          </div>
+        </div>
+      {/if}
+    </div>
+  {/if}
+
   {#if dateConfirmed}
     <div class="stat-row" style="margin-bottom:2rem">
       <div class="stat-pill"><span class="sn" style="color:var(--green)">{rsvpStats.attending}</span><span class="sl">dabei 🙌</span></div>
       <div class="stat-pill"><span class="sn" style="color:var(--red)">{rsvpStats.notAttending}</span><span class="sl">kann nicht</span></div>
-      <div class="stat-pill"><span class="sn">{rsvpStats.totalGuests}</span><span class="sl">Leute insgesamt</span></div>
+      <div class="stat-pill"><span class="sn">{rsvpStats.totalGuests}</span><span class="sl">Leute insgesamt (inkl. +1)</span></div>
     </div>
   {/if}
 
@@ -96,7 +132,17 @@
       <div class="done-icon">{rsvpChoice === 'yes' ? '🎉' : '😔'}</div>
       <h3>{rsvpChoice === 'yes' ? 'Nice, du bist dabei!' : 'Schade — nächstes Mal!'}</h3>
       <p>{rsvpChoice === 'yes' ? 'Wir freuen uns auf dich!' : ''}</p>
-      <button class="btn btn-outline" style="margin-top:1rem" onclick={() => (rsvpDone = false)}>Doch nochmal ändern</button>
+      <div class="done-actions">
+        {#if rsvpChoice === 'yes'}
+          <button
+            class="btn btn-outline"
+            class:plus-active={rsvpGuests > 1}
+            disabled={rsvpLoading}
+            onclick={() => { rsvpGuests = rsvpGuests > 1 ? 1 : 2; onsubmit(); }}
+          >{rsvpGuests > 1 ? '✓ +1 dabei' : '+1 mitbringen'}</button>
+        {/if}
+        <button class="btn btn-outline" onclick={() => (rsvpDone = false)}>Doch nochmal ändern</button>
+      </div>
     </div>
   {:else}
     {#if !dateConfirmed}
@@ -132,6 +178,16 @@
   .rsvp-card.attending { border-color: var(--green); background: #f4faf5; }
   .rsvp-card.declining { border-color: var(--red); background: #fdf4f4; }
   .rsvp-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  .event-countdown { background: linear-gradient(135deg, var(--accent), #d04b3c); color: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; text-align: center; box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .event-countdown.party-time { background: linear-gradient(135deg, var(--green), #2f6b39); box-shadow: 0 6px 20px color-mix(in srgb, var(--green) 35%, transparent); }
+  .ec-emoji { font-size: 2.5rem; line-height: 1; margin-bottom: .5rem; animation: ec-pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes ec-pop { from { transform: scale(0); } to { transform: scale(1); } }
+  .ec-title { font-family: var(--serif); font-size: 1.15rem; margin-bottom: 1rem; }
+  .event-countdown.party-time .ec-title { margin-bottom: 0; font-size: 1.4rem; }
+  .ec-units { display: flex; justify-content: center; gap: .6rem; }
+  .ec-unit { background: rgba(255,255,255,0.18); border-radius: 12px; padding: .65rem .25rem; min-width: 62px; backdrop-filter: blur(2px); }
+  .ec-num { display: block; font-family: var(--serif); font-size: 1.9rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ec-lbl { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; margin-top: 4px; }
   .chosen-date { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
   .chosen-date.pending { border-color: var(--border); border-style: dashed; background: var(--muted); }
   .chosen-icon { font-size: 1.75rem; flex-shrink: 0; }
@@ -145,6 +201,8 @@
   .rsvp-card p { font-size: 13px; color: var(--ink2); }
   .done-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem; }
   .done-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .done-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-top: 1rem; }
+  .done-actions .plus-active { border-color: var(--green); color: var(--green); background: color-mix(in srgb, var(--green) 10%, transparent); }
   .done-card h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: .4rem; }
   .done-card p { font-size: 14px; color: var(--ink2); }
   .rsvp-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }

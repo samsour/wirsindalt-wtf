@@ -251,7 +251,7 @@
   .date-week { margin-bottom: 1.5rem; }
   .week-label { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 0; margin-bottom: .75rem; cursor: pointer; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; font-family: var(--sans); }
   .week-label:hover { color: var(--ink); }
-  .winner-card { margin-top: 1.25rem; background: linear-gradient(135deg, #f0faf2, #e8f5e9); border: 1.5px solid var(--green); border-radius: 16px; padding: 1.25rem 1.5rem; text-align: center; }
+  .winner-card { margin-top: 1.25rem; background: color-mix(in srgb, var(--green) 12%, var(--surface)); border: 1.5px solid var(--green); border-radius: 16px; padding: 1.25rem 1.5rem; text-align: center; }
   .winner-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: .4rem; }
   .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
   .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
@@ -260,7 +260,7 @@
   .winner-card.pending .winner-eyebrow { color: var(--ink3); }
   .winner-card.pending .winner-date { font-size: 1.3rem; margin-bottom: .5rem; }
   .winner-note { font-size: 12px; line-height: 1.5; color: var(--ink2); margin-bottom: 1rem; }
-  .winner-card.pending .winner-cta { background: var(--ink); }
+  .winner-card.pending .winner-cta { background: var(--accent); }
   .planning-hint { margin-top: 1rem; }
   .hint-link { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 1px solid var(--border); border-radius: 100px; cursor: pointer; font-family: var(--sans); font-size: 15px; color: var(--accent); font-weight: 500; padding: .65rem 1.25rem; transition: background .15s, border-color .15s; }
   .hint-link:hover { background: var(--surface); border-color: var(--accent); }

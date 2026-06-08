@@ -51,7 +51,10 @@
         {#if showOnline}
           <div class="online-popover">
             {#each onlineNames as name}
-              <div class="online-avatar" title={name}>{initials(name)}</div>
+              <div class="online-row">
+                <div class="online-avatar">{initials(name)}</div>
+                <span class="online-name">{name}</span>
+              </div>
             {/each}
           </div>
         {/if}
@@ -138,16 +141,18 @@
   .online-popover {
     position: absolute; top: calc(100% + 8px); left: 0;
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: .6rem; display: flex; flex-wrap: wrap; gap: .4rem;
+    padding: .4rem; display: flex; flex-direction: column; gap: .15rem;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 200;
-    min-width: 120px;
+    min-width: 160px; max-height: 280px; overflow-y: auto;
   }
+  .online-row { display: flex; align-items: center; gap: .5rem; padding: .3rem .4rem; border-radius: 8px; }
   .online-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: #f0e8e0; color: var(--accent);
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #f0e8e0; color: var(--accent); flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: 600;
   }
+  .online-name { font-size: 13px; color: var(--ink); white-space: nowrap; }
 
   .menu-backdrop { position: fixed; inset: 0; z-index: 150; background: none; border: none; cursor: default; }
 
