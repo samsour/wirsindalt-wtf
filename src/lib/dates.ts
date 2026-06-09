@@ -40,6 +40,13 @@ export const DATE_ANNOUNCED = false;
 // export const FINAL_DATE: string | null = '2026-08-21';
 export const FINAL_DATE: string | null = null;
 
+// Voting closes at the end of the VOTE_DEADLINE day (deadline date + 24h).
+// No deadline set → voting stays open.
+export function isVotingClosed(voteDeadline: string | null | undefined, now: number = Date.now()): boolean {
+  if (!voteDeadline) return false;
+  return now > new Date(voteDeadline).getTime() + 86_400_000;
+}
+
 // The date object to display once announced: the chosen FINAL_DATE if set,
 // otherwise the vote winner. Returns undefined if neither is available.
 export function resolveFinalDate(voteLeaderKey?: string | null) {

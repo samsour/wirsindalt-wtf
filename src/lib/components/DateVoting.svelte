@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
-  import { DATES, DATE_ANNOUNCED, resolveFinalDate } from '$lib/dates';
+  import { DATES, DATE_ANNOUNCED, resolveFinalDate, isVotingClosed } from '$lib/dates';
 
   let showSepHint = $state(false);
   let showAllResults = $state(false);
@@ -44,6 +44,8 @@
     const hours = Math.floor((diff % 86_400_000) / 3_600_000);
     return { expired: false, days, hours };
   });
+
+  let votingClosed = $derived(isVotingClosed(voteDeadline, now));
 
   let myYes   = $derived(Object.values(myVotes).filter(v => v === 'yes').length);
   let myMaybe = $derived(Object.values(myVotes).filter(v => v === 'maybe').length);
@@ -181,9 +183,9 @@
             <div class="question-sub">Braucht ihr noch mehr Termine?</div>
             <div class="vote-count" style="margin:.5rem 0">{c.yes} dafür · {c.maybe} vielleicht · {c.no} nope</div>
             <div class="vote-actions">
-              <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja, gerne</button>
-              <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Egal</button>
-              <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Zu spät</button>
+              <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja, gerne</button>
+              <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Egal</button>
+              <button class="vbtn no" class:active={mv === 'no'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Zu spät</button>
             </div>
           </div>
         {:else}
@@ -213,9 +215,9 @@
                   <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
                   {#if highDecline}<div class="decline-alert">Mehrheit sagt Nein</div>{/if}
                   <div class="vote-actions">
-                    <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
-                    <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
-                    <button class="vbtn no" class:active={mv === 'no'} disabled={votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
+                    <button class="vbtn yes" class:active={mv === 'yes'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'yes')}>✓ Ja</button>
+                    <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'maybe')}>~ Vielleicht</button>
+                    <button class="vbtn no" class:active={mv === 'no'} disabled={votingClosed || votingKey === d.key} onclick={() => oncastvote(d.key, 'no')}>✗ Nein</button>
                   </div>
                 </div>
               {/each}

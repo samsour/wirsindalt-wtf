@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/db';
-import { DATES } from '$lib/dates';
+import { DATES, isVotingClosed } from '$lib/dates';
 import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
@@ -24,6 +25,11 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
+  // Voting closes once the deadline has passed.
+  if (isVotingClosed(env.VOTE_DEADLINE)) {
+    return json({ error: 'Die Abstimmung ist beendet.' }, { status: 409 });
+  }
+
   const { token, dateKey, vote } = await request.json();
   const { userId } = await resolveToken(token);
   if (!dateKey) return json({ error: 'Missing fields' }, { status: 400 });
