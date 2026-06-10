@@ -93,6 +93,15 @@
     if (!loading) startPoll();
   });
 
+  // Refresh the playlist "vibe" only when its song set actually changes (not on every poll tick).
+  $effect(() => {
+    if (phase !== PLAYLIST_PHASE) return;
+    const sig = songs.map(s => s.id).join(',');
+    if (sig === genresFor) return;
+    genresFor = sig;
+    loadGenres();
+  });
+
   onDestroy(() => {
     clearInterval(presenceInterval);
     clearInterval(pingInterval);
@@ -131,6 +140,8 @@
 
   let songs: any[] = $state([]);
   let mySongVotes: number[] = $state([]);
+  let songGenres: Record<number, string[]> = $state({});
+  let genresFor = $state('');
 
   let toast = $state('');
   let toastTimer: ReturnType<typeof setTimeout>;
@@ -359,12 +370,21 @@
     songs = d.songs; mySongVotes = d.myVotes;
   }
 
-  async function addSongPick(track: { spotifyId: string; title: string; artist: string; image: string | null }) {
+  async function loadGenres() {
+    try {
+      const d = await (await fetch('/api/songs/genres')).json();
+      songGenres = d.songGenres ?? {};
+    } catch {
+      songGenres = {};
+    }
+  }
+
+  async function addSongPick(track: { spotifyId: string; title: string; artist: string; artistId: string | null; image: string | null }) {
     if (!user) return;
     const res = await fetch('/api/songs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: user.token, spotifyId: track.spotifyId, title: track.title, artist: track.artist, image: track.image }),
+      body: JSON.stringify({ token: user.token, spotifyId: track.spotifyId, title: track.title, artist: track.artist, artistId: track.artistId, image: track.image }),
     });
     const d = await res.json();
     if (!res.ok) { showToast(d.error === 'max_picks' ? 'Max. 3 Songs — erst einen entfernen!' : 'Hat nicht geklappt'); return; }
@@ -543,6 +563,7 @@
     <PlaylistPhase
       {songs}
       myVotes={mySongVotes}
+      {songGenres}
       onaddpick={addSongPick}
       ontogglepick={toggleSongPick}
     >

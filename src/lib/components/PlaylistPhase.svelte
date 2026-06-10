@@ -3,10 +3,11 @@
 
   const MAX_PICKS = 3;
 
-  let { songs, myVotes, onaddpick, ontogglepick, afterHero }: {
+  let { songs, myVotes, songGenres = {}, onaddpick, ontogglepick, afterHero }: {
     songs: any[];
     myVotes: number[];
-    onaddpick: (track: { spotifyId: string; title: string; artist: string; image: string | null }) => void;
+    songGenres?: Record<number, string[]>;
+    onaddpick: (track: { spotifyId: string; title: string; artist: string; artistId: string | null; image: string | null }) => void;
     ontogglepick: (songId: number) => void;
     afterHero?: import('svelte').Snippet;
   } = $props();
@@ -48,7 +49,7 @@
 <div class="hero">
   <div class="eyebrow">Für die Ohren</div>
   <h1>Deine <em>Top 3</em></h1>
-  <p class="hero-sub">Such deine 3 Lieblingssongs für die Party. Je öfter ein Song gewählt wird, desto weiter wandert er nach oben — die Top-Tracks landen in der Playlist.</p>
+  <p class="hero-sub">Such deine 3 Lieblingssongs für die Party. Je öfter ein Song gewählt wird, desto weiter wandert er nach oben. Die Top-Tracks landen in der Playlist.</p>
 </div>
 
 {@render afterHero?.()}
@@ -98,6 +99,9 @@
         <div class="song-body">
           <span class="song-title">{song.title}</span>
           <span class="song-artist">{song.artist}</span>
+          {#if songGenres[song.id]?.length}
+            <span class="song-genres">{#each songGenres[song.id] as g}<span class="g-chip">{g}</span>{/each}</span>
+          {/if}
         </div>
         <div class="like-wrap">
           <button
@@ -150,6 +154,9 @@
 
   .cover { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
   .cover.ph { display: flex; align-items: center; justify-content: center; background: var(--muted); font-size: 18px; }
+
+  .song-genres { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin-top: 4px; }
+  .g-chip { font-size: 10px; color: var(--ink3); background: var(--muted); border-radius: 100px; padding: 1px 7px; text-transform: capitalize; white-space: nowrap; }
 
   .song-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
   .song-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .85rem; display: flex; align-items: center; gap: .7rem; animation: item-up 0.35s ease-out calc(var(--i,0) * 60ms + 50ms) backwards; }

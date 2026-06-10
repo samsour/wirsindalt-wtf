@@ -21,7 +21,7 @@ async function getAppToken(): Promise<string | null> {
   return cached.value;
 }
 
-export type SpotifyTrack = { spotifyId: string; title: string; artist: string; image: string | null };
+export type SpotifyTrack = { spotifyId: string; title: string; artist: string; artistId: string | null; image: string | null };
 
 // Returns null when Spotify isn't configured, [] on a failed/empty search.
 export async function searchTracks(q: string): Promise<SpotifyTrack[] | null> {
@@ -38,6 +38,7 @@ export async function searchTracks(q: string): Promise<SpotifyTrack[] | null> {
     spotifyId: t.id,
     title: t.name,
     artist: (t.artists ?? []).map((a: any) => a.name).join(', '),
+    artistId: t.artists?.[0]?.id ?? null, // primary artist (genres live on the artist, not the track)
     image: t.album?.images?.at(-1)?.url ?? null, // smallest cover
   }));
 }

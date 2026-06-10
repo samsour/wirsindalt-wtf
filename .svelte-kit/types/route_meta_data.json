@@ -32,6 +32,9 @@
 	"/api/songs": [
 		"src/routes/api/songs/+server.ts"
 	],
+	"/api/songs/genres": [
+		"src/routes/api/songs/genres/+server.ts"
+	],
 	"/api/songs/search": [
 		"src/routes/api/songs/search/+server.ts"
 	],

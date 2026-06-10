@@ -41,7 +41,7 @@ export async function GET({ url }) {
 
 // Add a pick from a Spotify track — creates the song if new, otherwise just registers your vote.
 export async function POST({ request }) {
-  const { token, spotifyId, title, artist, image } = await request.json();
+  const { token, spotifyId, title, artist, artistId, image } = await request.json();
   const { userId, userName } = await resolveToken(token);
   if (!title?.trim()) return json({ error: 'missing' }, { status: 400 });
 
