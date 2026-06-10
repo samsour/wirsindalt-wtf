@@ -26,7 +26,7 @@
 <div class="hero">
   <div class="eyebrow">Termin steht. Fehlt nur die Zeit.</div>
   <h1>Wann <em>geht's los?</em></h1>
-  <p class="hero-sub">Erstmal nur die ungefähre Startzeit{dateLabel ? ` am ${dateLabel}` : ''} — wie lange dann gefeiert wird, hängt noch von der Location ab. Stimm bei jeder Uhrzeit ab: passt, egal, oder nope (mehrere „passt" sind okay).</p>
+  <p class="hero-sub">Erstmal nur die ungefähre Startzeit{dateLabel ? ` am ${dateLabel}` : ''}. Wie lange dann gefeiert wird, hängt noch von der Location ab. Im Idealfall bis open-end. Stimm bei jeder Uhrzeit ab: passt, egal, oder nope (mehrere „passt" sind okay).</p>
 </div>
 
 {@render afterHero?.()}

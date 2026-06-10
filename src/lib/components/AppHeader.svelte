@@ -185,15 +185,14 @@
   .menu-logout { display: flex; align-items: center; gap: 8px; width: 100%; padding: .75rem 1rem; background: none; border: none; cursor: pointer; font-size: 14px; font-family: var(--sans); color: var(--ink3); transition: all .12s; }
   .menu-logout:hover { background: var(--muted); color: var(--red); }
 
-  .stepper { display: flex; align-items: center; padding: 0 1.5rem 1rem; overflow-x: auto; scrollbar-width: none; }
-  .stepper::-webkit-scrollbar { display: none; }
-  .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .stepper { display: flex; align-items: center; padding: 0 1.5rem 2.5rem; }
+  .step { position: relative; flex-shrink: 0; }
   .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--border); background: var(--surface); color: var(--ink3); transition: all .2s; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1) calc(var(--i,0) * 90ms + 200ms) backwards; }
-  .step.active .step-circle { border-color: var(--accent); color: var(--accent); background: #fff8f5; }
+  .step.active .step-circle { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
   .step.done .step-circle { border-color: var(--green); background: var(--green); color: #fff; }
-  .step-label { font-size: 10px; font-weight: 500; color: var(--ink3); white-space: nowrap; letter-spacing: .2px; }
+  .step-label { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: 4.75rem; text-align: center; line-height: 1.2; font-size: 10px; font-weight: 500; color: var(--ink3); letter-spacing: .2px; }
   .step.active .step-label { color: var(--accent); font-weight: 600; }
   .step.done .step-label { color: var(--green); }
-  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 8px 15px; transition: background .3s; transform-origin: left; animation: grow-right 0.4s ease-out calc(var(--i,0) * 90ms + 280ms) backwards; }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 6px; transition: background .3s; transform-origin: left; animation: grow-right 0.4s ease-out calc(var(--i,0) * 90ms + 280ms) backwards; }
   .step-line.filled { background: var(--green); }
 </style>

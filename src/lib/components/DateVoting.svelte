@@ -89,9 +89,6 @@
     <div class="winner-card">
       <div class="winner-eyebrow">🎉 Der Termin steht fest</div>
       <div class="winner-date">{winnerDate.label}</div>
-      {#if onnext}
-        <button class="winner-cta" onclick={onnext}>Zur Uhrzeit →</button>
-      {/if}
     </div>
   {:else if countdown?.expired}
     <div class="winner-card pending">
@@ -258,7 +255,7 @@
   .week-label:hover { color: var(--ink); }
   .winner-card { margin-top: 1.25rem; background: color-mix(in srgb, var(--green) 12%, var(--surface)); border: 1.5px solid var(--green); border-radius: 16px; padding: 1.25rem 1.5rem; text-align: center; }
   .winner-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: .4rem; }
-  .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 1rem; }
+  .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; margin-bottom: 0rem; }
   .winner-cta { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 600; font-family: var(--sans); cursor: pointer; transition: opacity .15s; }
   .winner-cta:hover { opacity: .85; }
   .winner-card.pending { background: var(--muted); border-color: var(--border); border-style: dashed; }

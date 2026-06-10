@@ -451,7 +451,7 @@
       oncastvote={castTimeVote}
     >
       {#snippet afterHero()}
-        <StepNav backLabel="Zurück zum Datum" nextLabel="Weiter zu Wer ist dabei" onback={() => (phase = 0)} onnext={() => (phase = 2)} />
+        <StepNav backLabel="Zurück" nextLabel="Weiter zu Wer ist dabei" onback={() => (phase = 0)} onnext={() => (phase = 2)} />
       {/snippet}
     </TimeVoting>
   {:else if phase === 2}
@@ -468,7 +468,7 @@
       onsubmit={submitRsvp}
     >
       {#snippet afterHero()}
-        <StepNav backLabel="Zurück zur Uhrzeit" nextLabel="Weiter zur Planung" onback={() => (phase = 1)} onnext={() => (phase = 3)} />
+        <StepNav backLabel="Zurück" nextLabel="Weiter zur Planung" onback={() => (phase = 1)} onnext={() => (phase = 3)} />
       {/snippet}
     </RsvpPhase>
   {:else if phase === 3}
@@ -495,7 +495,7 @@
       onunstrikelocation={(id) => strikeLocation(id, false)}
     >
       {#snippet afterHero()}
-        <StepNav backLabel="Zurück zu Wer ist dabei" onback={() => (phase = 2)} />
+        <StepNav backLabel="Zurück" onback={() => (phase = 2)} />
       {/snippet}
     </PlanningPhase>
   {/if}
