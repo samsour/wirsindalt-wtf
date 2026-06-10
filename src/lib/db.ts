@@ -69,6 +69,25 @@ export async function initDb() {
       UNIQUE(user_id, idea_id)
     );
 
+    CREATE TABLE IF NOT EXISTS songs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      user_name TEXT NOT NULL,
+      spotify_id TEXT,
+      title TEXT NOT NULL,
+      artist TEXT,
+      image TEXT,
+      votes INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS song_votes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      song_id INTEGER NOT NULL REFERENCES songs(id),
+      UNIQUE(user_id, song_id)
+    );
+
     CREATE TABLE IF NOT EXISTS locations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL REFERENCES users(id),
@@ -100,4 +119,8 @@ export async function initDb() {
   // migrations
   try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }
   try { await db.execute(`ALTER TABLE locations ADD COLUMN struck INTEGER DEFAULT 0`); } catch { /* already exists */ }
+  try { await db.execute(`ALTER TABLE songs ADD COLUMN spotify_id TEXT`); } catch { /* already exists */ }
+  try { await db.execute(`ALTER TABLE songs ADD COLUMN image TEXT`); } catch { /* already exists */ }
+  // one row per unique Spotify track (NULLs stay distinct, so manual rows are unaffected)
+  await db.execute(`CREATE UNIQUE INDEX IF NOT EXISTS idx_songs_spotify ON songs(spotify_id)`);
 }

@@ -9,6 +9,7 @@
   import StepNav from '$lib/components/StepNav.svelte';
   import RsvpPhase from '$lib/components/RsvpPhase.svelte';
   import PlanningPhase from '$lib/components/PlanningPhase.svelte';
+  import PlaylistPhase from '$lib/components/PlaylistPhase.svelte';
   import EmojiCannon from '$lib/components/EmojiCannon.svelte';
 
   // --- Auth ---
@@ -31,9 +32,14 @@
   let deadlineExpired = $derived(!voteDeadline || Date.now() > new Date(voteDeadline).getTime() + 86_400_000);
   let phase = $state(0);
 
+  // Experimental playlist lives at phase 4 — reachable from the menu, not the step bar.
+  const PLAYLIST_PHASE = 4;
+  let prePlaylistPhase = $state(0);
+  function openPlaylist() { if (phase !== PLAYLIST_PHASE) prePlaylistPhase = phase; phase = PLAYLIST_PHASE; }
+
   onMount(() => {
     const p = new URLSearchParams(window.location.search).get('step');
-    phase = p !== null && !isNaN(+p) ? Math.min(3, Math.max(0, +p)) : maxPhase;
+    phase = p !== null && !isNaN(+p) ? Math.min(4, Math.max(0, +p)) : maxPhase;
   });
 
   $effect(() => {
@@ -78,6 +84,7 @@
       else if (phase === 1) loadTimeVotes();
       else if (phase === 2) loadRsvpStats();
       else if (phase === 3) Promise.all([loadContribs(), loadIdeas(), loadLocations()]);
+      else if (phase === 4) loadSongs();
     }, 5_000);
   }
 
@@ -121,6 +128,9 @@
   let newIdeaText = $state('');
   let newLocDesc = $state('');
   let newLocAddr = $state('');
+
+  let songs: any[] = $state([]);
+  let mySongVotes: number[] = $state([]);
 
   let toast = $state('');
   let toastTimer: ReturnType<typeof setTimeout>;
@@ -174,7 +184,7 @@
   function logout() { user = null; localStorage.removeItem('abi2016_user'); myVotes = {}; }
 
   async function loadAll() {
-    await Promise.all([loadVotes(), loadMyVotes(), loadTimeVotes(), loadMyTimeVotes(), loadRsvpStats(), loadContribs(), loadIdeas(), loadLocations()]);
+    await Promise.all([loadVotes(), loadMyVotes(), loadTimeVotes(), loadMyTimeVotes(), loadRsvpStats(), loadContribs(), loadIdeas(), loadLocations(), loadSongs()]);
   }
 
   async function loadVotes() {
@@ -344,6 +354,36 @@
     myIdeaVotes = myIdeaVotes.filter(v => v !== ideaId);
   }
 
+  async function loadSongs() {
+    const d = await (await fetch(`/api/songs${user ? '?token=' + user.token : ''}`)).json();
+    songs = d.songs; mySongVotes = d.myVotes;
+  }
+
+  async function addSongPick(track: { spotifyId: string; title: string; artist: string; image: string | null }) {
+    if (!user) return;
+    const res = await fetch('/api/songs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, spotifyId: track.spotifyId, title: track.title, artist: track.artist, image: track.image }),
+    });
+    const d = await res.json();
+    if (!res.ok) { showToast(d.error === 'max_picks' ? 'Max. 3 Songs — erst einen entfernen!' : 'Hat nicht geklappt'); return; }
+    await loadSongs();
+    showToast('🎵 Song hinzugefügt!');
+  }
+
+  async function toggleSongPick(songId: number) {
+    if (!user) return;
+    const res = await fetch('/api/songs', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, songId }),
+    });
+    const d = await res.json();
+    if (!res.ok) { showToast(d.error === 'max_picks' ? 'Max. 3 Songs — erst einen entfernen!' : 'Hat nicht geklappt'); return; }
+    await loadSongs();
+  }
+
   async function loadLocations() {
     locations = await (await fetch('/api/locations')).json();
   }
@@ -419,6 +459,7 @@
     {onlineNames}
     onlogout={logout}
     onphase={(p) => (phase = p)}
+    onplaylist={openPlaylist}
   />
 
   {#if loading}
@@ -498,6 +539,17 @@
         <StepNav backLabel="Zurück" onback={() => (phase = 2)} />
       {/snippet}
     </PlanningPhase>
+  {:else if phase === 4}
+    <PlaylistPhase
+      {songs}
+      myVotes={mySongVotes}
+      onaddpick={addSongPick}
+      ontogglepick={toggleSongPick}
+    >
+      {#snippet afterHero()}
+        <StepNav backLabel="Zurück" onback={() => (phase = prePlaylistPhase)} />
+      {/snippet}
+    </PlaylistPhase>
   {/if}
 {/if}
 
