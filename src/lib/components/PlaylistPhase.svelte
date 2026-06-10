@@ -116,6 +116,20 @@
     {/each}
     {#if songs.length === 0}<p class="empty">Noch keine Songs.<br />Such deinen ersten Track. 🎧</p>{/if}
   </div>
+
+  <div class="vibe">
+    <h4 class="vibe-title">🎶 Zur Einstimmung</h4>
+    <div class="yt-embed">
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/BJWi2MEbKXc"
+        title="YouTube"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -159,4 +173,9 @@
   .like-pill:disabled { opacity: .4; cursor: not-allowed; }
   .like-pill:not(:disabled):hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--accent); }
   .like-pill.liked { background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: var(--accent); color: var(--accent); }
+
+  .vibe { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .vibe-title { font-size: 13px; font-weight: 600; color: var(--ink2); text-align: center; margin-bottom: .75rem; }
+  .yt-embed { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+  .yt-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 </style>
