@@ -1,4 +1,6 @@
 <script lang="ts">
+  import VideoPlayer from './VideoPlayer.svelte';
+
   const MAX_PICKS = 3;
 
   let { songs, myVotes, onaddpick, ontogglepick, afterHero }: {
@@ -118,17 +120,8 @@
   </div>
 
   <div class="vibe">
-    <h4 class="vibe-title">🎶 Zur Einstimmung</h4>
-    <div class="yt-embed">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/BJWi2MEbKXc"
-        title="YouTube"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen
-      ></iframe>
-    </div>
+    <h4 class="vibe-title">5000W Bassmachine</h4>
+    <VideoPlayer src="/aULpFqR8APQ.mp4" poster="/aULpFqR8APQ.jpg" />
   </div>
 </div>
 
@@ -176,6 +169,4 @@
 
   .vibe { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
   .vibe-title { font-size: 13px; font-weight: 600; color: var(--ink2); text-align: center; margin-bottom: .75rem; }
-  .yt-embed { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
-  .yt-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 </style>

@@ -53,6 +53,6 @@ declare module "$app/types" {
 		};
 		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/.DS_Store" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
+		Asset(): "/.DS_Store" | "/aULpFqR8APQ.jpg" | "/aULpFqR8APQ.mp4" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}
 }
