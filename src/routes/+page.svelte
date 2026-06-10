@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { checkMotto } from '$lib/dates';
+  import { checkMotto, DATE_ANNOUNCED, resolveFinalDate } from '$lib/dates';
   import Toast from '$lib/components/Toast.svelte';
   import GateCard from '$lib/components/GateCard.svelte';
   import AppHeader from '$lib/components/AppHeader.svelte';
   import DateVoting from '$lib/components/DateVoting.svelte';
+  import TimeVoting from '$lib/components/TimeVoting.svelte';
+  import StepNav from '$lib/components/StepNav.svelte';
   import RsvpPhase from '$lib/components/RsvpPhase.svelte';
   import PlanningPhase from '$lib/components/PlanningPhase.svelte';
   import EmojiCannon from '$lib/components/EmojiCannon.svelte';
@@ -24,14 +26,14 @@
   }
 
   let { data } = $props();
-  let maxPhase = $derived(data.maxPhase); // set MAX_PHASE in .env: 0=Terminwahl only, 1=+Anmeldung, 2=all
+  let maxPhase = $derived(data.maxPhase); // default landing step + steps marked done; set MAX_PHASE in .env (0=Datum, 1=Uhrzeit, 2=Wer ist dabei, 3=Planung)
   let voteDeadline = $derived(data.voteDeadline); // set VOTE_DEADLINE in .env: YYYY-MM-DD
   let deadlineExpired = $derived(!voteDeadline || Date.now() > new Date(voteDeadline).getTime() + 86_400_000);
   let phase = $state(0);
 
   onMount(() => {
     const p = new URLSearchParams(window.location.search).get('step');
-    phase = p !== null && !isNaN(+p) ? Math.min(2, Math.max(0, +p)) : maxPhase;
+    phase = p !== null && !isNaN(+p) ? Math.min(3, Math.max(0, +p)) : maxPhase;
   });
 
   $effect(() => {
@@ -73,7 +75,9 @@
     clearInterval(pollInterval);
     pollInterval = setInterval(() => {
       if (phase === 0) loadVotes();
-      else if (phase === 1) Promise.all([loadContribs(), loadIdeas(), loadLocations()]);
+      else if (phase === 1) loadTimeVotes();
+      else if (phase === 2) loadRsvpStats();
+      else if (phase === 3) Promise.all([loadContribs(), loadIdeas(), loadLocations()]);
     }, 5_000);
   }
 
@@ -93,6 +97,11 @@
   let totalUsers = $state(0);
   let myVotes: Record<string, string> = $state({});
   let votingKey = $state<string | null>(null);
+
+  // Time-of-day vote (own poll, opens once the date is announced)
+  let timeCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
+  let myTimeVotes: Record<string, string> = $state({});
+  let votingTimeKey = $state<string | null>(null);
 
   let rsvpStats = $state({ attending: 0, notAttending: 0, totalGuests: 0 });
   let rsvpChoice = $state<'yes' | 'no' | null>(null);
@@ -140,6 +149,7 @@
       }
     }
     await loadVotes();
+    await loadTimeVotes();
     await loadRsvpStats();
     loading = false;
   });
@@ -164,7 +174,7 @@
   function logout() { user = null; localStorage.removeItem('abi2016_user'); myVotes = {}; }
 
   async function loadAll() {
-    await Promise.all([loadVotes(), loadMyVotes(), loadRsvpStats(), loadContribs(), loadIdeas(), loadLocations()]);
+    await Promise.all([loadVotes(), loadMyVotes(), loadTimeVotes(), loadMyTimeVotes(), loadRsvpStats(), loadContribs(), loadIdeas(), loadLocations()]);
   }
 
   async function loadVotes() {
@@ -205,6 +215,44 @@
     });
     votingKey = null;
     showToast(newVote === 'yes' ? '✓ Stimme gezählt!' : newVote === 'maybe' ? '~ Als Vielleicht vermerkt' : newVote === 'no' ? '✗ Abgesagt' : 'Stimme zurückgezogen');
+  }
+
+  async function loadTimeVotes() {
+    const d = await (await fetch('/api/time-votes')).json();
+    timeCounts = d.counts;
+  }
+
+  async function loadMyTimeVotes() {
+    if (!user) return;
+    const res = await fetch('/api/time-votes', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token }),
+    });
+    if (res.status === 401) throw new Error('invalid session');
+    myTimeVotes = await res.json();
+  }
+
+  async function castTimeVote(slotKey: string, vote: string) {
+    if (!user) { showToast('Bitte zuerst einloggen!'); return; }
+    if (votingTimeKey === slotKey) return;
+    votingTimeKey = slotKey;
+    const prev = myTimeVotes[slotKey];
+    const newVote = prev === vote ? null : vote;
+    if (newVote) myTimeVotes[slotKey] = newVote; else delete myTimeVotes[slotKey];
+    myTimeVotes = { ...myTimeVotes };
+    if (timeCounts[slotKey]) {
+      if (prev) (timeCounts[slotKey] as any)[prev] = Math.max(0, (timeCounts[slotKey] as any)[prev] - 1);
+      if (newVote) (timeCounts[slotKey] as any)[newVote]++;
+      timeCounts = { ...timeCounts };
+    }
+    await fetch('/api/time-votes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, slotKey, vote: newVote }),
+    });
+    votingTimeKey = null;
+    showToast(newVote === 'yes' ? '✓ Stimme gezählt!' : newVote === 'maybe' ? '~ Als Egal vermerkt' : newVote === 'no' ? '✗ Nope vermerkt' : 'Stimme zurückgezogen');
   }
 
   async function loadRsvpStats() {
@@ -389,8 +437,41 @@
       {voteDeadline}
       oncastvote={castVote}
       onnext={() => (phase = 1)}
-    />
+    >
+      {#snippet afterHero()}
+        <StepNav nextLabel="Weiter zur Uhrzeit" onnext={() => (phase = 1)} />
+      {/snippet}
+    </DateVoting>
   {:else if phase === 1}
+    <TimeVoting
+      {timeCounts}
+      {myTimeVotes}
+      {votingTimeKey}
+      dateLabel={resolveFinalDate(voteLeader)?.label ?? ''}
+      oncastvote={castTimeVote}
+    >
+      {#snippet afterHero()}
+        <StepNav backLabel="Zurück zum Datum" nextLabel="Weiter zu Wer ist dabei" onback={() => (phase = 0)} onnext={() => (phase = 2)} />
+      {/snippet}
+    </TimeVoting>
+  {:else if phase === 2}
+    <RsvpPhase
+      {rsvpStats}
+      {voteLeader}
+      {voteDeadline}
+      bind:rsvpDone
+      bind:rsvpChoice
+      bind:rsvpGuests
+      bind:rsvpDietary
+      bind:rsvpNote
+      {rsvpLoading}
+      onsubmit={submitRsvp}
+    >
+      {#snippet afterHero()}
+        <StepNav backLabel="Zurück zur Uhrzeit" nextLabel="Weiter zur Planung" onback={() => (phase = 1)} onnext={() => (phase = 3)} />
+      {/snippet}
+    </RsvpPhase>
+  {:else if phase === 3}
     <PlanningPhase
       {ideas}
       {myIdeaVotes}
@@ -412,20 +493,11 @@
       ondeletelocation={deleteLocation}
       onstrikelocation={(id) => strikeLocation(id, true)}
       onunstrikelocation={(id) => strikeLocation(id, false)}
-    />
-  {:else if phase === 2}
-    <RsvpPhase
-      {rsvpStats}
-      {voteLeader}
-      {voteDeadline}
-      bind:rsvpDone
-      bind:rsvpChoice
-      bind:rsvpGuests
-      bind:rsvpDietary
-      bind:rsvpNote
-      {rsvpLoading}
-      onsubmit={submitRsvp}
-    />
+    >
+      {#snippet afterHero()}
+        <StepNav backLabel="Zurück zu Wer ist dabei" onback={() => (phase = 2)} />
+      {/snippet}
+    </PlanningPhase>
   {/if}
 {/if}
 

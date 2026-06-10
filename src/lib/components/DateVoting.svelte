@@ -15,7 +15,7 @@
     localStorage.setItem('abi2016_sep_hint_seen', '1');
   }
 
-  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, totalUsers = 0, voteDeadline = null, oncastvote, onnext }: {
+  let { voteCounts, myVotes, voteLeader, votingKey, userName = '', uniqueVoters = 0, totalUsers = 0, voteDeadline = null, oncastvote, onnext, afterHero }: {
     voteCounts: Record<string, { yes: number; maybe: number; no: number }>;
     myVotes: Record<string, string>;
     voteLeader: string | undefined;
@@ -26,6 +26,7 @@
     voteDeadline?: string | null;
     oncastvote: (dateKey: string, vote: string) => void;
     onnext?: () => void;
+    afterHero?: import('svelte').Snippet;
   } = $props();
 
   let winnerDate = $derived(resolveFinalDate(voteLeader));
@@ -89,7 +90,7 @@
       <div class="winner-eyebrow">🎉 Der Termin steht fest</div>
       <div class="winner-date">{winnerDate.label}</div>
       {#if onnext}
-        <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
+        <button class="winner-cta" onclick={onnext}>Zur Uhrzeit →</button>
       {/if}
     </div>
   {:else if countdown?.expired}
@@ -99,7 +100,7 @@
       <p class="winner-note">Wir checken jetzt ab, welcher Termin am besten passt.<br />
         (zwecks Verfübarkeit einer Location undso)</p>
       {#if onnext}
-        <button class="winner-cta" onclick={onnext}>Zur Planung →</button>
+        <button class="winner-cta" onclick={onnext}>Weiter →</button>
       {/if}
     </div>
   {:else if countdown}
@@ -112,11 +113,13 @@
         ⏳ Noch {countdown.days} {countdown.days === 1 ? 'Tag' : 'Tage'}{countdown.hours > 0 ? ` und ${countdown.hours} Std.` : ''} zum Abstimmen
       </div>
       {#if onnext}
-        <div class="planning-hint"><button class="hint-link" onclick={onnext}>Zur Planung →</button></div>
+        <div class="planning-hint"><button class="hint-link" onclick={onnext}>Weiter →</button></div>
       {/if}
     {/if}
   {/if}
 </div>
+
+{@render afterHero?.()}
 
 <div class="section">
   {#if showSepHint}

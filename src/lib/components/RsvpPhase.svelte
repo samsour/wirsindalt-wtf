@@ -14,6 +14,7 @@
     rsvpLoading,
     onsubmit,
     onnext,
+    afterHero,
   }: {
     rsvpStats: { attending: number; notAttending: number; totalGuests: number };
     voteLeader: string | undefined;
@@ -26,6 +27,7 @@
     rsvpLoading: boolean;
     onsubmit: () => void;
     onnext?: () => void;
+    afterHero?: import('svelte').Snippet;
   } = $props();
 
   let now = $state(Date.now());
@@ -73,6 +75,8 @@
   <h1>Kommst du <em>oder was?</em></h1>
   <p class="hero-sub">Kurz Bescheid geben, bring ruhig jemanden mit.</p>
 </div>
+
+{@render afterHero?.()}
 
 <div class="section">
   {#if showVotingLeader || showPending || showFinal}
@@ -175,8 +179,8 @@
   .rsvp-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: all .15s; text-align: center; font-family: var(--sans); }
   .rsvp-card:hover:not(:disabled) { transform: translateY(-2px); }
   .rsvp-card:disabled { opacity: .35; cursor: default; filter: grayscale(0.4); }
-  .rsvp-card.attending { border-color: var(--green); background: #f4faf5; }
-  .rsvp-card.declining { border-color: var(--red); background: #fdf4f4; }
+  .rsvp-card.attending { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--surface)); }
+  .rsvp-card.declining { border-color: var(--red); background: color-mix(in srgb, var(--red) 12%, var(--surface)); }
   .rsvp-icon { font-size: 2.5rem; margin-bottom: .75rem; }
   .event-countdown { background: linear-gradient(135deg, var(--accent), #d04b3c); color: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; text-align: center; box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
   .event-countdown.party-time { background: linear-gradient(135deg, var(--green), #2f6b39); box-shadow: 0 6px 20px color-mix(in srgb, var(--green) 35%, transparent); }
@@ -197,7 +201,7 @@
   .chosen-countdown { font-size: 11px; color: var(--ink3); margin-top: 3px; }
   .chosen-note { font-size: 12px; line-height: 1.5; color: var(--ink2); margin-top: 6px; }
   .pending-label { text-align: center; font-size: 13px; color: var(--ink3); margin-bottom: 1rem; }
-  .rsvp-card h3 { font-family: var(--serif); font-size: 1.25rem; margin-bottom: .25rem; }
+  .rsvp-card h3 { font-family: var(--serif); font-size: 1.25rem; margin-bottom: .25rem; color: var(--ink); }
   .rsvp-card p { font-size: 13px; color: var(--ink2); }
   .done-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem; }
   .done-icon { font-size: 3rem; margin-bottom: 1rem; }

@@ -31,14 +31,13 @@ export const DATES = [
 
 // Voting is done, but the final date still needs to be agreed in the planning team.
 // Flip to `true` once the date is locked — then the real date shows and RSVP opens.
-export const DATE_ANNOUNCED = false;
+export const DATE_ANNOUNCED = true;
 
 // The agreed date, once the planning team has decided.
 //  - Leave `null` to announce whatever date won the vote.
 //  - Set to a date key (e.g. '2026-08-15') to announce a specific date instead.
 // Only takes effect once DATE_ANNOUNCED is `true`.
-// export const FINAL_DATE: string | null = '2026-08-21';
-export const FINAL_DATE: string | null = null;
+export const FINAL_DATE: string | null = '2026-08-15';
 
 // Voting closes at the end of the VOTE_DEADLINE day (deadline date + 24h).
 // No deadline set → voting stays open.
@@ -53,6 +52,13 @@ export function resolveFinalDate(voteLeaderKey?: string | null) {
   const key = FINAL_DATE ?? voteLeaderKey ?? null;
   return key ? DATES.find((d) => d.key === key) : undefined;
 }
+
+// Time-of-day options for the fixed event date — voted yes/maybe/no like the date slots.
+export const TIME_SLOTS = [
+  { key: 'afternoon',     emoji: '🌤️', label: 'Nachmittag',   sub: 'Start ~15 Uhr' },
+  { key: 'early-evening', emoji: '🌅', label: 'Früher Abend', sub: 'Start ~17 Uhr' },
+  { key: 'evening',       emoji: '🌙', label: 'Abend',        sub: 'Start ~19 Uhr' },
+];
 
 export const ABI_MOTTO = 'immer blau, trotzdem schlau';
 

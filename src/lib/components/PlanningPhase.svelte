@@ -6,6 +6,7 @@
     newIdeaText = $bindable(''),
     newLocDesc = $bindable(''), newLocAddr = $bindable(''),
     onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation, onstrikelocation, onunstrikelocation,
+    afterHero,
   }: {
     ideas: any[];
     myIdeaVotes: number[];
@@ -27,6 +28,7 @@
     ondeletelocation: (id: number) => void;
     onstrikelocation: (id: number) => void;
     onunstrikelocation: (id: number) => void;
+    afterHero?: import('svelte').Snippet;
   } = $props();
 
   const catEmoji: Record<string, string> = {
@@ -40,6 +42,8 @@
   <h1>Wo, was, <em>und wie?</em></h1>
   <p class="hero-sub">Ein Ort wäre cool. Ansonsten einfach mal Brainstormen.<br />Kann jemand was mitbringen, wird irgendwas organisiert?<br />Seid kreativ!</p>
 </div>
+
+{@render afterHero?.()}
 
 <div class="section">
   <div class="plan-tabs">

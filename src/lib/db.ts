@@ -24,6 +24,15 @@ export async function initDb() {
       UNIQUE(user_id, date_key)
     );
 
+    CREATE TABLE IF NOT EXISTS time_votes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      slot_key TEXT NOT NULL,
+      vote TEXT NOT NULL CHECK(vote IN ('yes','maybe','no')),
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(user_id, slot_key)
+    );
+
     CREATE TABLE IF NOT EXISTS rsvp (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),

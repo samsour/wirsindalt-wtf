@@ -29,6 +29,9 @@
 	"/api/rsvp": [
 		"src/routes/api/rsvp/+server.ts"
 	],
+	"/api/time-votes": [
+		"src/routes/api/time-votes/+server.ts"
+	],
 	"/api/votes": [
 		"src/routes/api/votes/+server.ts"
 	],
