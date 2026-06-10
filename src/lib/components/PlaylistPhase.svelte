@@ -121,7 +121,7 @@
 
   <div class="vibe">
     <h4 class="vibe-title">5000W Bassmachine</h4>
-    <VideoPlayer src="/aULpFqR8APQ.mp4" poster="/aULpFqR8APQ.jpg" />
+    <VideoPlayer src="/aULpFqR8APQ.mp4" poster="/aULpFqR8APQ.jpg" ratio="352 / 162" fit="cover" />
   </div>
 </div>
 

@@ -1,5 +1,7 @@
 <script lang="ts">
-  let { src, poster = '' }: { src: string; poster?: string } = $props();
+  let { src, poster = '', ratio = '4 / 3', fit = 'contain' }: {
+    src: string; poster?: string; ratio?: string; fit?: 'contain' | 'cover';
+  } = $props();
 
   let video = $state<HTMLVideoElement>();
   let playing = $state(false);
@@ -34,12 +36,13 @@
   let progress = $derived(duration ? (current / duration) * 100 : 0);
 </script>
 
-<div class="player">
+<div class="player" style="aspect-ratio: {ratio}">
   <!-- svelte-ignore a11y_media_has_caption -->
   <video
     bind:this={video}
     {src}
     poster={poster || undefined}
+    style="object-fit: {fit}"
     playsinline
     preload="metadata"
     onclick={toggle}
