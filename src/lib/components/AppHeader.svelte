@@ -171,10 +171,10 @@
 
   .hamburger { display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; padding: 6px; background: none; border: none; border-radius: 8px; cursor: pointer; }
   .hamburger:hover { background: var(--muted); }
-  .bar { display: block; height: 1.5px; background: var(--ink); border-radius: 2px; transition: all .2s; }
-  .bar.open:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .bar { display: block; width: 100%; height: 2px; background: var(--ink); border-radius: 2px; transition: all .2s; }
+  .bar.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .bar.open:nth-child(2) { opacity: 0; }
-  .bar.open:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .bar.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
   .menu-popover {
     position: absolute; top: calc(100% + 8px); right: 0;
