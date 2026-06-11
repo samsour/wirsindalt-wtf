@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { DATES, DATE_ANNOUNCED, resolveFinalDate } from '$lib/dates';
+  import FlipNumber from './FlipNumber.svelte';
 
   let {
     rsvpStats,
@@ -32,7 +33,7 @@
 
   let now = $state(Date.now());
   onMount(() => {
-    const t = setInterval(() => (now = Date.now()), 60_000);
+    const t = setInterval(() => (now = Date.now()), 1000);
     return () => clearInterval(t);
   });
 
@@ -62,11 +63,12 @@
   let eventCountdown = $derived.by(() => {
     if (!showFinal || !finalDate) return null;
     const diff = new Date(`${finalDate.key}T18:00:00`).getTime() - now;
-    if (diff <= 0) return { past: true, days: 0, hours: 0, minutes: 0 };
+    if (diff <= 0) return { past: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
     const days = Math.floor(diff / 86_400_000);
     const hours = Math.floor((diff % 86_400_000) / 3_600_000);
     const minutes = Math.floor((diff % 3_600_000) / 60_000);
-    return { past: false, days, hours, minutes };
+    const seconds = Math.floor((diff % 60_000) / 1000);
+    return { past: false, days, hours, minutes, seconds };
   });
 </script>
 
@@ -107,16 +109,20 @@
         <div class="ec-title">Noch bis zur Feier 🎉</div>
         <div class="ec-units">
           <div class="ec-unit">
-            <span class="ec-num">{eventCountdown.days}</span>
+            <FlipNumber value={eventCountdown.days} />
             <span class="ec-lbl">{eventCountdown.days === 1 ? 'Tag' : 'Tage'}</span>
           </div>
           <div class="ec-unit">
-            <span class="ec-num">{eventCountdown.hours}</span>
+            <FlipNumber value={eventCountdown.hours} />
             <span class="ec-lbl">Std.</span>
           </div>
           <div class="ec-unit">
-            <span class="ec-num">{eventCountdown.minutes}</span>
+            <FlipNumber value={eventCountdown.minutes} />
             <span class="ec-lbl">Min.</span>
+          </div>
+          <div class="ec-unit">
+            <FlipNumber value={eventCountdown.seconds} />
+            <span class="ec-lbl">Sek.</span>
           </div>
         </div>
       {/if}
@@ -188,10 +194,9 @@
   @keyframes ec-pop { from { transform: scale(0); } to { transform: scale(1); } }
   .ec-title { font-family: var(--serif); font-size: 1.15rem; margin-bottom: 1rem; }
   .event-countdown.party-time .ec-title { margin-bottom: 0; font-size: 1.4rem; }
-  .ec-units { display: flex; justify-content: center; gap: .6rem; }
-  .ec-unit { background: rgba(255,255,255,0.18); border-radius: 12px; padding: .65rem .25rem; min-width: 62px; backdrop-filter: blur(2px); }
-  .ec-num { display: block; font-family: var(--serif); font-size: 1.9rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
-  .ec-lbl { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; margin-top: 4px; }
+  .ec-units { display: flex; justify-content: center; gap: .7rem; }
+  .ec-unit { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
+  .ec-lbl { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; }
   .chosen-date { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
   .chosen-date.pending { border-color: var(--border); border-style: dashed; background: var(--muted); }
   .chosen-icon { font-size: 1.75rem; flex-shrink: 0; }
