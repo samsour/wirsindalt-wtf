@@ -46,5 +46,8 @@
 	],
 	"/planung": [
 		"src/routes/planung/+page.server.ts"
+	],
+	"/playlist": [
+		"src/routes/playlist/+page.ts"
 	]
 }

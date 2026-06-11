@@ -29,7 +29,7 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/anmeldung" | "/api" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung";
+		RouteId(): "/" | "/anmeldung" | "/api" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
 		RouteParams(): {
 			
 		};
@@ -50,9 +50,10 @@ declare module "$app/types" {
 			"/api/songs/search": Record<string, never>;
 			"/api/time-votes": Record<string, never>;
 			"/api/votes": Record<string, never>;
-			"/planung": Record<string, never>
+			"/planung": Record<string, never>;
+			"/playlist": Record<string, never>
 		};
-		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung";
+		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/.DS_Store" | "/aULpFqR8APQ.jpg" | "/aULpFqR8APQ.mp4" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}
