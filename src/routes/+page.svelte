@@ -142,6 +142,8 @@
   let songs: any[] = $state([]);
   let mySongVotes: number[] = $state([]);
   let songGenres: Record<number, string[]> = $state({});
+  let vibe: string[] = $state([]);
+  let vibeMore = $state(0);
   let genresFor = $state('');
 
   let toast = $state('');
@@ -375,8 +377,10 @@
     try {
       const d = await (await fetch('/api/songs/genres')).json();
       songGenres = d.songGenres ?? {};
+      vibe = d.vibe ?? [];
+      vibeMore = d.vibeMore ?? 0;
     } catch {
-      songGenres = {};
+      songGenres = {}; vibe = []; vibeMore = 0;
     }
   }
 
@@ -578,6 +582,8 @@
       {songs}
       myVotes={mySongVotes}
       {songGenres}
+      {vibe}
+      {vibeMore}
       onaddpick={addSongPick}
       ontogglepick={toggleSongPick}
     >

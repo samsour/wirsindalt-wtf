@@ -3,10 +3,12 @@
 
   const MAX_PICKS = 3;
 
-  let { songs, myVotes, songGenres = {}, onaddpick, ontogglepick, afterHero }: {
+  let { songs, myVotes, songGenres = {}, vibe = [], vibeMore = 0, onaddpick, ontogglepick, afterHero }: {
     songs: any[];
     myVotes: number[];
     songGenres?: Record<number, string[]>;
+    vibe?: string[];
+    vibeMore?: number;
     onaddpick: (track: { spotifyId: string; title: string; artist: string; artistId: string | null; image: string | null }) => void;
     ontogglepick: (songId: number) => void;
     afterHero?: import('svelte').Snippet;
@@ -91,6 +93,16 @@
     {/if}
   </div>
 
+  {#if vibe.length}
+    <div class="vibe-bar">
+      <span class="vibe-label">🎚️ Vibe</span>
+      <div class="vibe-chips">
+        {#each vibe as g}<span class="vibe-chip">{g}</span>{/each}
+        {#if vibeMore > 0}<span class="vibe-more">+{vibeMore} weitere</span>{/if}
+      </div>
+    </div>
+  {/if}
+
   <div class="song-list">
     {#each songs as song, i}
       <div class="song-card" style="--i:{i}">
@@ -98,10 +110,10 @@
         {#if song.image}<img class="cover" src={song.image} alt="" />{:else}<div class="cover ph">🎵</div>{/if}
         <div class="song-body">
           <span class="song-title">{song.title}</span>
-          <span class="song-artist">{song.artist}</span>
-          {#if songGenres[song.id]?.length}
-            <span class="song-genres">{#each songGenres[song.id] as g}<span class="g-chip">{g}</span>{/each}</span>
-          {/if}
+          <span class="song-meta">
+            <span class="song-artist">{song.artist}</span>
+            {#each songGenres[song.id] ?? [] as g}<span class="g-chip">{g}</span>{/each}
+          </span>
         </div>
         <div class="like-wrap">
           <button
@@ -155,15 +167,20 @@
   .cover { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
   .cover.ph { display: flex; align-items: center; justify-content: center; background: var(--muted); font-size: 18px; }
 
-  .song-genres { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin-top: 4px; }
-  .g-chip { font-size: 10px; color: var(--ink3); background: var(--muted); border-radius: 100px; padding: 1px 7px; text-transform: capitalize; white-space: nowrap; }
+  .vibe-bar { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.25rem; padding: .75rem 1rem; background: var(--muted); border-radius: 10px; }
+  .vibe-label { font-size: 12px; font-weight: 600; color: var(--ink2); flex-shrink: 0; }
+  .vibe-chips { display: flex; flex-wrap: wrap; gap: .4rem; align-items: baseline; }
+  .vibe-chip { font-size: 12px; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 100px; padding: 2px 10px; text-transform: capitalize; }
+  .vibe-more { font-size: 11px; color: var(--ink3); align-self: center; }
+  .g-chip { font-size: 10px; color: var(--ink3); background: var(--muted); border-radius: 100px; padding: 1px 7px; text-transform: capitalize; white-space: nowrap; flex-shrink: 0; }
 
   .song-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
   .song-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .85rem; display: flex; align-items: center; gap: .7rem; animation: item-up 0.35s ease-out calc(var(--i,0) * 60ms + 50ms) backwards; }
   .song-rank { font-family: var(--serif); font-size: 1.1rem; color: var(--ink3); min-width: 1.2rem; text-align: center; flex-shrink: 0; }
   .song-body { flex: 1; min-width: 0; }
   .song-title { font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .song-artist { font-size: 12px; color: var(--ink3); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .song-meta { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-top: 2px; }
+  .song-artist { font-size: 12px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
   .like-wrap { position: relative; flex-shrink: 0; }
   .like-tooltip { position: absolute; bottom: calc(100% + 6px); right: 0; background: var(--ink); color: var(--paper); font-size: 11px; padding: 5px 10px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 10; }
