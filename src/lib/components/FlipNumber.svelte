@@ -29,11 +29,11 @@
 
 <style>
   .flip {
-    --h: 4.6rem;
+    --h: 6rem;
     position: relative; display: inline-block;
-    height: var(--h); min-width: 3.2rem; padding: 0 .6rem;
-    font-family: var(--serif); font-size: 3rem; font-variant-numeric: tabular-nums;
-    perspective: 320px; color: #fff;
+    height: var(--h); min-width: 4.4rem; padding: 0 .9rem;
+    font-family: var(--serif); font-size: 4rem; font-variant-numeric: tabular-nums;
+    perspective: 400px; color: #fff;
   }
   .half {
     position: absolute; left: 0; right: 0; height: 50%; overflow: hidden;
@@ -46,7 +46,10 @@
   .half span { display: block; height: var(--h); line-height: var(--h); }
 
   @media (max-width: 430px) {
-    .flip { --h: 3.4rem; min-width: 2.1rem; padding: 0 .35rem; font-size: 2.1rem; }
+    .flip { --h: 4.2rem; min-width: 2.5rem; padding: 0 .45rem; font-size: 2.6rem; }
+  }
+  @media (min-width: 768px) {
+    .flip { --h: 7.6rem; min-width: 5.4rem; padding: 0 1.2rem; font-size: 5.2rem; }
   }
 
   .foldtop { z-index: 3; transform-origin: bottom; animation: fold-top .28s ease-in forwards; }

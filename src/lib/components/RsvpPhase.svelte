@@ -194,7 +194,7 @@
   @keyframes ec-pop { from { transform: scale(0); } to { transform: scale(1); } }
   .ec-title { font-family: var(--serif); font-size: 1.15rem; margin-bottom: 1rem; }
   .event-countdown.party-time .ec-title { margin-bottom: 0; font-size: 1.4rem; }
-  .ec-units { display: flex; justify-content: center; gap: .7rem; }
+  .ec-units { display: flex; justify-content: center; gap: .7rem; padding: 0 .5rem; flex-wrap: wrap; }
   .ec-unit { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
   .ec-lbl { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; }
   .chosen-date { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
