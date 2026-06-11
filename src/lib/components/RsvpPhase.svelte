@@ -59,10 +59,10 @@
     return { days, hours };
   });
 
-  // Countdown to the party itself, once the final date is announced. Party kicks off at 18:00.
+  // Countdown to the party itself, once the final date is announced. Party kicks off at 17:00.
   let eventCountdown = $derived.by(() => {
     if (!showFinal || !finalDate) return null;
-    const diff = new Date(`${finalDate.key}T18:00:00`).getTime() - now;
+    const diff = new Date(`${finalDate.key}T17:00:00`).getTime() - now;
     if (diff <= 0) return { past: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
     const days = Math.floor(diff / 86_400_000);
     const hours = Math.floor((diff % 86_400_000) / 3_600_000);

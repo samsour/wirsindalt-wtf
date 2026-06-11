@@ -1,7 +1,7 @@
 <script lang="ts">
   import FlipNumber from './FlipNumber.svelte';
 
-  // Date key like '2026-08-15'; the party kicks off at 18:00.
+  // Date key like '2026-08-15'; the party kicks off at 17:00.
   let { targetKey }: { targetKey: string } = $props();
 
   let now = $state(Date.now());
@@ -11,7 +11,7 @@
   });
 
   let cd = $derived.by(() => {
-    const diff = new Date(`${targetKey}T18:00:00`).getTime() - now;
+    const diff = new Date(`${targetKey}T17:00:00`).getTime() - now;
     if (diff <= 0) return null;
     return {
       days: Math.floor(diff / 86_400_000),
