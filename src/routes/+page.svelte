@@ -11,6 +11,7 @@
   import PlanningPhase from '$lib/components/PlanningPhase.svelte';
   import PlaylistPhase from '$lib/components/PlaylistPhase.svelte';
   import EmojiCannon from '$lib/components/EmojiCannon.svelte';
+  import MiniCountdown from '$lib/components/MiniCountdown.svelte';
 
   // --- Auth ---
   let user: { userId: number; userName: string; token: string } | null = $state(null);
@@ -518,6 +519,7 @@
   }
 
   let voteLeader = $derived(Object.entries(voteCounts).sort((a, b) => (b[1].yes + b[1].maybe * 0.5) - (a[1].yes + a[1].maybe * 0.5))[0]?.[0]);
+  let finalDate = $derived(resolveFinalDate(voteLeader));
 </script>
 
 <svelte:head>
@@ -543,6 +545,9 @@
   {/if}
 {:else}
   <EmojiCannon token={user.token} />
+  {#if DATE_ANNOUNCED && finalDate && phase !== 2}
+    <MiniCountdown targetKey={finalDate.key} />
+  {/if}
   <AppHeader
     userName={user.userName}
     {phase}

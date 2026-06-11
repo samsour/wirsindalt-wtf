@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
 
-  let { value }: { value: number } = $props();
+  let { value, compact = false }: { value: number; compact?: boolean } = $props();
 
   let current = $state(untrack(() => value));
   let prev = $state(untrack(() => value));
@@ -16,7 +16,7 @@
   });
 </script>
 
-<div class="flip">
+<div class="flip" class:compact>
   <div class="half top"><span>{current}</span></div>
   <div class="half bottom"><span>{prev}</span></div>
   {#if anim > 0}
@@ -46,11 +46,16 @@
   .half span { display: block; height: var(--h); line-height: var(--h); }
 
   @media (max-width: 430px) {
-    .flip { --h: 4.2rem; min-width: 2.5rem; padding: 0 .45rem; font-size: 2.6rem; }
+    .flip:not(.compact) { --h: 4.2rem; min-width: 2.5rem; padding: 0 .45rem; font-size: 2.6rem; }
   }
   @media (min-width: 768px) {
-    .flip { --h: 7.6rem; min-width: 5.4rem; padding: 0 1.2rem; font-size: 5.2rem; }
+    .flip:not(.compact) { --h: 7.6rem; min-width: 5.4rem; padding: 0 1.2rem; font-size: 5.2rem; }
   }
+
+  /* Compact variant for the sticky mini countdown. */
+  .flip.compact { --h: 2rem; min-width: 1.5rem; padding: 0 .3rem; font-size: 1.25rem; }
+  .flip.compact .top { border-radius: 4px 4px 0 0; }
+  .flip.compact .bottom { border-radius: 0 0 4px 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
 
   .foldtop { z-index: 3; transform-origin: bottom; animation: fold-top .28s ease-in forwards; }
   .foldbottom { z-index: 3; transform-origin: top; transform: rotateX(90deg); animation: fold-bottom .28s .28s ease-out forwards; }
