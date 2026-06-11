@@ -137,6 +137,7 @@
   let newIdeaText = $state('');
   let newLocDesc = $state('');
   let newLocAddr = $state('');
+  let newLocContact = $state('');
 
   let songs: any[] = $state([]);
   let mySongVotes: number[] = $state([]);
@@ -428,15 +429,26 @@
     locations = locations.filter(l => l.id !== id);
   }
 
+  async function editLocation(id: number, fields: { description: string; address: string; contact: string }) {
+    if (!user || !fields.description.trim()) return;
+    const loc = await (await fetch('/api/locations', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: user.token, id, ...fields }),
+    })).json();
+    locations = locations.map(l => l.id === id ? loc : l);
+    showToast('Ort aktualisiert!');
+  }
+
   async function addLocation() {
     if (!user || !newLocDesc.trim()) return;
     const loc = await (await fetch('/api/locations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: user.token, description: newLocDesc, address: newLocAddr }),
+      body: JSON.stringify({ token: user.token, description: newLocDesc, address: newLocAddr, contact: newLocContact }),
     })).json();
     locations = [...locations, loc];
-    newLocDesc = ''; newLocAddr = '';
+    newLocDesc = ''; newLocAddr = ''; newLocContact = '';
     showToast('Ort vorgeschlagen!');
   }
 
@@ -545,12 +557,14 @@
       bind:newIdeaText
       bind:newLocDesc
       bind:newLocAddr
+      bind:newLocContact
       onaddcontrib={addContrib}
       ondeletecontrib={deleteContrib}
       onaddidea={addIdea}
       ondeleteidea={deleteIdea}
       ontoggleideavote={toggleIdeaVote}
       onaddlocation={addLocation}
+      oneditlocation={editLocation}
       ondeletelocation={deleteLocation}
       onstrikelocation={(id) => strikeLocation(id, true)}
       onunstrikelocation={(id) => strikeLocation(id, false)}

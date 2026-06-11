@@ -4,7 +4,7 @@ import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
   const rows = await db.execute(
-    `SELECT id, user_id, user_name, description, address, struck, created_at FROM locations ORDER BY created_at ASC`
+    `SELECT id, user_id, user_name, description, address, contact, struck, created_at FROM locations ORDER BY created_at ASC`
   );
   return json(rows.rows);
 }
@@ -16,14 +16,25 @@ export async function PATCH({ request }) {
   return json({ ok: true });
 }
 
+export async function PUT({ request }) {
+  const { token, id, description, address, contact } = await request.json();
+  await resolveToken(token);
+  if (!description?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
+  const result = await db.execute({
+    sql: `UPDATE locations SET description = ?, address = ?, contact = ? WHERE id = ? RETURNING *`,
+    args: [description.trim(), address?.trim() || null, contact?.trim() || null, id],
+  });
+  return json(result.rows[0]);
+}
+
 export async function POST({ request }) {
-  const { token, description, address } = await request.json();
+  const { token, description, address, contact } = await request.json();
   const { userId, userName } = await resolveToken(token);
   if (!description?.trim()) return json({ error: 'Missing fields' }, { status: 400 });
 
   const result = await db.execute({
-    sql: `INSERT INTO locations (user_id, user_name, description, address) VALUES (?, ?, ?, ?) RETURNING *`,
-    args: [userId, userName, description.trim(), address?.trim() ?? null],
+    sql: `INSERT INTO locations (user_id, user_name, description, address, contact) VALUES (?, ?, ?, ?, ?) RETURNING *`,
+    args: [userId, userName, description.trim(), address?.trim() ?? null, contact?.trim() || null],
   });
   return json(result.rows[0]);
 }

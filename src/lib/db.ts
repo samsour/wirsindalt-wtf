@@ -101,6 +101,7 @@ export async function initDb() {
       user_name TEXT NOT NULL,
       description TEXT NOT NULL,
       address TEXT,
+      contact TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -126,6 +127,7 @@ export async function initDb() {
   // migrations
   try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }
   try { await db.execute(`ALTER TABLE locations ADD COLUMN struck INTEGER DEFAULT 0`); } catch { /* already exists */ }
+  try { await db.execute(`ALTER TABLE locations ADD COLUMN contact TEXT`); } catch { /* already exists */ }
   try { await db.execute(`ALTER TABLE songs ADD COLUMN spotify_id TEXT`); } catch { /* already exists */ }
   try { await db.execute(`ALTER TABLE songs ADD COLUMN image TEXT`); } catch { /* already exists */ }
   try { await db.execute(`ALTER TABLE songs ADD COLUMN artist_id TEXT`); } catch { /* already exists */ }

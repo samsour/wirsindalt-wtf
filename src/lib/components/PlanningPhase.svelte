@@ -4,8 +4,8 @@
     planTab = $bindable<'contrib' | 'ideas' | 'locations'>('locations'),
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
     newIdeaText = $bindable(''),
-    newLocDesc = $bindable(''), newLocAddr = $bindable(''),
-    onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, ondeletelocation, onstrikelocation, onunstrikelocation,
+    newLocDesc = $bindable(''), newLocAddr = $bindable(''), newLocContact = $bindable(''),
+    onaddcontrib, ondeletecontrib, onaddidea, ondeleteidea, ontoggleideavote, onaddlocation, oneditlocation, ondeletelocation, onstrikelocation, onunstrikelocation,
     afterHero,
   }: {
     ideas: any[];
@@ -19,12 +19,14 @@
     newIdeaText?: string;
     newLocDesc?: string;
     newLocAddr?: string;
+    newLocContact?: string;
     onaddcontrib: () => void;
     ondeletecontrib: (id: number) => void;
     onaddidea: () => void;
     ondeleteidea: (id: number) => void;
     ontoggleideavote: (id: number) => void;
     onaddlocation: () => void;
+    oneditlocation: (id: number, fields: { description: string; address: string; contact: string }) => void;
     ondeletelocation: (id: number) => void;
     onstrikelocation: (id: number) => void;
     onunstrikelocation: (id: number) => void;
@@ -35,6 +37,24 @@
     Essen: '🍕', Getränke: '🍺', Equipment: '🎒', Sonstiges: '✨',
   };
   const cats = Object.keys(catEmoji);
+
+  // Inline editing of an existing location.
+  let editingLoc = $state<number | null>(null);
+  let editDesc = $state('');
+  let editAddr = $state('');
+  let editContact = $state('');
+
+  function startEditLoc(loc: any) {
+    editingLoc = loc.id;
+    editDesc = loc.description ?? '';
+    editAddr = loc.address ?? '';
+    editContact = loc.contact ?? '';
+  }
+  function saveEditLoc() {
+    if (editingLoc === null || !editDesc.trim()) return;
+    oneditlocation(editingLoc, { description: editDesc, address: editAddr, contact: editContact });
+    editingLoc = null;
+  }
 </script>
 
 <div class="hero">
@@ -131,20 +151,33 @@
     <div class="contrib-list">
       {#each locations as loc, i}
         {@const struck = !!loc.struck}
-        <div class="contrib-card" class:loc-struck={struck} style="--i:{i}">
-          <div class="avatar" style="background:#e8f0f8;color:#2a5c8a">{struck ? '🚫' : '📍'}</div>
-          <div class="contrib-info">
-            <div class="contrib-name" class:strike={struck}>{loc.description}</div>
-            <div class="contrib-item" class:strike={struck}>{[loc.address, `von ${loc.user_name}`].filter(Boolean).join(' · ')}</div>
-            {#if struck}<div class="struck-label">Nicht verfügbar</div>{/if}
+        {#if editingLoc === loc.id}
+          <div class="contrib-card loc-edit" style="--i:{i}">
+            <div class="loc-edit-fields">
+              <input bind:value={editDesc} placeholder="Beschreibung" onkeydown={e => e.key === 'Enter' && saveEditLoc()} />
+              <input bind:value={editAddr} placeholder="Adresse / Hinweis" onkeydown={e => e.key === 'Enter' && saveEditLoc()} />
+              <input bind:value={editContact} placeholder="Ansprechpartner" onkeydown={e => e.key === 'Enter' && saveEditLoc()} />
+            </div>
+            <button class="icon-btn save-btn" onclick={saveEditLoc} title="Speichern">✓</button>
+            <button class="icon-btn" onclick={() => (editingLoc = null)} title="Abbrechen">✕</button>
           </div>
-          {#if struck}
-            <button class="icon-btn restore" onclick={() => onunstrikelocation(loc.id)} title="Wiederherstellen">↩</button>
-            <button class="icon-btn del-confirm" onclick={() => ondeletelocation(loc.id)} title="Endgültig löschen">🗑</button>
-          {:else}
-            <button class="icon-btn strike-btn" onclick={() => onstrikelocation(loc.id)} title="Als nicht verfügbar markieren">✕</button>
-          {/if}
-        </div>
+        {:else}
+          <div class="contrib-card" class:loc-struck={struck} style="--i:{i}">
+            <div class="avatar" style="background:#e8f0f8;color:#2a5c8a">{struck ? '🚫' : '📍'}</div>
+            <div class="contrib-info">
+              <div class="contrib-name" class:strike={struck}>{loc.description}</div>
+              <div class="contrib-item" class:strike={struck}>{[loc.address, loc.contact ? `Ansprechpartner: ${loc.contact}` : null].filter(Boolean).join(' · ')}</div>
+              {#if struck}<div class="struck-label">Nicht verfügbar</div>{/if}
+            </div>
+            {#if struck}
+              <button class="icon-btn restore" onclick={() => onunstrikelocation(loc.id)} title="Wiederherstellen">↩</button>
+              <button class="icon-btn del-confirm" onclick={() => ondeletelocation(loc.id)} title="Endgültig löschen">🗑</button>
+            {:else}
+              <button class="icon-btn edit-btn" onclick={() => startEditLoc(loc)} title="Bearbeiten">✎</button>
+              <button class="icon-btn strike-btn" onclick={() => onstrikelocation(loc.id)} title="Als nicht verfügbar markieren">✕</button>
+            {/if}
+          </div>
+        {/if}
       {/each}
       {#if locations.length === 0}<p class="empty">Noch kein Ort vorgeschlagen!<br />Irgendwo müssen wir aber hin :D</p>{/if}
     </div>
@@ -152,8 +185,11 @@
       <h4>📍 Ort vorschlagen</h4>
       <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Gänsi, Waldi, irgendne Halle, ..." onkeydown={e => e.key === 'Enter' && newLocAddr ? onaddlocation() : null} /></div>
       <div class="form-row"><label>Adresse / Hinweis</label>
+        <input bind:value={newLocAddr} placeholder="Straße, PLZ oder Link" onkeydown={e => e.key === 'Enter' && onaddlocation()} />
+      </div>
+      <div class="form-row" style="margin-bottom:0"><label>Ansprechpartner</label>
         <div style="display:flex;gap:.5rem">
-          <input bind:value={newLocAddr} placeholder="Straße, PLZ oder Link" onkeydown={e => e.key === 'Enter' && onaddlocation()} style="flex:1" />
+          <input bind:value={newLocContact} placeholder="Wer kümmert sich drum?" onkeydown={e => e.key === 'Enter' && onaddlocation()} style="flex:1" />
           <button class="submit-icon-btn" onclick={onaddlocation} title="Vorschlagen">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -200,6 +236,13 @@
   .del-confirm { color: var(--red); opacity: .7; }
   .del-confirm:hover { opacity: 1; }
   .loc-struck { opacity: .6; background: var(--muted); }
+  .edit-btn { color: var(--ink3); }
+  .edit-btn:hover { color: var(--accent); }
+  .save-btn { color: var(--green); font-weight: 700; }
+  .loc-edit { align-items: center; gap: .5rem; }
+  .loc-edit-fields { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .4rem; }
+  .loc-edit-fields input { width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 14px; font-family: var(--sans); background: var(--surface); color: var(--ink); outline: none; }
+  .loc-edit-fields input:focus { border-color: var(--accent); }
   .strike { text-decoration: line-through; color: var(--ink3); }
   .struck-label { font-size: 11px; color: var(--red); margin-top: 2px; font-weight: 500; }
   .ideas-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.5rem; }
