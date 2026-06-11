@@ -75,6 +75,47 @@
     pingInterval = setInterval(ping, 20_000);
   }
 
+  // --- Live activity toasts ---
+  let activityInterval: ReturnType<typeof setInterval>;
+  let lastEventId = $state(0);
+
+  function activityMsg(e: { user_name: string; type: string; detail: string | null }): string {
+    const n = e.user_name;
+    switch (e.type) {
+      case 'song_add':     return `🎵 ${n} hat „${e.detail}" zur Playlist`;
+      case 'song_like':    return `❤️ ${n} feiert „${e.detail}"`;
+      case 'idea_add':     return `💡 ${n} hatte eine Idee`;
+      case 'idea_like':    return `❤️ ${n} mag eine Idee`;
+      case 'location_add': return `📍 ${n} hat einen Ort vorgeschlagen`;
+      case 'contrib_add':  return `🙋 ${n} bringt „${e.detail}" mit`;
+      case 'rsvp_yes':     return `🎉 ${n} ist dabei!`;
+      default:             return `${n} war aktiv`;
+    }
+  }
+
+  async function fetchActivity() {
+    if (!user) return;
+    let rows: { id: number; user_name: string; type: string; detail: string | null }[];
+    try {
+      rows = await (await fetch(`/api/events?since=${lastEventId}`)).json();
+    } catch { return; }
+    if (!Array.isArray(rows) || rows.length === 0) return;
+    lastEventId = rows.reduce((m, r) => Math.max(m, r.id), lastEventId);
+    const others = rows.filter(r => r.user_name !== user!.userName);
+    if (others.length === 1) showToast(activityMsg(others[0]));
+    else if (others.length > 1) showToast(`🎉 ${others.length} Sachen gerade passiert`);
+  }
+
+  async function startActivity() {
+    // Seed lastEventId so we don't replay events that happened before we joined.
+    try {
+      const rows = await (await fetch('/api/events?since=0')).json();
+      lastEventId = Array.isArray(rows) ? rows.reduce((m: number, r: any) => Math.max(m, r.id), 0) : 0;
+    } catch { /* ignore */ }
+    clearInterval(activityInterval);
+    activityInterval = setInterval(fetchActivity, 4_000);
+  }
+
   let pollInterval: ReturnType<typeof setInterval>;
 
   function startPoll() {
@@ -106,6 +147,7 @@
     clearInterval(presenceInterval);
     clearInterval(pingInterval);
     clearInterval(pollInterval);
+    clearInterval(activityInterval);
   });
 
   let voteCounts: Record<string, { yes: number; maybe: number; no: number }> = $state({});
@@ -165,6 +207,7 @@
         try {
           await loadAll();
           startPresence();
+          startActivity();
         } catch {
           logout();
         }
@@ -192,13 +235,14 @@
     localStorage.setItem('abi2016_user', JSON.stringify(user));
     await loadAll();
     startPresence();
+    startActivity();
     showToast(`Willkommen, ${user!.userName}!`);
   }
 
   function logout() { user = null; localStorage.removeItem('abi2016_user'); myVotes = {}; }
 
   async function loadAll() {
-    await Promise.all([loadVotes(), loadMyVotes(), loadTimeVotes(), loadMyTimeVotes(), loadRsvpStats(), loadContribs(), loadIdeas(), loadLocations(), loadSongs()]);
+    await Promise.all([loadVotes(), loadMyVotes(), loadTimeVotes(), loadMyTimeVotes(), loadRsvpStats(), loadMyRsvp(), loadContribs(), loadIdeas(), loadLocations(), loadSongs()]);
   }
 
   async function loadVotes() {
@@ -283,6 +327,18 @@
     rsvpStats = await (await fetch('/api/rsvp')).json();
   }
 
+  // Restore the user's own RSVP after a refresh (once on load — not in the poll, so it
+  // never overrides them while they're mid-change).
+  async function loadMyRsvp() {
+    if (!user) return;
+    const d = await (await fetch(`/api/rsvp?token=${user.token}`)).json();
+    if (d.mine) {
+      rsvpChoice = d.mine.attending ? 'yes' : 'no';
+      rsvpGuests = d.mine.guests ?? 1;
+      rsvpDone = true;
+    }
+  }
+
   async function submitRsvp() {
     if (!user) return;
     rsvpLoading = true;
@@ -293,7 +349,7 @@
     });
     rsvpLoading = false; rsvpDone = true;
     await loadRsvpStats();
-    showToast(rsvpChoice === 'yes' ? 'Anmeldung gespeichert!' : 'Schade! Bis zum naechsten Mal.');
+    showToast(rsvpChoice === 'yes' ? 'Anmeldung gespeichert!' : 'Schade! Bis zum nächsten Mal.');
   }
 
   async function loadContribs() {

@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { resolveToken } from '$lib/server/auth';
+import { logEvent } from '$lib/server/events';
 
 const MAX_PICKS = 3;
 
@@ -59,6 +60,7 @@ export async function POST({ request }) {
       if (await pickCount(userId) >= MAX_PICKS) return json({ error: 'max_picks' }, { status: 409 });
       await db.execute({ sql: `INSERT INTO song_votes (user_id, song_id) VALUES (?, ?)`, args: [userId, songId] });
       await db.execute({ sql: `UPDATE songs SET votes = votes + 1 WHERE id = ?`, args: [songId] });
+      await logEvent(userName, 'song_like', title.trim());
     }
     return json({ ok: true });
   }
@@ -72,6 +74,7 @@ export async function POST({ request }) {
   songId = ins.rows[0].id as number;
   await db.execute({ sql: `INSERT INTO song_votes (user_id, song_id) VALUES (?, ?)`, args: [userId, songId] });
   await db.execute({ sql: `UPDATE songs SET votes = votes + 1 WHERE id = ?`, args: [songId] });
+  await logEvent(userName, 'song_add', title.trim());
   return json({ ok: true });
 }
 

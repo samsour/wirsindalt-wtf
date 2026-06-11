@@ -73,7 +73,7 @@
 <div class="hero">
   <div class="eyebrow">So, einmal durchzählen bidde</div>
   <h1>Kommst du <em>oder was?</em></h1>
-  <p class="hero-sub">Kurz Bescheid geben, bring ruhig jemanden mit.</p>
+  <p class="hero-sub">Kurz Bescheid geben, gerne mit +1 Bescheid geben, damit wir wissen, mit wie vielen Leuten wir insgesamt rechnen müssen.</p>
 </div>
 
 {@render afterHero?.()}

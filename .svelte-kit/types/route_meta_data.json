@@ -14,6 +14,9 @@
 	"/api/emoji": [
 		"src/routes/api/emoji/+server.ts"
 	],
+	"/api/events": [
+		"src/routes/api/events/+server.ts"
+	],
 	"/api/ideas": [
 		"src/routes/api/ideas/+server.ts"
 	],

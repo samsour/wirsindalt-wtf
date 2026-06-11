@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { resolveToken } from '$lib/server/auth';
+import { logEvent } from '$lib/server/events';
 
 export async function GET() {
   const rows = await db.execute(
@@ -18,6 +19,7 @@ export async function POST({ request }) {
     sql: `INSERT INTO contributions (user_id, user_name, item, category) VALUES (?, ?, ?, ?) RETURNING *`,
     args: [userId, userName, item.trim(), category],
   });
+  await logEvent(userName, 'contrib_add', item.trim());
   return json(result.rows[0]);
 }
 

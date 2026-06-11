@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { resolveToken } from '$lib/server/auth';
+import { logEvent } from '$lib/server/events';
 
 export async function GET({ url }) {
   const token = url.searchParams.get('token');
@@ -50,6 +51,7 @@ export async function POST({ request }) {
     sql: `INSERT OR IGNORE INTO idea_votes (user_id, idea_id) VALUES (?, ?)`,
     args: [userId, result.rows[0].id as number],
   });
+  await logEvent(userName, 'idea_add', text.trim());
   return json(result.rows[0]);
 }
 
@@ -63,7 +65,7 @@ export async function DELETE({ request }) {
 
 export async function PUT({ request }) {
   const { token, ideaId } = await request.json();
-  const { userId } = await resolveToken(token);
+  const { userId, userName } = await resolveToken(token);
   const existing = await db.execute({
     sql: `SELECT id FROM idea_votes WHERE user_id = ? AND idea_id = ?`,
     args: [userId, ideaId],
@@ -75,6 +77,7 @@ export async function PUT({ request }) {
   } else {
     await db.execute({ sql: `INSERT INTO idea_votes (user_id, idea_id) VALUES (?, ?)`, args: [userId, ideaId] });
     await db.execute({ sql: `UPDATE ideas SET votes = votes + 1 WHERE id = ?`, args: [ideaId] });
+    await logEvent(userName, 'idea_like', null);
     return json({ voted: true });
   }
 }

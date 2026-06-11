@@ -123,6 +123,14 @@ export async function initDb() {
       emoji TEXT NOT NULL,
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      detail TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `);
   // migrations
   try { await db.execute(`ALTER TABLE users ADD COLUMN client_id TEXT`); } catch { /* already exists */ }
