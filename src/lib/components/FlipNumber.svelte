@@ -38,7 +38,7 @@
   .half {
     position: absolute; left: 0; right: 0; height: 50%; overflow: hidden;
     display: flex; justify-content: center;
-    background: rgba(0, 0, 0, 0.42);
+    background: #161616;
     backface-visibility: hidden;
   }
   .top { top: 0; align-items: flex-start; border-radius: 9px 9px 0 0; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
