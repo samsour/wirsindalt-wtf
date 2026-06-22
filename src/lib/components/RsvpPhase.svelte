@@ -16,6 +16,7 @@
     onsubmit,
     onnext,
     afterHero,
+    finalLocation = null,
   }: {
     rsvpStats: { attending: number; notAttending: number; totalGuests: number };
     voteLeader: string | undefined;
@@ -29,7 +30,12 @@
     onsubmit: () => void;
     onnext?: () => void;
     afterHero?: import('svelte').Snippet;
+    finalLocation?: { address: string; city: string } | null;
   } = $props();
+
+  let mapsUrl = $derived(finalLocation
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([finalLocation.address, finalLocation.city].filter(Boolean).join(', '))}`
+    : '');
 
   let now = $state(Date.now());
   onMount(() => {
@@ -81,25 +87,6 @@
 {@render afterHero?.()}
 
 <div class="section">
-  {#if showVotingLeader || showPending || showFinal}
-    <div class="chosen-date" class:pending={!dateConfirmed}>
-      <span class="chosen-icon">{dateConfirmed ? '📅' : '🗳️'}</span>
-      <div>
-        <div class="chosen-label">{showVotingLeader ? 'Aktuell vorne' : 'Der Termin'}</div>
-        <div class="chosen-value">{showFinal ? finalDate?.label : showVotingLeader ? leaderDate?.label : 'Wird noch bekannt gegeben'}</div>
-        {#if countdown}
-          <div class="chosen-countdown">
-          </div>
-          Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}. Änderungen vorbehalten, falls wir keine gescheite Location finden.
-        {:else if showPending}
-          <div class="chosen-note">
-            Die Abstimmung ist durch — danke fürs Mitvoten! Den endgültigen Termin stimmen wir noch im Planungsteam ab und geben ihn hier bekannt. Sobald er steht, kannst du zusagen.
-          </div>
-        {/if}
-      </div>
-    </div>
-  {/if}
-
   {#if eventCountdown}
     <div class="event-countdown" class:party-time={eventCountdown.past}>
       {#if eventCountdown.past}
@@ -127,6 +114,43 @@
         </div>
       {/if}
     </div>
+  {/if}
+
+  {#if showVotingLeader || showPending || showFinal}
+    <div class="chosen-date" class:pending={!dateConfirmed}>
+      <span class="chosen-icon">{dateConfirmed ? '📅' : '🗳️'}</span>
+      <div>
+        <div class="chosen-label">{showVotingLeader ? 'Aktuell vorne' : 'Der Termin'}</div>
+        <div class="chosen-value">{showFinal ? finalDate?.label : showVotingLeader ? leaderDate?.label : 'Wird noch bekannt gegeben'}</div>
+        {#if countdown}
+          <div class="chosen-countdown">
+          </div>
+          Termin wird fixiert in {countdown.days > 0 ? `${countdown.days} Tag${countdown.days !== 1 ? 'en' : ''}` : `${countdown.hours} Std.`}. Änderungen vorbehalten, falls wir keine gescheite Location finden.
+        {:else if showPending}
+          <div class="chosen-note">
+            Die Abstimmung ist durch — danke fürs Mitvoten! Den endgültigen Termin stimmen wir noch im Planungsteam ab und geben ihn hier bekannt. Sobald er steht, kannst du zusagen.
+          </div>
+        {:else if showFinal}
+          <div class="chosen-note">
+            Los geht's ab 16–17 Uhr. Offiziell nur bis 0:00 — wer danach noch weiterziehen will, da lässt sich bestimmt was organisieren.
+          </div>
+          <a class="chosen-cal" href="/api/calendar" download>📅 Zum Kalender hinzufügen</a>
+        {/if}
+      </div>
+    </div>
+  {/if}
+
+  {#if showFinal}
+    {#if finalLocation}
+      <a class="loc-summary" href={mapsUrl} target="_blank" rel="noopener">
+        <span class="ls-icon">📍</span>
+        <div class="ls-body">
+          <div class="ls-label">Wo</div>
+          <div class="ls-addr">{finalLocation.address}{finalLocation.city ? `, ${finalLocation.city}` : ''}</div>
+        </div>
+        <span class="ls-go">Karte ↗</span>
+      </a>
+    {/if}
   {/if}
 
   {#if dateConfirmed}
@@ -197,6 +221,15 @@
   .ec-units { display: flex; justify-content: center; gap: .7rem; padding: 0 .5rem; flex-wrap: wrap; }
   .ec-unit { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
   .ec-lbl { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; }
+  .loc-summary { display: flex; align-items: center; gap: 1rem; text-decoration: none; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: .85rem 1.25rem; margin-bottom: .75rem; transition: transform .15s, border-color .15s; }
+  .loc-summary:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .ls-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .ls-body { flex: 1; min-width: 0; }
+  .ls-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 2px; }
+  .ls-addr { font-family: var(--serif); font-size: 1.1rem; color: var(--ink); line-height: 1.2; }
+  .ls-go { flex-shrink: 0; font-size: 13px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .chosen-cal { display: inline-flex; align-items: center; gap: .4rem; text-decoration: none; background: var(--accent); color: #fff; border-radius: 9px; padding: .5rem .9rem; font-size: 13px; font-weight: 600; font-family: var(--sans); margin-top: .7rem; transition: opacity .15s; }
+  .chosen-cal:hover { opacity: .88; }
   .chosen-date { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
   .chosen-date.pending { border-color: var(--border); border-style: dashed; background: var(--muted); }
   .chosen-icon { font-size: 1.75rem; flex-shrink: 0; }

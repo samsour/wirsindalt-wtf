@@ -29,7 +29,7 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/anmeldung" | "/api" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/events" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
+		RouteId(): "/" | "/anmeldung" | "/api" | "/api/auth" | "/api/calendar" | "/api/contributions" | "/api/emoji" | "/api/events" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
 		RouteParams(): {
 			
 		};
@@ -38,6 +38,7 @@ declare module "$app/types" {
 			"/anmeldung": Record<string, never>;
 			"/api": Record<string, never>;
 			"/api/auth": Record<string, never>;
+			"/api/calendar": Record<string, never>;
 			"/api/contributions": Record<string, never>;
 			"/api/emoji": Record<string, never>;
 			"/api/events": Record<string, never>;
@@ -54,7 +55,7 @@ declare module "$app/types" {
 			"/planung": Record<string, never>;
 			"/playlist": Record<string, never>
 		};
-		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/contributions" | "/api/emoji" | "/api/events" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
+		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/calendar" | "/api/contributions" | "/api/emoji" | "/api/events" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/.DS_Store" | "/aULpFqR8APQ.jpg" | "/aULpFqR8APQ.mp4" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}

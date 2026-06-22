@@ -597,6 +597,7 @@
       {rsvpStats}
       {voteLeader}
       {voteDeadline}
+      finalLocation={data.finalLocation}
       bind:rsvpDone
       bind:rsvpChoice
       bind:rsvpGuests
@@ -615,6 +616,7 @@
       {myIdeaVotes}
       {contributions}
       {locations}
+      finalLocation={data.finalLocation}
       userId={user.userId}
       bind:planTab
       bind:newContribItem

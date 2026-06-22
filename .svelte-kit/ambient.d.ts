@@ -38,7 +38,9 @@
  * The above values will be the same _even if_ different values for `ENVIRONMENT` or `PUBLIC_BASE_URL` are set at runtime, as they are statically replaced in your code with their build time values.
  */
 declare module '$env/static/private' {
+	export const LOCATION_ADDRESS: string;
 	export const MAX_PHASE: string;
+	export const POSTCODE_CITY: string;
 	export const SPOTIFY_CLIENT_ID: string;
 	export const SPOTIFY_CLIENT_SECRET: string;
 	export const TURSO_AUTH_TOKEN: string;
@@ -54,6 +56,7 @@ declare module '$env/static/private' {
 	export const INIT_CWD: string;
 	export const SHELL: string;
 	export const TMPDIR: string;
+	export const CLAUDE_CODE_CHILD_SESSION: string;
 	export const npm_config_global_prefix: string;
 	export const MallocNanoZone: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
@@ -204,7 +207,9 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		LOCATION_ADDRESS: string;
 		MAX_PHASE: string;
+		POSTCODE_CITY: string;
 		SPOTIFY_CLIENT_ID: string;
 		SPOTIFY_CLIENT_SECRET: string;
 		TURSO_AUTH_TOKEN: string;
@@ -220,6 +225,7 @@ declare module '$env/dynamic/private' {
 		INIT_CWD: string;
 		SHELL: string;
 		TMPDIR: string;
+		CLAUDE_CODE_CHILD_SESSION: string;
 		npm_config_global_prefix: string;
 		MallocNanoZone: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;

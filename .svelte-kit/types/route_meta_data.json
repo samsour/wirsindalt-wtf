@@ -8,6 +8,9 @@
 	"/api/auth": [
 		"src/routes/api/auth/+server.ts"
 	],
+	"/api/calendar": [
+		"src/routes/api/calendar/+server.ts"
+	],
 	"/api/contributions": [
 		"src/routes/api/contributions/+server.ts"
 	],

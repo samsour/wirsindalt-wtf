@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/db';
 import { resolveToken } from '$lib/server/auth';
 import { logEvent } from '$lib/server/events';
@@ -29,6 +30,9 @@ export async function PUT({ request }) {
 }
 
 export async function POST({ request }) {
+  // Venue is locked in — no more location suggestions.
+  if (env.LOCATION_ADDRESS) return json({ error: 'Der Ort steht bereits fest.' }, { status: 409 });
+
   const { token, description, address, contact } = await request.json();
   const { userId, userName } = await resolveToken(token);
   if (!description?.trim()) return json({ error: 'Missing fields' }, { status: 400 });

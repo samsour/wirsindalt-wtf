@@ -1,6 +1,6 @@
 <script lang="ts">
   let {
-    ideas, myIdeaVotes, contributions, locations, userId,
+    ideas, myIdeaVotes, contributions, locations, userId, finalLocation = null,
     planTab = $bindable<'contrib' | 'ideas' | 'locations'>('locations'),
     newContribItem = $bindable(''), newContribCat = $bindable('Essen'),
     newIdeaText = $bindable(''),
@@ -13,6 +13,7 @@
     contributions: any[];
     locations: any[];
     userId: number;
+    finalLocation?: { address: string; city: string } | null;
     planTab?: 'contrib' | 'ideas' | 'locations';
     newContribItem?: string;
     newContribCat?: string;
@@ -37,6 +38,10 @@
     Essen: '🍕', Getränke: '🍺', Equipment: '🎒', Sonstiges: '✨',
   };
   const cats = Object.keys(catEmoji);
+
+  let mapsUrl = $derived(finalLocation
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([finalLocation.address, finalLocation.city].filter(Boolean).join(', '))}`
+    : '');
 
   // Inline editing of an existing location.
   let editingLoc = $state<number | null>(null);
@@ -148,6 +153,21 @@
     </div>
 
   {:else}
+    {#if finalLocation}
+      <a class="final-loc" href={mapsUrl} target="_blank" rel="noopener">
+        <span class="fl-icon">📍</span>
+        <div class="fl-body">
+          <div class="fl-label">Der Ort steht fest</div>
+          <div class="fl-addr">{finalLocation.address}</div>
+          {#if finalLocation.city}<div class="fl-city">{finalLocation.city}</div>{/if}
+        </div>
+        <span class="fl-go">Karte ↗</span>
+      </a>
+    {/if}
+
+    {#if finalLocation && locations.length}
+      <div class="loc-archive-label">Frühere Vorschläge</div>
+    {/if}
     <div class="contrib-list">
       {#each locations as loc, i}
         {@const struck = !!loc.struck}
@@ -179,8 +199,9 @@
           </div>
         {/if}
       {/each}
-      {#if locations.length === 0}<p class="empty">Noch kein Ort vorgeschlagen!<br />Irgendwo müssen wir aber hin :D</p>{/if}
+      {#if locations.length === 0 && !finalLocation}<p class="empty">Noch kein Ort vorgeschlagen!<br />Irgendwo müssen wir aber hin :D</p>{/if}
     </div>
+    {#if !finalLocation}
     <div class="add-box">
       <h4>📍 Ort vorschlagen</h4>
       <div class="form-row"><label>Beschreibung</label><input bind:value={newLocDesc} placeholder="z.B. Gänsi, Waldi, irgendne Halle, ..." onkeydown={e => e.key === 'Enter' && newLocAddr ? onaddlocation() : null} /></div>
@@ -196,6 +217,7 @@
         </div>
       </div>
     </div>
+    {/if}
   {/if}
 
 </div>
@@ -236,6 +258,16 @@
   .del-confirm { color: var(--red); opacity: .7; }
   .del-confirm:hover { opacity: 1; }
   .loc-struck { opacity: .6; background: var(--muted); }
+
+  .final-loc { display: flex; align-items: center; gap: 1rem; text-decoration: none; background: color-mix(in srgb, var(--green) 12%, var(--surface)); border: 2px solid var(--green); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; transition: transform .15s; }
+  .final-loc:hover { transform: translateY(-2px); }
+  .fl-icon { font-size: 1.75rem; flex-shrink: 0; }
+  .fl-body { flex: 1; min-width: 0; }
+  .fl-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 2px; }
+  .fl-addr { font-family: var(--serif); font-size: 1.25rem; color: var(--ink); line-height: 1.15; }
+  .fl-city { font-size: 13px; color: var(--ink2); margin-top: 1px; }
+  .fl-go { flex-shrink: 0; font-size: 13px; font-weight: 600; color: var(--green); white-space: nowrap; }
+  .loc-archive-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink3); margin-bottom: .6rem; }
   .edit-btn { color: var(--ink3); }
   .edit-btn:hover { color: var(--accent); }
   .save-btn { color: var(--green); font-weight: 700; }
