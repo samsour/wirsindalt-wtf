@@ -1,4 +1,6 @@
 <script lang="ts">
+  import LocationMap from './LocationMap.svelte';
+
   let {
     ideas, myIdeaVotes, contributions, locations, userId, finalLocation = null,
     planTab = $bindable<'contrib' | 'ideas' | 'locations'>('locations'),
@@ -163,6 +165,7 @@
         </div>
         <span class="fl-go">Karte ↗</span>
       </a>
+      <LocationMap query={[finalLocation.address, finalLocation.city].filter(Boolean).join(', ')} />
     {/if}
 
     {#if finalLocation && locations.length}

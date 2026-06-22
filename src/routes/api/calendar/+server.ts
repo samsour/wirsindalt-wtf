@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { DATE_ANNOUNCED, FINAL_DATE } from '$lib/dates';
 
-const TITLE = "CvSS ABI '16 — 10 Jahre Reunion";
+const TITLE = '10 Jahre blau, trotzdem schlau 🎓';
 const START_HOUR = 17;
 const DURATION_HOURS = 7; // 17:00 → 00:00 (midnight)
 
