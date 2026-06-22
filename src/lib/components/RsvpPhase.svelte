@@ -82,11 +82,7 @@
   <div class="eyebrow">So, einmal durchzählen bidde</div>
   <h1>Kommst du <em>oder was?</em></h1>
   <p class="hero-sub">Kurz Bescheid geben, gerne mit +1 Bescheid geben, damit wir wissen, mit wie vielen Leuten wir insgesamt rechnen müssen.</p>
-</div>
 
-{@render afterHero?.()}
-
-<div class="section">
   {#if eventCountdown}
     <div class="event-countdown" class:party-time={eventCountdown.past}>
       {#if eventCountdown.past}
@@ -115,7 +111,11 @@
       {/if}
     </div>
   {/if}
+</div>
 
+{@render afterHero?.()}
+
+<div class="section">
   {#if showVotingLeader || showPending || showFinal}
     <div class="chosen-date" class:pending={!dateConfirmed}>
       <span class="chosen-icon">{dateConfirmed ? '📅' : '🗳️'}</span>
@@ -212,7 +212,7 @@
   .rsvp-card.attending { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--surface)); }
   .rsvp-card.declining { border-color: var(--red); background: color-mix(in srgb, var(--red) 12%, var(--surface)); }
   .rsvp-icon { font-size: 2.5rem; margin-bottom: .75rem; }
-  .event-countdown { background: linear-gradient(135deg, var(--accent), #d04b3c); color: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; text-align: center; box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+  .event-countdown { background: linear-gradient(135deg, var(--accent), #d04b3c); color: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; text-align: center; box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
   .event-countdown.party-time { background: linear-gradient(135deg, var(--green), #2f6b39); box-shadow: 0 6px 20px color-mix(in srgb, var(--green) 35%, transparent); }
   .ec-emoji { font-size: 2.5rem; line-height: 1; margin-bottom: .5rem; animation: ec-pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
   @keyframes ec-pop { from { transform: scale(0); } to { transform: scale(1); } }
