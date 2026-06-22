@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { TIME_SLOTS } from '$lib/dates';
+  import { TIME_SLOTS, FINAL_TIME } from '$lib/dates';
+
+  const finalTime = FINAL_TIME;
 
   let { timeCounts, myTimeVotes, votingTimeKey, dateLabel = '', oncastvote, afterHero }: {
     timeCounts: Record<string, { yes: number; maybe: number; no: number }>;
@@ -24,14 +26,23 @@
 </script>
 
 <div class="hero">
-  <div class="eyebrow">Termin steht. Fehlt nur die Zeit.</div>
+  <div class="eyebrow">{finalTime ? 'Termin & Uhrzeit stehen 🎉' : 'Termin steht. Fehlt nur die Zeit.'}</div>
   <h1>Wann <em>geht's los?</em></h1>
-  <p class="hero-sub">Erstmal nur die ungefähre Startzeit{dateLabel ? ` am ${dateLabel}` : ''}. Wie lange dann gefeiert wird, hängt noch von der Location ab. Im Idealfall bis open-end. Stimm bei jeder Uhrzeit ab: passt, egal, oder nope (mehrere „passt" sind okay).</p>
+  {#if finalTime}
+    <p class="hero-sub">Danke fürs Mitvoten! Wie lange gefeiert wird, hängt noch von der Location ab.</p>
+    <div class="winner-card">
+      <div class="winner-eyebrow">🎉 Die Uhrzeit steht fest</div>
+      <div class="winner-date">{finalTime}</div>
+    </div>
+  {:else}
+    <p class="hero-sub">Erstmal nur die ungefähre Startzeit{dateLabel ? ` am ${dateLabel}` : ''}. Wie lange dann gefeiert wird, hängt noch von der Location ab. Im Idealfall bis open-end. Stimm bei jeder Uhrzeit ab: passt, egal, oder nope (mehrere „passt" sind okay).</p>
+  {/if}
 </div>
 
 {@render afterHero?.()}
 
 <div class="section time-vote">
+
   {#each TIME_SLOTS as s}
     {@const c = timeCounts[s.key] ?? { yes: 0, maybe: 0, no: 0 }}
     {@const total = c.yes + c.maybe + c.no || 1}
@@ -52,15 +63,19 @@
       </div>
       <div class="vote-count">{c.yes} ✓ · {c.maybe} ~ · {c.no} ✗</div>
       <div class="vote-actions">
-        <button class="vbtn yes"   class:active={mv === 'yes'}   disabled={votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'yes')}>✓ Passt</button>
-        <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'maybe')}>~ Egal</button>
-        <button class="vbtn no"    class:active={mv === 'no'}    disabled={votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'no')}>✗ Nope</button>
+        <button class="vbtn yes"   class:active={mv === 'yes'}   disabled={!!finalTime || votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'yes')}>✓ Passt</button>
+        <button class="vbtn maybe" class:active={mv === 'maybe'} disabled={!!finalTime || votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'maybe')}>~ Egal</button>
+        <button class="vbtn no"    class:active={mv === 'no'}    disabled={!!finalTime || votingTimeKey === s.key} onclick={() => oncastvote(s.key, 'no')}>✗ Nope</button>
       </div>
     </div>
   {/each}
 </div>
 
 <style>
+
+  .winner-card { margin-top: 1.25rem; background: color-mix(in srgb, var(--green) 12%, var(--surface)); border: 1.5px solid var(--green); border-radius: 16px; padding: 1.25rem 1.5rem; text-align: center; }
+  .winner-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: .4rem; }
+  .winner-date { font-family: var(--serif); font-size: 1.75rem; color: var(--ink); line-height: 1.1; }
 
   .slot-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem; position: relative; overflow: hidden; transition: border-color .15s; }
   .slot-card.voted-yes { border-color: var(--green); background: color-mix(in srgb, var(--green) 8%, var(--surface)); }

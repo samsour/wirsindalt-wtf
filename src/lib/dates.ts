@@ -39,6 +39,10 @@ export const DATE_ANNOUNCED = true;
 // Only takes effect once DATE_ANNOUNCED is `true`.
 export const FINAL_DATE: string | null = '2026-08-15';
 
+// The agreed start time. Once set, it's shown as the answer on the Uhrzeit page and
+// time voting is closed. Leave `null` to keep the time vote open.
+export const FINAL_TIME: string | null = '16–17 Uhr';
+
 // Voting closes at the end of the VOTE_DEADLINE day (deadline date + 24h).
 // No deadline set → voting stays open.
 export function isVotingClosed(voteDeadline: string | null | undefined, now: number = Date.now()): boolean {

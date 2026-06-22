@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
-import { TIME_SLOTS, DATE_ANNOUNCED } from '$lib/dates';
+import { TIME_SLOTS, DATE_ANNOUNCED, FINAL_TIME } from '$lib/dates';
 import { resolveToken } from '$lib/server/auth';
 
 export async function GET() {
@@ -26,6 +26,10 @@ export async function POST({ request }) {
   // The time vote only opens once the date is locked in.
   if (!DATE_ANNOUNCED) {
     return json({ error: 'Die Uhrzeit-Abstimmung ist noch nicht offen.' }, { status: 409 });
+  }
+  // ...and closes once a final time is set.
+  if (FINAL_TIME) {
+    return json({ error: 'Die Uhrzeit steht bereits fest.' }, { status: 409 });
   }
 
   const { token, slotKey, vote } = await request.json();

@@ -57,6 +57,6 @@ declare module "$app/types" {
 		};
 		Pathname(): "/" | "/anmeldung" | "/api/auth" | "/api/calendar" | "/api/contributions" | "/api/emoji" | "/api/events" | "/api/ideas" | "/api/init" | "/api/locations" | "/api/presence" | "/api/rsvp" | "/api/songs" | "/api/songs/genres" | "/api/songs/search" | "/api/time-votes" | "/api/votes" | "/planung" | "/playlist";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/.DS_Store" | "/aULpFqR8APQ.jpg" | "/aULpFqR8APQ.mp4" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
+		Asset(): "/.DS_Store" | "/aULpFqR8APQ.jpg" | "/aULpFqR8APQ.mp4" | "/favicon-32.png" | "/favicon-64.png" | "/icon-192.png" | "/icon-512.png" | "/immerblau-pixel.png" | "/immerblau.png" | "/og-image.png" | "/robots.txt" | string & {};
 	}
 }
