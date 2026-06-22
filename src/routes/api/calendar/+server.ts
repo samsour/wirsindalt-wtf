@@ -30,6 +30,8 @@ export async function GET() {
     'BEGIN:VEVENT',
     `UID:reunion-${FINAL_DATE}@wirsindalt.wtf`,
     `DTSTAMP:${stamp}`,
+    'SEQUENCE:2', // bump when event details change so calendars apply the update
+    `LAST-MODIFIED:${stamp}`,
     `DTSTART:${fmt(start)}`,
     `DTEND:${fmt(end)}`,
     `SUMMARY:${TITLE}`,
@@ -42,6 +44,7 @@ export async function GET() {
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
       'Content-Disposition': 'attachment; filename="reunion.ics"',
+      'Cache-Control': 'no-store',
     },
   });
 }
